@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Register Page</h2>
+            </div>
+            <div unicorn:view>
+                {% include "partials/_messages.html" %}
+                <form hx-post="{% url 'register' %}" class="mt-8 space-y-6">
+                    <div class="rounded-md shadow-sm -space-y-px">
+                        <div>
+                            {% component "input" id="email" type="email" name="email" label="Email" placeholder="email" required="true" %}
+                        {% endcomponent %}
+                        <div>
+                            {% component "input" id="password1" type="password" name="password1" label="Password" placeholder="******" required="true" %}
+                        {% endcomponent %}
+                    </div>
+                    <div>
+                        {% component "input" id="password2" type="password" name="password2" label="Confirm Password" placeholder="******" required="true" %}
+                    {% endcomponent %}
+                </div>
+                <div>
+                    {% component "input" id="domain" name="domain" label="Domain" placeholder="test" required="true" %}
+                {% endcomponent %}
+            </div>
+        </div>
+    </div>
+    <div>
+        <label for="company_name" class="sr-only">Company Name</label>
+        {% component "input" id="company_name" name="company_name" label="Company Name" required="true" %}
+    {% endcomponent %}
+</div>
+</div>
+<div>
+    {% component "button" type="submit" label="Register" %}  {% endcomponent %}
+    <div>{% component "link" label="Login" url="login" boost="true" %}    {% endcomponent %}</div>
+</div>
+</form>
+</div>
+</div>
+{% endblock main %}

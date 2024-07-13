@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="p-6 bg-white rounded-lg shadow-lg">
+    <h2 class="text-2xl font-semibold mb-4">Settings</h2>
+    <div hx-boost='true'>
+        <form method="post" action="{% url 'user_settings' %}" class="space-y-4">
+            {% csrf_token %}
+            {% component "input" id="first_name" label="First Name" type="text" name="first_name" value=request.user.first_name placeholder="First Name" required=True %}{% endcomponent %}
+            {% component "input" id="last_name" label="Last Name" type="text" name="last_name" value=request.user.last_name placeholder="Last Name" required=True %}{% endcomponent %}
+            {% component "input" id="email" label="Email Address" type="email" name="email" value=request.user.email placeholder="user@email.com" required=True %}{% endcomponent %}
+            {% component "input" id="password1" label="Password" type="password" name="password1" placeholder="Enter new password" required=False %}{% endcomponent %}
+            {% component "input" id="password2" label="Confirm Password" type="password" name="password2" placeholder="Confirm password" required=False %}{% endcomponent %}
+            <div id="error_div" class="hidden text-red-800 mb-4">Passwords do not match.</div>
+            <div>
+                <button type="submit" id="submit_button"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="p-6 bg-white rounded-lg shadow-lg">
+    {% if request.user.is_company_admin %}
+    <div id="list_of_employees">
+        {% for employee in employees %}
+        <div>{{ employee.first_name }} {{ employee.last_name }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <form action="" method='post'>
+        {% csrf_token %}
+        <input type="text" name="employee_first_name" placeholder="First Name"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <input type="text" name="employee_last_name" placeholder="Last Name"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <input type="email" name="employee_email" placeholder="Email Address"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <input type="password" name="password" placeholder="Password"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <input type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+    </form>
+</div>
+{% endblock main %}
+
+{% block js %}
+<script>
+    const password1 = document.getElementById("password1");
+    const password2 = document.getElementById("password2");
+    const errorDiv = document.getElementById("error_div");
+    const submitButton = document.getElementById("submit_button");
+
+    function checkPasswords() {
+        if (password1.value || password2.value) {
+            if (password1.value !== password2.value) {
+                errorDiv.classList.remove('hidden');
+                password1.classList.add('border-red-500');
+                password2.classList.add('border-red-500');
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                submitButton.disabled = true;
+            } else {
+                errorDiv.classList.add('hidden');
+                password1.classList.remove('border-red-500');
+                password2.classList.remove('border-red-500');
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                submitButton.disabled = false;
+            }
+        } else {
+            errorDiv.classList.add('hidden');
+            password1.classList.remove('border-red-500');
+            password2.classList.remove('border-red-500');
+            submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            submitButton.disabled = false;
+        }
+    }
+
+    password1.addEventListener('input', checkPasswords);
+    password2.addEventListener('input', checkPasswords);
+</script>
+{% endblock js %}

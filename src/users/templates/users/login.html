@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+                    Login to
+                    <br>
+                    <span class="underline">{{ request.tenant.name }}</span>
+                </h2>
+            </div>
+            <div hx-boost="true" data-loading-target="#login_button">
+                <form action="{% url 'login' %}" method="post" class="mt-8 space-y-6">
+                    {% csrf_token %}
+                    <div class="rounded-md shadow-sm -space-y-px">
+                        <div class="p-2">
+                            {% component "input" id="email" label="Email Address" type="email" name="email" placeholder="user@email.com" required=True %}{% endcomponent %}
+                        </div>
+                        <div class="p-2">
+                            {% component "input" id="password" label="Password" type="password" name="password" placeholder="********" required=True %}{% endcomponent %}
+                        </div>
+                        <div class="pt-2">{% component "button" id="login_button" label="Login" %}{% endcomponent %}</div>
+                    </div>
+                </form>
+                <div class="text-center">{% component "link" label="Register" url="register" boost="true" %} {% endcomponent %}</div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}

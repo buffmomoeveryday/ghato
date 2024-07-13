@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full border-collapse border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="px-4 py-2 border">ID</th>
+                    <th class="px-4 py-2 border">Supplier</th>
+                    <th class="px-4 py-2 border">Purchase Date</th>
+                    <th class="px-4 py-2 border">Total Amount</th>
+                    <th class="px-4 py-2 border">Received Date</th>
+                    <th class="px-4 py-2 border">Created At</th>
+                    <th class="px-4 py-2 border">Updated At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for purchase in purchases %}
+                    <tr>
+                        <td class="border px-4 py-2 underline text-blue-400">
+                            <a href="{% url 'purchase_detail' id=purchase.id %}">{{ purchase.id }}</a>
+                        </td>
+                        <td class="border px-4 py-2">{{ purchase.supplier.name }}</td>
+                        <td class="border px-4 py-2">{{ purchase.purchase_date }}</td>
+                        <td class="border px-4 py-2">{{ purchase.total_amount }}</td>
+                        <td class="border px-4 py-2">{{ purchase.received_date }}</td>
+                        <td class="border px-4 py-2">{{ purchase.created_at }}</td>
+                        <td class="border px-4 py-2">{{ purchase.updated_at }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock main %}
