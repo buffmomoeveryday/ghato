@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1a181d83-23b9-491c-9fd2-d7fe8c8bd2e5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jammav2.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirement.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/asgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/asgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/templates/cdn_css.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/cdn_css.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/templates/cdn_script.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/cdn_script.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/templates/partials/_sidebar.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/partials/_sidebar.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/wsgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/components/purchase_add.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/components/purchase_add.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/components/purchase_add_component.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/components/purchase_add_component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0002_rename_baseuserofmeasurements_unitofmeasurements_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0002_rename_baseuserofmeasurements_unitofmeasurements_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templates/inventory/inventory.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templates/purchase/htmx/add_product_form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templates/purchase/purchase_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templates/purchase/purchase_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templates/purchase/purchase_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templates/purchase/purchase_index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tenant/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tenant/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tenant/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tenant/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/templates/users/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/templates/users/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/users/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/views.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/src/purchases/components/purchase_add.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/purchases/components/purchase_add_component.html" root0="FORCE_HIGHLIGHTING" root1="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/src/sales/components/sales_add_component.html" root0="FORCE_HIGHLIGHTING" root1="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2j7yhqIUlzQkmS2jOO5Ml1nS6cV" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Django Server.Unnamed.executor&quot;: &quot;Debug&quot;,
+    &quot;Django Server.ghato.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenDjangoStructureViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.pycharm.django.structure.promotion.once.per.project&quot;: &quot;true&quot;,
+    &quot;django.template.preview.state&quot;: &quot;SHOW_EDITOR_AND_PREVIEW&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/siddharthakhanal/Desktop/projects/projects/python/django/ghato/venv&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.stylelint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration name="Unnamed" type="Python.DjangoServer" factoryName="Django server" nameIsGenerated="true">
+      <module name="ghato" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="DJANGO_SETTINGS_MODULE" value="core.settings" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="8000" />
+      <option name="host" value="localhost" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1a181d83-23b9-491c-9fd2-d7fe8c8bd2e5" name="Changes" comment="" />
+      <created>1720752534346</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1720752534346</updated>
+      <workItem from="1720752536855" duration="25000" />
+      <workItem from="1720967156496" duration="284000" />
+      <workItem from="1721357710599" duration="3127000" />
+      <workItem from="1721360851250" duration="15000" />
+      <workItem from="1721360875778" duration="1943000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

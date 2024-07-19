@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block main %}
+<div class="container mx-auto px-4 py-8">
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead>
+                <tr class="bg-gray-50">
+                    <th class="py-2 px-4 border-b">Product Name</th>
+                    <th class="py-2 px-4 border-b">SKU</th>
+                    <th class="py-2 px-4 border-b">UOM</th>
+                    <th class="py-2 px-4 border-b">Quantity</th>
+                    <th class="py-2 px-4 border-b">Price</th>
+                    <th class="py-2 px-4 border-b">Value</th>
+                    <th class="py-2 px-4 border-b">Invoice</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory %}
+                <tr class="hover:bg-gray-100">
+                    <td class="py-2 px-4 border-b">{{ item.product.name }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.product.sku | upper }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.product.uom.name | capfirst }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.quantity }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.price }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.total }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.purchase }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="bg-gray-50">
+                    <td colspan="5" class="py-2 px-4 border-b">Total Inventory Value:</td>
+                    <td class="py-2 px-4 border-b">{{ total_inventory_value }}</td>
+                    <td class="py-2 px-4 border-b"></td>
+                </tr>
+                <tr class="bg-gray-50">
+                    <td colspan="5" class="py-2 px-4 border-b">Total Unique Products:</td>
+                    <td class="py-2 px-4 border-b">{{ total_unique_product }}</td>
+                    <td class="py-2 px-4 border-b"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock main %}

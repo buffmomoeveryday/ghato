@@ -1,131 +1,166 @@
 <div>
     {% include "partials/_messages.html" %}
-
     <div class="p-8 bg-white rounded-lg shadow-md">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="supplier" class="block text-sm font-medium text-gray-700">Supplier</label>
                 <div class="mt-1 flex rounded-md shadow-sm">
-                    <select u:model="supplier" u:key="supplier_list" name="supplier" id="supplier_dropdown"
-                        class="form-select block w-full mt-1 rounded-md border-gray-300">
+                    <select u:model="supplier"
+                            u:key="supplier_list"
+                            name="supplier"
+                            id="supplier_dropdown"
+                            class="form-select block w-full mt-1 rounded-md border-gray-300">
                         <option value="">Select a supplier</option>
-                        {% for supplier in suppliers %}
-                        <option value="{{ supplier.id }}">{{ supplier.name|capfirst }}</option>
-                        {% endfor %}
+                        {% for supplier in suppliers %}<option value="{{ supplier.id }}">{{ supplier.name|capfirst }}</option>{% endfor %}
                     </select>
                 </div>
                 <div class="mt-2">
                     {% include "purchase/partials/add_supplier_modal.html" with id="add_supplier" button_label="Add New Supplier" title="Add Supplier" %}
                 </div>
             </div>
-
             <div>
-                <label for="purchase_invoice_date" class="block text-sm font-medium text-gray-700">Purchase Date</label>
-                <input u:model.defer="purchase_invoice_date" type="date" u:input="check_date" id="purchase_invoice_date"
-                    name="purchase_invoice_date" class="form-input block w-full mt-1 rounded-md border-gray-300">
-                <p id="date-error" class="text-red-600 text-sm mt-1">
-                    {{ unicorn.errors.purchase_invoice_date.0.message.0 }}</p>
+                <label for="purchase_invoice_date"
+                       class="block text-sm font-medium text-gray-700">Purchase Date</label>
+                <input u:model.defer="purchase_invoice_date"
+                       type="date"
+                       u:input="check_date"
+                       id="purchase_invoice_date"
+                       name="purchase_invoice_date"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.purchase_invoice_date.0.message.0 }}</p>
             </div>
-
             <div>
-                <label for="total_invoice_amount" class="block text-sm font-medium text-gray-700">Total Amount</label>
-                <input u:model.lazy="total_invoice_amount" type="number" id="total_invoice_amount"
-                    name="total_invoice_amount" class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <label for="total_invoice_amount"
+                       class="block text-sm font-medium text-gray-700">Total Amount</label>
+                <input u:model.lazy="total_invoice_amount"
+                       type="number"
+                       id="total_invoice_amount"
+                       name="total_invoice_amount"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300">
             </div>
-
             <div>
                 <label for="received_date" class="block text-sm font-medium text-gray-700">Received Date</label>
-                <input u:model="received_date" type="date" id="received_date" name="received_date"
-                    class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <input u:model="received_date"
+                       type="date"
+                       id="received_date"
+                       name="received_date"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300">
             </div>
-
             <div>
-                <label for="purchase_invoice_number" class="block text-sm font-medium text-gray-700">Supplier Invoice
-                    Reference</label>
-                <input u:model.lazy="purchase_invoice_number" type="text" id="purchase_invoice_number"
-                    name="purchase_invoice_number" class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <label for="purchase_invoice_number"
+                       class="block text-sm font-medium text-gray-700">
+                    Supplier Invoice
+                    Reference
+                </label>
+                <input u:model.lazy="purchase_invoice_number"
+                       type="text"
+                       id="purchase_invoice_number"
+                       name="purchase_invoice_number"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300">
             </div>
         </div>
     </div>
-
     <!-- Purchase Detail -->
     <div class="p-8 mt-8 bg-white rounded-lg shadow-md">
         <h2 class="text-2xl font-semibold mb-6">Purchase Items List</h2>
-        
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div>
                 <label for="product" class="block text-sm font-medium text-gray-700">Product</label>
-                <select u:model.defer="product" u:key="product_list" id="product" name="product"
-                class="form-select block w-full mt-1 rounded-md border-gray-300">
-                <option value="">Select a product</option>
-                {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }} ({{ product.sku }})</option>
-                {% endfor %}
-            </select>
-        </div>
-                <div class="mt-2">
-
-        {% include "purchase/partials/add_product_modal.html" with id="add_purchase" button_label="Add Purchase" title="Add Purchase" %}
-                </div>
-        <div>
-
-            <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-                <input u:model.defer="quantity" type="number" id="quantity" name="quantity"
-                    class="form-input block w-full mt-1 rounded-md border-gray-300" />
+                <select u:model.defer="product"
+                        u:key="product_list"
+                        id="product"
+                        name="product"
+                        class="form-select block w-full mt-1 rounded-md border-gray-300">
+                    <option value="">Select a product</option>
+                    {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }} ({{ product.sku }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mt-2">
+                {% include "purchase/partials/add_product_modal.html" with id="add_purchase" button_label="Add Purchase" title="Add Purchase" %}
+            </div>
+            <div>
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <input u:model.defer="quantity"
+                       type="number"
+                       id="quantity"
+                       name="quantity"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300" />
             </div>
             <div>
                 <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-                <input u:model.defer="price" type="number" id="price" name="price"
-                    class="form-input block w-full mt-1 rounded-md border-gray-300" />
+                <input u:model.defer="price"
+                       type="number"
+                       id="price"
+                       name="price"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300" />
             </div>
-            <div>
-                <label for="received_quantity" class="block text-sm font-medium text-gray-700">Received Quantity</label>
-                <input u:model.lazy="received_quantity" type="number" id="received_quantity" name="received_quantity"
-                    class="form-input block w-full mt-1 rounded-md border-gray-300" />
-            </div>
+            
+            {% comment  %}
+            <!-- <div> -->
+                <!-- <label for="received_quantity" -->
+                       <!-- class="block text-sm font-medium text-gray-700">Received Quantity</label> -->
+                <!-- <input u:model.lazy="received_quantity" -->
+                       <!-- type="number" -->
+                       <!-- id="received_quantity" -->
+                       <!-- name="received_quantity" -->
+                       <!-- class="form-input block w-full mt-1 rounded-md border-gray-300" /> -->
+            <!-- </div> -->
+            {% endcomment %}
+
             <div class="flex items-end">
-                <button u:partial.key="product_table" u:click="add_item_to_session" type="submit"
-                    id="add_product_button" class="bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-500">Add
-                    Item</button>
+                <button u:partial.key="product_table"
+                        u:click="add_item_to_session"
+                        type="submit"
+                        id="add_product_button"
+                        class="bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-500">
+                    Add
+                    Item
+                </button>
             </div>
         </div>
-
         <div class="overflow-x-auto">
-            <table u:key="product_table" class="min-w-full bg-white divide-y divide-gray-200">
+            <table u:key="product_table"
+                   class="min-w-full bg-white divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Product ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Action</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edit</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for item in product_to_be_purchased %}
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.product_id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.product_name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.price }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <button u:click="remove_item_from_session({{item.product_id}})" name="remove_item"
-                                type="submit" class="text-red-600 hover:underline">Delete</button>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ item.product_id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ item.product_name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ item.price }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button u:click="edit_product({{ item.product_id }})"
+                                        name="edit_product"
+                                        type="submit"
+                                        class="text-blue-600 hover:underline">Edit Product</button>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <button u:click="remove_item_from_session({{ item.product_id }})"
+                                        name="remove_item"
+                                        type="submit"
+                                        class="text-red-600 hover:underline">Delete</button>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
         <div class="mt-4">
-            <button u:click="save_all" name="save_all"
-                class="bg-pink-500 text-white p-3 rounded-md hover:bg-pink-400">Save All</button>
+            <button u:click="save_all"
+                    name="save_all"
+                    class="bg-pink-500 text-white p-3 rounded-md hover:bg-pink-400">Save All</button>
         </div>
     </div>
 </div>

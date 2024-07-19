@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load unicorn %}
+{% csrf_token %}
+
+{% block main %}
+<h1 class="text-3xl font-semibold mb-6">
+    Sales Invoices</h1>
+{% unicorn 'sales-add-component'  %}
+{% endblock main %}

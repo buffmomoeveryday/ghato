@@ -6,30 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('purchases', '0001_initial'),
-        ('tenant', '0001_initial'),
+        ("purchases", "0001_initial"),
+        ("tenant", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='BaseUserOfMeasurements',
-            new_name='UnitOfMeasurements',
+            old_name="BaseUserOfMeasurements",
+            new_name="UnitOfMeasurements",
         ),
         migrations.RemoveField(
-            model_name='product',
-            name='description',
+            model_name="product",
+            name="description",
         ),
         migrations.RemoveField(
-            model_name='product',
-            name='price',
+            model_name="product",
+            name="price",
         ),
         migrations.RemoveField(
-            model_name='purchaseitem',
-            name='received_quantity',
+            model_name="purchaseitem",
+            name="received_quantity",
         ),
         migrations.AlterField(
-            model_name='purchaseitem',
-            name='quantity',
+            model_name="purchaseitem",
+            name="quantity",
             field=models.IntegerField(default=0),
         ),
     ]

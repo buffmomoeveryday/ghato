@@ -21,7 +21,7 @@
         {% endblock style %}
         {% with request.user.is_authenticated as auth %}
             {% if auth %}
-                {% include "partials/_sidebar.html" %}
+                {% include "partials/sidebar.html" %}
             {% endif %}
             <main class="{% if auth %} authenticated-main p-4 pt-20 sm:ml-64 {% endif %}">
                 {% include "partials/_messages.html" %}

@@ -5,8 +5,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django_unicorn.components import UnicornView
-from django_unicorn.components import LocationUpdate, UnicornView, HashUpdate
-from icecream import ic
+
+# from icecream import ic
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
@@ -91,10 +91,9 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             self.added_products = new_added_products
             self.product_to_be_purchased = self.added_products
             self.request.session["added_products"] = self.added_products
-            messages.success(request=self.request, message="Proudct Removed")
-
+            messages.success(request=self.request, message="Product Removed")
         except Exception as e:
-            messages.error(request=self.request, message=f"Some Error Occoured {e}")
+            messages.error(request=self.request, message=f"Some Error Occurred {e}")
 
     def add_item_to_session(self):
         try:
@@ -103,25 +102,48 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 tenant=self.request.tenant,
             )
 
-            product = {
-                "product_id": self.product,
-                "product_name": product_model.name,
-                "quantity": self.quantity,
-                "sku": product_model.sku,
-                "price": self.price,
-            }
+            existing_product = next(
+                (
+                    p
+                    for p in self.product_to_be_purchased
+                    if p["product_id"] == self.product
+                ),
+                None,
+            )
 
-            self.product_to_be_purchased.append(product)
+            if existing_product:
+                if existing_product["price"] != self.price:
+                    messages.error(
+                        self.request, "Product Already Added With a different rate"
+                    )
+                    return
+                else:
+                    existing_product["quantity"] += int(self.quantity)
+                    messages.success(
+                        self.request, "Product quantity updated successfully."
+                    )
+            else:
+                product = {
+                    "product_id": self.product,
+                    "product_name": product_model.name,
+                    "quantity": int(self.quantity),
+                    "sku": product_model.sku,
+                    "price": self.price,
+                }
+                self.product_to_be_purchased.append(product)
+                messages.success(self.request, "Product added successfully.")
+
             self.request.session["added_products"] = self.product_to_be_purchased
-            ic(self.request.session["added_products"])
 
             self.product = ""
             self.price = ""
             self.quantity = ""
-            messages.success(request=self.request, message="Product Added Successfully")
+
+        except ValidationError as ve:
+            messages.error(self.request, str(ve))
 
         except Exception as e:
-            messages.error(request=self.request, message=f"{e}")
+            messages.error(self.request, f"{e}")
 
     @transaction.atomic
     def create_supplier(self):
@@ -141,10 +163,10 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
             messages.success(
                 request=self.request,
-                message=f"Supplier {str(supplier.name).capitalize} Created",
+                message=f"Supplier {str(supplier.name).capitalize()} Created",
             )
         except Exception as e:
-            messages.error(request=self.request, message=f"Some error occoured {e}")
+            messages.error(self.request, f"Some error occurred: {e}")
 
     @transaction.atomic
     def create_product(self):
@@ -163,31 +185,44 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             self.new_product_uom = ""
             self.new_product_name = ""
 
-            messages.success(
-                request=self.request,
-                message=f"Sucessfully Created new Product",
-            )
+            messages.success(self.request, "Successfully created new product.")
 
         except Exception as e:
-            messages.error(request=self.request, message=f"Error{e}")
+            messages.error(self.request, f"Error: {e}")
 
     def check_date(self):
-        if self.purchase_invoice_date >= date.today():
+        if self.purchase_invoice_date > date.today():
             raise ValidationError(
-                {"purchase_invoice_date": "Date Cannot Be Greater than today"},
+                {"purchase_invoice_date": "Date cannot be greater than today"},
                 code="invalid",
             )
 
+    def edit_product(self, product_id):
+        try:
+            product = next(
+                (
+                    p
+                    for p in self.product_to_be_purchased
+                    if p["product_id"] == str(product_id)
+                ),
+                None,
+            )
+            if product:
+                self.product = product["product_id"]
+                self.quantity = product["quantity"]
+                self.price = product["price"]
+                messages.success(self.request, "Product details loaded for editing.")
+                self.product_to_be_purchased.remove(product)
+                self.request.session["added_products"] = self.product_to_be_purchased
+            else:
+                messages.error(self.request, "Product not found in the session.")
+        except Exception as e:
+            messages.error(self.request, f"Some Error Occurred: {e}")
+
     def mount(self):
-        self.suppliers = Supplier.objects.filter(
-            tenant=self.request.tenant,
-        )
-        self.products = Product.objects.filter(
-            tenant=self.request.tenant,
-        )
-        self.uoms = UnitOfMeasurements.objects.filter(
-            tenant=self.request.tenant,
-        )
+        self.suppliers = Supplier.objects.filter(tenant=self.request.tenant)
+        self.products = Product.objects.filter(tenant=self.request.tenant)
+        self.uoms = UnitOfMeasurements.objects.filter(tenant=self.request.tenant)
 
         if "added_products" not in self.request.session:
             self.request.session["added_products"] = []

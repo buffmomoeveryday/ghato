@@ -9,16 +9,17 @@ THIRD_PARTY = [
     "django_unicorn",
     "django_htmx",
     "template_partials",
-    "slippers",
     "django_celery_results",
-    "sweetify",
+    "debug_toolbar",
+    "django_filters",
 ]
-SWEETIFY_SWEETALERT_LIBRARY = "sweetalert2"
 
 
 USER = [
     "purchases",
     "dashboard",
+    "accounts",
+    "sales",
 ]
 
 INSTALLED_APPS = [
@@ -40,6 +41,7 @@ INSTALLED_APPS += USER
 
 MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -58,12 +60,17 @@ COMPONENT_TEMPLATE = [
     os.path.join(BASE_DIR, "purchase/components"),
 ]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             os.path.join(BASE_DIR, "core/templates"),
             os.path.join(BASE_DIR, "purchases/components"),
+            os.path.join(BASE_DIR, "sales/components"),
         ],
         # "APP_DIRS": True,
         "OPTIONS": {
@@ -74,7 +81,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
             "builtins": [
-                "slippers.templatetags.slippers",
+                # "slippers.templatetags.slippers",
                 "django_components.templatetags.component_tags",
             ],
             "loaders": [
@@ -134,7 +141,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "core/templates/components"),
 ]
 
-
 from decouple import Csv, config
 
 DEBUG = config("DEBUG", default=False, cast=bool)
@@ -185,7 +191,10 @@ UNICORN = {
     "SCRIPT_LOCATION": "after",
     "MORPHER": {
         "NAME": "morphdom",
-        # "NAME": "alpine",
         "RELOAD_SCRIPT_ELEMENTS": True,
     },
 }
+
+
+THOUSAND_SEPARATOR = ","
+USE_THOUSAND_SEPARATOR = True

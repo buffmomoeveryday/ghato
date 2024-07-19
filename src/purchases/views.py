@@ -1,15 +1,28 @@
 from django import forms
-from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from django_htmx.http import HttpResponseClientRedirect
-from icecream import ic
 
-from .models import Product, PurchaseInovice, PurchaseItem, Supplier, UnitOfMeasurements
-from .tasks import add_to_stock
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+
+
+from .models import (
+    Product,
+    PurchaseInovice,
+    PurchaseItem,
+    Supplier,
+    UnitOfMeasurements,
+    PaymentMade,
+    StockMovement,
+)
+
+from sales.models import PaymentReceived
+
+from .filters import PurchaseFilter
+
+from django.db.models import Avg, Sum
 
 
 class PurchaseForm(forms.ModelForm):
@@ -26,17 +39,14 @@ class PurchaseItemForm(forms.ModelForm):
 
 @login_required
 def purchase_index(request):
-
-    if request.method == "GET":
-        purchases = PurchaseInovice.objects.filter(tenant=request.tenant)
-        context = {
-            "purchases": purchases,
-        }
-        return render(
-            request=request,
-            template_name="purchase/purchase_index.html",
-            context=context,
-        )
+    queryset = PurchaseInovice.objects.filter(tenant=request.tenant).select_related(
+        "supplier"
+    )
+    filter = PurchaseFilter(request.GET, queryset=queryset, tenant=request.tenant)
+    context = {
+        "filter": filter,
+    }
+    return render(request, "purchase/purchase_index.html", context)
 
 
 @login_required
@@ -52,14 +62,100 @@ def purchase_add(request):
 @login_required
 def purchase_detail(request, id):
     if request.method == "GET":
-        purchase = PurchaseInovice.objects.get(id=id, tenant=request.tenant)
-        purchase_items = PurchaseItem.objects.filter(purchase=purchase)
+        purchase = (
+            PurchaseInovice.objects.filter(id=id, tenant=request.tenant)
+            .select_related("supplier")
+            .first()
+        )
+        purchase_items = PurchaseItem.objects.filter(purchase=purchase).select_related(
+            "purchase", "product"
+        )
         context = {
             "purchase": purchase,
             "purchase_items": purchase_items,
         }
         return render(
             request=request,
-            template_name="inventory/inventory.html",
+            template_name="purchase/purchase_detail.html",
             context=context,
         )
+
+
+@login_required
+def supplier_detail(request, supplier_id):
+    supplier = get_object_or_404(Supplier, id=supplier_id, tenant=request.tenant)
+    supplier_invoice = PurchaseInovice.objects.filter(
+        supplier=supplier, tenant=request.tenant
+    )
+    payments_made = PaymentMade.objects.filter(supplier=supplier, tenant=request.tenant)
+    payment_to_be_made = (
+        supplier_invoice.aggregate(Sum("total_amount"))["total_amount__sum"] or 0
+    )
+
+    payments_made_amount = payments_made.aggregate(Sum("amount"))["amount__sum"] or 0
+    payment_remaining = payment_to_be_made - payments_made_amount
+
+    context = {
+        "supplier": supplier,
+        "supplier_invoice": supplier_invoice,
+        "payment_to_be_made": payment_to_be_made,
+        "payments_made_amount": payments_made_amount,
+        "payment_remaining": payment_remaining,
+        "payments_made": payments_made,
+    }
+    return render(request, "supplier/supplier_detail.html", context)
+
+
+@login_required
+def payments_made(request):
+    payments_made = PaymentMade.objects.filter(tenant=request.tenant).select_related(
+        "supplier"
+    )
+    total_payments_made = payments_made.aggregate(Sum("amount"))
+    context = {
+        "payments_made": payments_made,
+        "total_payments_made": total_payments_made["amount__sum"],
+    }
+
+    return render(
+        request=request, template_name="payments/payments_made.html", context=context
+    )
+
+
+@login_required
+def inventory(request):
+    tenant = request.user.tenant
+    purchase_items = PurchaseItem.objects.filter(tenant=tenant).select_related(
+        "product",
+        "tenant",
+        "purchase__supplier",
+    )
+
+    total_inventory_value = (
+        purchase_items.annotate(
+            total_value=ExpressionWrapper(
+                F("quantity") * F("price"), output_field=DecimalField()
+            )
+        ).aggregate(total_value_sum=Sum("total_value"))["total_value_sum"]
+        or 0
+    )
+
+    context = {
+        "inventory": purchase_items,
+        "total_inventory_value": total_inventory_value,
+    }
+    return render(
+        request=request,
+        template_name="inventory/inventory_index.html",
+        context=context,
+    )
+
+
+@login_required
+def product_stock_movement(request, product_id):
+    pass
+
+
+@login_required
+def stock_movement(request):
+    pass

@@ -7,20 +7,35 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='TenantModel',
+            name="TenantModel",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True, verbose_name='Tenant Name')),
-                ('domain', models.CharField(max_length=10, unique=True, verbose_name='Domain')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=255, unique=True, verbose_name="Tenant Name"
+                    ),
+                ),
+                (
+                    "domain",
+                    models.CharField(max_length=10, unique=True, verbose_name="Domain"),
+                ),
             ],
             options={
-                'verbose_name': 'Tenant',
-                'verbose_name_plural': 'Tenants',
+                "verbose_name": "Tenant",
+                "verbose_name_plural": "Tenants",
             },
         ),
     ]

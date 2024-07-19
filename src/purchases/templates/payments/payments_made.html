@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<h1 class="text-3xl font-bold pb-4">Payments Made</h1>
+<hr class="pb-4">
+Total Payments Made : {{total_payments_made}}
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+
+                <th scope="col" class="px-6 py-3">
+                    Supplier Name
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Amount
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Payment Method
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Transaction ID
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Payment Date
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for payments in payments_made %}
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    {{payments.supplier.name}}
+                </th>
+                <td class="px-6 py-4">
+                    {{payments.amount}}
+                </td>
+                <td class="px-6 py-4">
+                    {{payments.payment_method|upper}}
+                </td>
+                <td class="px-6 py-4">
+                    {{payments.transaction_id}}
+                </td>
+
+                        <td class="px-6 py-4">
+                            {{payments.payment_date|date}}
+                        </td>
+            
+            </tr>
+            {% empty %}
+            <h1 class="text-red-800 text-3xl"> No Payments Made</h1>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock main %}

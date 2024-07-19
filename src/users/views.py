@@ -88,7 +88,7 @@ def logout_user(request):
 def settings(request):
     if request.method == "GET":
         employees = CustomUser.objects.filter(tenant=request.tenant).exclude(
-            pk=request.user.pk
+            id=request.user.id
         )
 
         context = {
