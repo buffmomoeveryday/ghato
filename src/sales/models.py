@@ -3,6 +3,8 @@ from tenant.models import TenantAwareModel
 from core.models import BaseModelMixin
 from purchases.models import Product
 
+from django.db.models import F
+
 
 class Customer(TenantAwareModel, BaseModelMixin):
     first_name = models.CharField(max_length=50)
@@ -41,10 +43,23 @@ class SalesInvoice(TenantAwareModel, BaseModelMixin):
 
 
 class SalesItem(TenantAwareModel, BaseModelMixin):
-    order = models.ForeignKey(Sales, related_name="items", on_delete=models.CASCADE)
+    sales = models.ForeignKey(Sales, related_name="items", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    vat = models.IntegerField(
+        choices=[
+            (13, 13),
+            (0, 0),
+        ],
+        default=13,
+    )
+
+    vat_amount = models.GeneratedField(
+        expression=(F("price") * F("quantity") * F("vat") / 100),
+        output_field=models.DecimalField(max_digits=20, decimal_places=2),
+        db_persist=True,
+    )
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
