@@ -69,6 +69,8 @@ class SalesAddComponentView(UnicornView):
             self.customer = ""
             self.billing_address = ""
             self.product_selected = ""
+            self.total_vat = 0
+            messages.success(request=self.request, message="Created Successfully")
 
         except Exception as e:
             messages.error(request=self.request, message=f"{e}")
