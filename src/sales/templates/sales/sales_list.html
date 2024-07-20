@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="container mx-auto py-8">
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">Customer Name</th>
+                    <th class="py-2 px-4 border-b">Billing Address</th>
+                    <th class="py-2 px-4 border-b">Total Amount Without Vat</th>
+                    <th class="py-2 px-4 border-b">Total VAT</th>
+                    <th class="py-2 px-4 border-b">Amount With  VAT</th>
+                    <th class="py-2 px-4 border-b">Payment Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in sales_invoice %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b">{{ invoice.order.customer.first_name }} {{ invoice.order.customer.last_name }}</td>
+                        <td class="py-2 px-4 border-b">{{ invoice.billing_address|truncatechars:30 }}</td>
+                        <td class="py-2 px-4 border-b">{{ invoice.total_amount }}</td>
+                        <td class="py-2 px-4 border-b">{{ invoice.total_vat }}</td>
+                        <td class="py-2 px-4 border-b">{{ invoice.with_vat }}</td>
+                        <td class="py-2 px-4 border-b">{{ invoice.payment_status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock main %}

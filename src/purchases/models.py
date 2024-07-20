@@ -30,7 +30,6 @@ class Product(TenantAwareModel, BaseModelMixin):
     uom = models.ForeignKey(UnitOfMeasurements, on_delete=models.SET_NULL, null=True)
     sku = models.CharField(max_length=50, unique=True)
     stock_quantity = models.IntegerField(null=True)
-    # vat_percentage = models.CharField(verbose_name="Vat Percentage",``)
 
     def __str__(self):
         return self.name
