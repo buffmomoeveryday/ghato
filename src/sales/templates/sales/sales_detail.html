@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="container mx-auto p-4">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-4">
+            <h1 class="text-xl">
+                Invoice No: <span class="font-bold">{{ sale_invoice.id }}</span>
+            </h1>
+            <h2 class="text-xl font-semibold mb-2">
+                {{ sale_invoice.sales.customer.first_name }} {{ sale_invoice.sales.customer.last_name }}
+            </h2>
+            <p class="text-gray-600 mb-2">
+                Payment Status: <span class="font-medium">{{ sale_invoice.payment_status }}</span>
+            </p>
+            <p class="text-gray-600">
+                Total Amount: <span class="font-medium">Rs. {{ sale_invoice.sales.total_amount }}</span>
+            </p>
+        </div>
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold mb-4">Items</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-2 border">Name</th>
+                            <th class="px-4 py-2 border">Quantity</th>
+                            <th class="px-4 py-2 border">Price</th>
+                            <th class="px-4 py-2 border">VAT %</th>
+                            <th class="px-4 py-2 border">VAT Amount</th>
+                            <th class="px-4 py-2 border">Total Without VAT</th>
+                            <th class="px-4 py-2 border">Total With VAT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in sale_items %}
+                            <tr class="bg-gray-100">
+                                <td class="px-4 py-2 border">{{ item.product.name }}</td>
+                                <td class="px-4 py-2 border">{{ item.quantity }}</td>
+                                <td class="px-4 py-2 border">Rs. {{ item.price }}</td>
+                                <td class="px-4 py-2 border">{{ item.vat }}</td>
+                                <td class="px-4 py-2 border">Rs. {{ item.vat_amount }}</td>
+                                <td class="px-4 py-2 border">Rs. {{ item.total }}</td>
+                                <td class="px-4 py-2 border">Rs. {{ item.total_with_vat }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
