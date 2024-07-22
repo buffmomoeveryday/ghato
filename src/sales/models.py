@@ -26,7 +26,7 @@ class Sales(TenantAwareModel, BaseModelMixin):
 
 
 class SalesInvoice(TenantAwareModel, BaseModelMixin):
-    order = models.OneToOneField(Sales, on_delete=models.CASCADE)
+    sales = models.OneToOneField(Sales, on_delete=models.CASCADE)
     billing_address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_status = models.CharField(
@@ -67,6 +67,10 @@ class SalesItem(TenantAwareModel, BaseModelMixin):
     @property
     def total(self):
         return self.price * self.quantity
+
+    @property
+    def total_with_vat(self):
+        return self.total + self.vat_amount
 
 
 class PaymentReceived(TenantAwareModel, BaseModelMixin):
