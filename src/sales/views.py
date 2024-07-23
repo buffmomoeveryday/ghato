@@ -70,12 +70,14 @@ def sales_detail(request, sales_id):
     if not sale_invoice:
         raise Http404("SalesInvoice not found")
 
-    ic(sale_items.all)
-    ic(sale_invoice)
+    items = [item.quantity for item in sale_items]
+    products = [item.product.name for item in sale_items]
 
     context = {
         "sale_invoice": sale_invoice,
         "sale_items": sale_items,
+        "items": items,
+        "products": products,
     }
     return render(
         request=request,
