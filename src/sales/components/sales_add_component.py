@@ -1,9 +1,10 @@
-from sales.models import Customer, Product, Sales, SalesItem, SalesInvoice
-from icecream import ic
 from typing import List
 
 from django.contrib import messages
 from django_unicorn.components import UnicornView
+from icecream import ic
+
+from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
 
 
 class SalesAddComponentView(UnicornView):

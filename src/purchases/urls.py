@@ -1,12 +1,8 @@
 from django.urls import path
 
-
-from .views import purchase_detail, purchase_index, purchase_add, supplier_detail
-from .views import payments_made
-
 # , payments_received
-from .views import inventory
-
+from .views import (inventory, payments_made, purchase_add, purchase_detail,
+                    purchase_index, supplier_detail)
 
 purchase = [
     path("purchase/all/", purchase_index, name="purchase_index"),

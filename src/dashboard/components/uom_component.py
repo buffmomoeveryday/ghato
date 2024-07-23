@@ -1,9 +1,11 @@
-from django_unicorn.components import UnicornView
-from purchases.models import UnitOfMeasurements
 from typing import List
-from icecream import ic
+
 from django.contrib import messages
 from django.db import transaction
+from django_unicorn.components import UnicornView
+from icecream import ic
+
+from purchases.models import UnitOfMeasurements
 
 
 class UomComponentView(UnicornView):

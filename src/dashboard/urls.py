@@ -1,7 +1,7 @@
-from django.urls import path
 from django.http import HttpResponsePermanentRedirect
+from django.urls import path, reverse_lazy
+
 from .views import dashboard_index
-from django.urls import reverse_lazy
 
 appname = "dashboard"
 
