@@ -4,13 +4,19 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
+
 # from icecream import ic
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django_unicorn.components import UnicornView
 
-from purchases.models import (Product, PurchaseInovice, PurchaseItem, Supplier,
-                              UnitOfMeasurements)
+from purchases.models import (
+    Product,
+    PurchaseInovice,
+    PurchaseItem,
+    Supplier,
+    UnitOfMeasurements,
+)
 
 
 class PurchaseAddView(LoginRequiredMixin, UnicornView):
@@ -48,6 +54,14 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     @transaction.atomic
     def save_all(self):
         try:
+            if (
+                self.supplier is None
+                or self.purchase_invoice_date is None
+                or self.total_invoice_amount is 0
+                or self.purchase_invoice_number is None,
+            ):
+                return messages.error(self.request, "fuck")
+
             purchase = PurchaseInovice.objects.create(
                 supplier_id=self.supplier,
                 purchase_date=self.purchase_invoice_date,
@@ -91,6 +105,10 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
     def add_item_to_session(self):
         try:
+
+            if self.product is None or self.quantity is 0 or self.price is 0:
+                return messages.error(request=self.request, message="fix error")
+
             product_model = Product.objects.get(
                 id=self.product,
                 tenant=self.request.tenant,
@@ -167,7 +185,6 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
         try:
             tenant = self.request.tenant
             uom = UnitOfMeasurements.objects.get(id=self.new_product_uom)
-            ic(uom)
             product = Product.objects.create(
                 tenant=tenant,
                 name=self.new_product_name,

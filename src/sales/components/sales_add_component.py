@@ -78,7 +78,18 @@ class SalesAddComponentView(UnicornView):
 
     def add_product(self):
         try:
+            ic(self.product_selected)
+
+            if (
+                self.product_price == 0
+                or self.product_quantity == 0
+                or self.product_selected is None
+            ):
+                return messages.error(
+                    self.request, "Price or Quantity Could not be zero"
+                )
             product = Product.objects.get(id=self.product_selected)
+
             self.selected_products.append(
                 {
                     "product_id": product.id,
@@ -102,6 +113,7 @@ class SalesAddComponentView(UnicornView):
             self.product_quantity = 1
 
         except Product.DoesNotExist:
+
             self.call("alert", "Product not found")
 
     def updating(self, name, value):
