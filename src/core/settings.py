@@ -198,3 +198,11 @@ UNICORN = {
 
 THOUSAND_SEPARATOR = ","
 USE_THOUSAND_SEPARATOR = True
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
