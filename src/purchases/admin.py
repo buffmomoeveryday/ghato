@@ -1,13 +1,7 @@
 from django.contrib import admin
 
-from .models import (
-    Product,
-    PurchaseInovice,
-    PurchaseItem,
-    Supplier,
-    UnitOfMeasurements,
-    PaymentMade,
-)
+from .models import (PaymentMade, Product, PurchaseInovice, PurchaseItem,
+                     Supplier, UnitOfMeasurements)
 
 # Register your models here.
 

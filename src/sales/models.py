@@ -1,9 +1,9 @@
 from django.db import models
-from tenant.models import TenantAwareModel
+from django.db.models import F
+
 from core.models import BaseModelMixin
 from purchases.models import Product
-
-from django.db.models import F
+from tenant.models import TenantAwareModel
 
 
 class Customer(TenantAwareModel, BaseModelMixin):

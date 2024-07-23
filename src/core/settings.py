@@ -141,7 +141,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "core/templates/components"),
 ]
 
-from decouple import Csv, config
+from decouple import config
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 SECRET_KEY = config("SECRET_KEY")

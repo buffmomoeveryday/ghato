@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Customer, PaymentReceived, Sales, SalesInvoice, SalesItem
 
 # Register your models here.

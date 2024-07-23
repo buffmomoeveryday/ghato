@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import sales_add, sales_all, sales_detail
 
 sales = [

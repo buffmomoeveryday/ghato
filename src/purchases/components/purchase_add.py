@@ -4,19 +4,13 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django_unicorn.components import UnicornView
-
 # from icecream import ic
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django_unicorn.components import UnicornView
 
-from purchases.models import (
-    Product,
-    Supplier,
-    UnitOfMeasurements,
-    PurchaseInovice,
-    PurchaseItem,
-)
+from purchases.models import (Product, PurchaseInovice, PurchaseItem, Supplier,
+                              UnitOfMeasurements)
 
 
 class PurchaseAddView(LoginRequiredMixin, UnicornView):

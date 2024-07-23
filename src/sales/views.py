@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
 from django.db.models import Sum
+from django.http import Http404
+from django.shortcuts import render
+from icecream import ic
 
-from .models import PaymentReceived, Sales, SalesInvoice, SalesItem
+from .models import PaymentReceived, SalesInvoice, SalesItem
 
 
 @login_required
@@ -68,6 +69,9 @@ def sales_detail(request, sales_id):
 
     if not sale_invoice:
         raise Http404("SalesInvoice not found")
+
+    ic(sale_items.all)
+    ic(sale_invoice)
 
     context = {
         "sale_invoice": sale_invoice,
