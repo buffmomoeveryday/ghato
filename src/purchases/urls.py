@@ -12,7 +12,6 @@ purchase = [
 
 payments = [
     path("payments/made/", payments_made, name="payments_made"),
-    # path("payments/received/", payments_received, name="payments_received"),
 ]
 
 supplier = [
