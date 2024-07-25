@@ -66,7 +66,7 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div>
                 <label for="product" class="block text-sm font-medium text-gray-700">Product</label>
-                <select u:model.defer="product"
+                <select u:model="product"
                         u:key="product_list"
                         id="product"
                         name="product"
@@ -96,18 +96,7 @@
                        name="price"
                        class="form-input block w-full mt-1 rounded-md border-gray-300" />
             </div>
-            
-            {% comment  %}
-            <!-- <div> -->
-                <!-- <label for="received_quantity" -->
-                       <!-- class="block text-sm font-medium text-gray-700">Received Quantity</label> -->
-                <!-- <input u:model.lazy="received_quantity" -->
-                       <!-- type="number" -->
-                       <!-- id="received_quantity" -->
-                       <!-- name="received_quantity" -->
-                       <!-- class="form-input block w-full mt-1 rounded-md border-gray-300" /> -->
-            <!-- </div> -->
-            {% endcomment %}
+  
 
             <div class="flex items-end">
                 <button u:partial.key="product_table"
@@ -152,6 +141,7 @@
                                         type="submit"
                                         class="text-red-600 hover:underline">Delete</button>
                             </td>
+                            
                         </tr>
                     {% endfor %}
                 </tbody>
