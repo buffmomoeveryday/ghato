@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
-# from icecream import ic
+from icecream import ic
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django_unicorn.components import UnicornView
@@ -20,6 +20,7 @@ from purchases.models import (
 
 
 class PurchaseAddView(LoginRequiredMixin, UnicornView):
+
     template_name = "purchase_add_component.html"
 
     suppliers = []
@@ -43,7 +44,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
     new_product_name = ""
     new_product_uom = ""
-    new_proudct_sku = ""
+    new_product_sku = ""
 
     received_quantity = 0
 
@@ -54,13 +55,12 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     @transaction.atomic
     def save_all(self):
         try:
-            if (
-                self.supplier is None
-                or self.purchase_invoice_date is None
-                or self.total_invoice_amount is 0
-                or self.purchase_invoice_number is None,
-            ):
-                return messages.error(self.request, "fuck")
+            # if (
+            #     self.supplier is None
+            #     or self.total_invoice_amount == 0
+            #     or self.purchase_invoice_number is None,
+            # ):
+            #     return messages.error(self.request, "fuck")
 
             purchase = PurchaseInovice.objects.create(
                 supplier_id=self.supplier,
@@ -78,7 +78,13 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                     price=item["price"],
                     tenant=self.request.tenant,
                 )
+
+                product = Product.objects.get(id=item["product_id"])
+                product.stock_quantity = item["quantity"]
+                product.save()
+
                 self.request.session["added_products"] = []
+
                 messages.success(
                     request=self.request,
                     message="Added Successfully",
@@ -86,6 +92,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 return redirect(reverse_lazy("purchase_index"))
 
         except Exception as e:
+            ic(e)
             messages.error(request=self.request, message=f"{e}")
 
     def remove_item_from_session(self, product_id):
@@ -106,7 +113,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     def add_item_to_session(self):
         try:
 
-            if self.product is None or self.quantity is 0 or self.price is 0:
+            if self.product is None or self.quantity == 0 or self.price == 0:
                 return messages.error(request=self.request, message="fix error")
 
             product_model = Product.objects.get(
@@ -189,12 +196,14 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 tenant=tenant,
                 name=self.new_product_name,
                 uom=uom,
-                sku=self.new_proudct_sku,
+                sku=self.new_product_sku,
             )
 
-            self.new_proudct_sku = ""
+            self.new_product_sku = ""
             self.new_product_uom = ""
             self.new_product_name = ""
+
+            self.products = Product.objects.filter(tenant=self.request.tenant)
 
             messages.success(self.request, "Successfully created new product.")
 
