@@ -13,6 +13,10 @@ class Customer(TenantAwareModel, BaseModelMixin):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
 
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -47,6 +51,7 @@ class SalesItem(TenantAwareModel, BaseModelMixin):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock_snapshot= models.IntegerField(null=True)
     vat = models.IntegerField(
         choices=[
             (13, 13),
@@ -71,6 +76,10 @@ class SalesItem(TenantAwareModel, BaseModelMixin):
     @property
     def total_with_vat(self):
         return self.total + self.vat_amount
+
+    @property
+    def stock_before_sales(self):
+        return self.product.opening_stock - self.quantity
 
 
 class PaymentReceived(TenantAwareModel, BaseModelMixin):

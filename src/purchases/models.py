@@ -1,3 +1,4 @@
+from typing import Iterable
 from django.db import models
 
 from core.models import BaseModelMixin
@@ -25,11 +26,11 @@ class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
 class Product(TenantAwareModel, BaseModelMixin):
     # TODO: add product category
-
     name = models.CharField(max_length=100)
     uom = models.ForeignKey(UnitOfMeasurements, on_delete=models.SET_NULL, null=True)
     sku = models.CharField(max_length=50, unique=True)
     stock_quantity = models.IntegerField(null=True)
+    opening_stock = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name

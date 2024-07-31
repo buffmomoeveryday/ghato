@@ -20,6 +20,7 @@ USER = [
     "dashboard",
     "accounts",
     "sales",
+    "analytics",
 ]
 
 INSTALLED_APPS = [
@@ -128,7 +129,6 @@ TIME_ZONE = "Asia/Kathmandu"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
@@ -137,31 +137,23 @@ BASE_URL = "buffmomo.xyz"
 AUTH_USER_MODEL = "users.CustomUser"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "core/templates/components"),
+    os.path.join(BASE_DIR, "core/static"),
 ]
 
 from decouple import config
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 SECRET_KEY = config("SECRET_KEY")
-ALLOWED_HOST = ["*.localhost", "0.0.0.0", "*.buffmomo.xyz", "buffmomo.xyz"]
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": config("POSTGRES_DB"),
-#         "USER": config("POSTGRES_USER"),
-#         "PASSWORD": config("POSTGRES_PASSWORD"),
-#         "HOST": config("DB_HOST"),
-#         "PORT": config("DB_PORT", cast=int),
-#     }
-# }
+
 
 # Redis
 REDIS_URL = config("REDIS_URL")
@@ -206,3 +198,6 @@ CACHES = {
         "LOCATION": "unique-snowflake",
     }
 }
+
+STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "core/staticfiles")

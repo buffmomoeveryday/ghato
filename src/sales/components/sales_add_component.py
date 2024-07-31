@@ -62,7 +62,7 @@ class SalesAddComponentView(UnicornView):
             )
 
             for item in self.selected_products:
-                SalesItem.objects.create(
+                salesitem = SalesItem.objects.create(
                     sales=sales,
                     product_id=item["product_id"],
                     quantity=item["quantity"],
@@ -71,8 +71,11 @@ class SalesAddComponentView(UnicornView):
                 )
 
                 product = Product.objects.get(id=item["product_id"])
+
+                salesitem.stock_snapshop = product.stock_quantity
+                salesitem.save()
+                
                 product.stock_quantity = product.stock_quantity - item["quantity"]
-                ic(product.stock_quantity)
                 product.save()
 
             SalesInvoice.objects.create(

@@ -34,13 +34,13 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     supplier = ""
     purchase_invoice_date: date = ""
     purchase_invoice_number = ""
-    received_date = ""
-    total_invoice_amount = 0
+    received_date = date.today()
+    total_invoice_amount: float = 0.00
 
     product = ""
     uom = ""
     quantity = 0
-    price = 0
+    price = 0.00
 
     new_product_name = ""
     new_product_uom = ""
@@ -54,14 +54,29 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
     @transaction.atomic
     def save_all(self):
-        try:
-            # if (
-            #     self.supplier is None
-            #     or self.total_invoice_amount == 0
-            #     or self.purchase_invoice_number is None,
-            # ):
-            #     return messages.error(self.request, "fuck")
+        if self.purchase_invoice_date is None:
+            messages.error(self.request, "Purchase Invoice Date is required")
+            raise ValidationError(
+                message={"purchase_invoice_date": "The Date is required"},
+                code="invalid",
+            )
+        if self.purchase_invoice_number == "":
+            messages.error(self.request, "Supplier Refrence is required")
+            raise ValidationError(
+                message={"purchase_invoice_number": "Supplier Refrence is required"},
+                code="invalid",
+            )
+        if self.supplier == "":
+            messages.error(self.request, "Please Select a supplier")
+            raise ValidationError(
+                message={"supplier": "Please Select a supplier"},
+                code="invalid",
+            )
 
+        if not self.product_to_be_purchased:
+            messages.error(self.request, "No Items in Invoice")
+
+        try:
             purchase = PurchaseInovice.objects.create(
                 supplier_id=self.supplier,
                 purchase_date=self.purchase_invoice_date,
@@ -81,6 +96,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
                 product = Product.objects.get(id=item["product_id"])
                 product.stock_quantity = item["quantity"]
+                product.opening_stock = item["quantity"]
                 product.save()
 
                 self.request.session["added_products"] = []
@@ -137,7 +153,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                     )
                     return
                 else:
-                    existing_product["quantity"] += int(self.quantity)
+                    existing_product["quantity"] += self.quantity
                     messages.success(
                         self.request, "Product quantity updated successfully."
                     )
@@ -145,9 +161,9 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 product = {
                     "product_id": self.product,
                     "product_name": product_model.name,
-                    "quantity": int(self.quantity),
+                    "quantity": (self.quantity),
                     "sku": product_model.sku,
-                    "price": self.price,
+                    "price": float(self.price),
                 }
                 self.product_to_be_purchased.append(product)
                 messages.success(self.request, "Product added successfully.")
@@ -239,6 +255,12 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
         except Exception as e:
             messages.error(self.request, f"Some Error Occurred: {e}")
 
+    def calculate_total(self):
+        self.total_invoice_amount = sum(
+            int(item["quantity"]) * float(item["price"])
+            for item in self.product_to_be_purchased
+        )
+
     def mount(self):
         self.suppliers = Supplier.objects.filter(tenant=self.request.tenant)
         self.products = Product.objects.filter(tenant=self.request.tenant)
@@ -248,3 +270,10 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             self.request.session["added_products"] = []
 
         self.product_to_be_purchased = self.request.session["added_products"]
+
+    def complete(self):
+        self.calculate_total()
+
+    def updating(self, name, values):
+        ic(name)
+        ic(values)

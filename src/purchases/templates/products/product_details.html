@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <!--
+    Definition: The inventory level at which a new order should be placed to replenish stock.
+    Insight: Ensures timely restocking, preventing stockouts and maintaining smooth operations. -->
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-5xl font-bold pb-5 text-blue-800">{{ product.name }}</h1>
+
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+            <h3 class="text-3xl font-bold pb-2 text-gray-600">Detail</h3>
+            <p class="text-lg"><strong>Sell Through Rate:</strong> {{ sell_through_rate }} %</p>
+            <p class="text-lg"><strong>Opening Stock:</strong> {{ opening_stock }}</p>
+            <p class="text-lg"><strong>Remaining Stock:</strong> {{ remaining_stock }}</p>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h3 class="text-3xl font-bold pb-2 text-gray-600">Movement</h3>
+            {% include 'inventory/movement.html#movement' %}
+            <div id="chart" class="mt-6">
+                <!-- Chart will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+{% endblock main %}
+
+{% block js %}
+
+    <script>
+        var options = {
+            chart: {
+                height: 380,
+                width: "100%",
+                type: "line"
+            },
+            series: [
+                {
+                    name: "Product",
+                    data: {{ sales_qty_list|safe }}
+                }, {
+                    name: "Stock SnapShot",
+                    data: {{ stock_snapshot|safe }}
+                }
+            ],
+            xaxis: {
+                categories: {{ sales_time|safe }}
+            },
+            stroke: {
+                curve: 'smooth',
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+        chart.render();
+
+    </script>
+
+{% endblock js %}

@@ -18,10 +18,15 @@
             <tbody>
                 {% for item in inventory %}
                 <tr class="hover:bg-gray-100">
-                    <td class="py-2 px-4 border-b">{{ item.product.name }}</td>
+                    <td class="py-2 px-4 border-b">
+                    <a href="{% url 'product_analytics' item.product.id %}">
+                        {{ item.product.name }}
+                    </a>
+                    
+                    </td>
                     <td class="py-2 px-4 border-b">{{ item.product.sku | upper }}</td>
                     <td class="py-2 px-4 border-b">{{ item.product.uom.name | capfirst }}</td>
-                    <td class="py-2 px-4 border-b">{{ item.quantity }}</td>
+                    <td class="py-2 px-4 border-b">{{ item.product.stock_quantity }}</td>
                     <td class="py-2 px-4 border-b">{{ item.price }}</td>
                     <td class="py-2 px-4 border-b">{{ item.total }}</td>
                     <td class="py-2 px-4 border-b">{{ item.purchase }}</td>

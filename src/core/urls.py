@@ -14,6 +14,7 @@ auth_urls = [
     path("", include("users.urls")),
     path("", include("purchases.urls")),
     path("", include("sales.urls")),
+    path("analytics/", include("analytics.urls")),
 ]
 
 

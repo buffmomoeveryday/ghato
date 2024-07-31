@@ -1,5 +1,6 @@
 {% load django_htmx %}
 {% load unicorn %}
+{# djlint:off H031,H030 #}
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -11,8 +12,6 @@
             {% endblock title %}
             Ghato
         </title>
-        <script defer src="https://unpkg.com/@alpinejs/morph@3.x.x/dist/cdn.min.js"></script>
-        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
         {% unicorn_scripts %}
     </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
