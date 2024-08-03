@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from icecream import ic
 
 from .models import PaymentReceived, SalesInvoice, SalesItem
@@ -83,4 +83,36 @@ def sales_detail(request, sales_id):
         request=request,
         template_name="sales/sales_detail.html",
         context=context,
+    )
+
+
+from datetime import datetime
+
+
+@login_required
+def sales_invoice(request, sales_id):
+
+    sales = get_object_or_404(SalesInvoice, id=sales_id, tenant=request.tenant)
+    time = datetime.now()
+
+    sales_items = SalesItem.objects.filter(
+        sales=sales.sales,
+        tenant=request.tenant,
+    ).select_related("product", "sales", "sales__salesinvoice")
+
+    for item in sales_items:
+        ic(item.product.name)
+        ic(item.quantity)
+
+    ic(sales)
+    ic(sales_items)
+
+    context = {
+        "company": request.tenant,
+        "sales": sales,
+        "sales_items": sales_items,
+        "time": time,
+    }
+    return render(
+        request=request, template_name="sales/sales_bill.html", context=context
     )

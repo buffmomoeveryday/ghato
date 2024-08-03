@@ -6,8 +6,9 @@ from django.http import HttpResponse
 
 from .filters import PurchaseFilter
 from .models import PaymentMade, PurchaseInovice, PurchaseItem, Supplier
-
 from sales.models import SalesItem
+
+import pandas as pd
 
 
 class PurchaseForm(forms.ModelForm):
@@ -107,14 +108,23 @@ def payments_made(request):
     )
 
 
+import datetime
+from .filters import InventoryFilter
+
+
 @login_required
 def inventory(request):
+
     tenant = request.user.tenant
     purchase_items = PurchaseItem.objects.filter(tenant=tenant).select_related(
         "product",
         "tenant",
         "purchase__supplier",
         "product__uom",
+    )
+
+    filter = InventoryFilter(
+        request.GET, queryset=purchase_items, tenant=request.tenant
     )
 
     total_inventory_value = (
@@ -127,9 +137,11 @@ def inventory(request):
     )
 
     context = {
-        "inventory": purchase_items,
+        "inventory": filter.qs,
+        "inventory_form": filter.form,
         "total_inventory_value": total_inventory_value,
     }
+
     return render(
         request=request,
         template_name="inventory/inventory_index.html",
@@ -143,7 +155,7 @@ from icecream import ic
 
 @login_required
 def stock_movement(request):
-    sales = SalesItem.objects.filter(tenant=request.tenant).select_related(
+    sales = SalesItem.objects.filter_by_tenant(request.tenant).select_related(
         "product",
         "sales",
         "sales__customer",

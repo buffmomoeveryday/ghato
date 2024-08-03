@@ -1,4 +1,4 @@
-{% if messages %}
+    {% if messages %}
 {% for message in messages %}
 <div id="toast-{{ forloop.counter }}" class="toast fixed flex items-center w-full max-w-xs p-4 space-x-4 text-white
     {% if message.tags == 'success' %}

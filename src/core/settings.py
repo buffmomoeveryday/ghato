@@ -12,6 +12,9 @@ THIRD_PARTY = [
     "django_celery_results",
     "debug_toolbar",
     "django_filters",
+    "django_pandas",
+    "rest_framework",
+    "widget_tweaks",
 ]
 
 

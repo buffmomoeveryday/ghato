@@ -5,7 +5,7 @@ from django.contrib import messages
 from django_unicorn.components import UnicornView
 from icecream import ic
 from django.core.exceptions import ValidationError
-
+from django.shortcuts import redirect
 
 from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
 
@@ -74,7 +74,7 @@ class SalesAddComponentView(UnicornView):
 
                 salesitem.stock_snapshop = product.stock_quantity
                 salesitem.save()
-                
+
                 product.stock_quantity = product.stock_quantity - item["quantity"]
                 product.save()
 
@@ -83,6 +83,7 @@ class SalesAddComponentView(UnicornView):
                 billing_address=self.billing_address,
                 total_amount=self.total_amount,
                 tenant=self.request.tenant,
+                created_by=self.request.user,
             )
             self.selected_products = []
             self.total_amount = 0.0
@@ -91,6 +92,7 @@ class SalesAddComponentView(UnicornView):
             self.product_selected = ""
             self.total_vat = 0
             messages.success(request=self.request, message="Created Successfully")
+            return redirect(reversed("sales_bill"))
 
         except Exception as e:
             messages.error(request=self.request, message=f"{e}")

@@ -1,0 +1,94 @@
+<!-- Container for the bill -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/paper.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/flowbite.min.css' %}">
+<style>
+    @page {
+        size: A4
+    }
+        h4 { margin: 5mm 0 0 50mm }
+</style>
+<body class="A4">
+    <section class='sheet padding-15mm'>
+        <div class="paper">
+            <!-- Header Section -->
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-3xl font-bold">{{ company.name }}</h1>
+                    <p class="text-sm">123 Your Street</p>
+                    <p class="text-sm">City, Country</p>
+                    <p class="text-sm">+123 456 7890</p>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold">Sales Bill</h2>
+                    <p class="text-sm">Date: {{ sales.created_at |date }}</p>
+                    <p class="text-sm">Bill No: {{ sales.id }}</p>
+                </div>
+            </div>
+            <!-- Customer Information -->
+            <div class="mb-4">
+                <h3 class="text-lg font-bold">Bill To:</h3>
+                <p class="text-sm">{{ sales.customer.get_full_name }}</p>
+                <p class="text-sm">{{ sales.billing_address }}</p>
+            </div>
+            <!-- Bill Items Table -->
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm font-semibold">Item</th>
+                        <th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm font-semibold">Quantity</th>
+                        <th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm font-semibold">Price</th>
+                        <th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm font-semibold">Subtotal</th>
+                        <th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm font-semibold">VAT Amount</th>
+                        <th class="py-2 px-4 border-b-2 border-gray-300 text-left text-sm font-semibold">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sales_items %}
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-300 text-sm">{{ item.product.name }} ({{ item.product.sku }})</td>
+                            <td class="py-2 px-4 border-b border-gray-300 text-sm">{{ item.quantity }}</td>
+                            <td class="py-2 px-4 border-b border-gray-300 text-sm">{{ item.price }}</td>
+                            <td class="py-2 px-4 border-b border-gray-300 text-sm">{{ item.total }}</td>
+                            <td class="py-2 px-4 border-b border-gray-300 text-sm">{{ item.vat_amount }}</td>
+                            <td class="py-2 px-4 border-b border-gray-300 text-sm">{{ item.total_with_vat }}</td>
+                        </tr>
+                    {% endfor %}
+                    <!-- <tr>
+                        <td class="py-2 px-4 border-b border-gray-300 text-sm">Item 2</td>
+                        <td class="py-2 px-4 border-b border-gray-300 text-sm">1</td>
+                        <td class="py-2 px-4 border-b border-gray-300 text-sm">$15.00</td>
+                        <td class="py-2 px-4 border-b border-gray-300 text-sm">$15.00</td>
+                    </tr> -->
+                </tbody>
+            </table>
+            <!-- Summary Section -->
+            <div class="flex justify-end mt-4">
+                <table class="w-1/2">
+                    <tbody>
+                        <tr>
+                            <td class="py-2 px-4 border-t border-gray-300 text-right text-sm font-bold">Subtotal:</td>
+                            <td class="py-2 px-4 border-t border-gray-300 text-right text-sm">Rs. {{ sales.get_total }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-t border-gray-300 text-right text-sm font-bold">VAT:</td>
+                            <td class="py-2 px-4 border-t border-gray-300 text-right text-sm">Rs.{{ sales.get_vat }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 px-4 border-t border-gray-300 text-right text-sm font-bold">Total:</td>
+                            <td class="py-2 px-4 border-t border-gray-300 text-right text-sm">Rs.{{ sales.get_total_with_vat }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Footer Section -->
+            <hr class="p-3">
+            <div class="text-center mt-8">
+                <p class="text-sm">Thank you for your business!</p>
+                <p class="text-sm pt-2">Printed by {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                <p class="text-sm">Printed at  {{ time }}</p>
+            </div>
+        </div>
+    </section>
+    <!-- Flowbite scripts for interactive elements (if any) -->
+</body>

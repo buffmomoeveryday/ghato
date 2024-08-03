@@ -1,15 +1,16 @@
 from django.db import models
+from tenant.models import TenantAwareModel
 
 
-class BankAccount(models.Model):
+class BankAccount(TenantAwareModel):
 
     class AccountType(models.TextChoices):
         CURRENT = "1", "CURRENT"
         SAVING = "2", "SAVING"
 
     name = models.CharField(max_length=255)
-    balance = models.DecimalField(max_digits=25, decimal_places=2)
-    type = models.CharField(
+    balance = models.DecimalField(max_digits=25, decimal_places=2, default=0.00)
+    accounttype = models.CharField(
         max_length=25,
         choices=AccountType.choices,
         default=AccountType.CURRENT,
@@ -21,14 +22,10 @@ class BankAccount(models.Model):
     def transfer_to_bank(self):
         pass
 
-    @property
-    def balance(self):
-        return self.balance
 
-
-class CashAccount(models.Model):
+class CashAccount(TenantAwareModel):
     name = models.CharField(max_length=255, null=True)
-    balance = models.DecimalField(max_digits=25, decimal_places=2)
+    balance = models.DecimalField(max_digits=25, decimal_places=2, default=0.00)
 
     def transfer_to_cash(self):
         pass
@@ -36,15 +33,7 @@ class CashAccount(models.Model):
     def transfer_to_bank(self):
         pass
 
-    @property
-    def balance(self):
-        return self.balance
 
-
-class Account(models.Model):
+class Account(TenantAwareModel):
     name = models.CharField(max_length=255)
-    balance = models.DecimalField(max_digits=25, decimal_places=2)
-
-    @property
-    def balance(self):
-        return self.balance
+    balance = models.DecimalField(max_digits=25, decimal_places=2, default=0.00)

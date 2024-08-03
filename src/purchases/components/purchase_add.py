@@ -262,8 +262,12 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
         )
 
     def mount(self):
-        self.suppliers = Supplier.objects.filter(tenant=self.request.tenant)
-        self.products = Product.objects.filter(tenant=self.request.tenant)
+        self.suppliers = Supplier.objects.filter(tenant=self.request.tenant).order_by(
+            "name"
+        )
+        self.products = Product.objects.filter(tenant=self.request.tenant).order_by(
+            "name"
+        )
         self.uoms = UnitOfMeasurements.objects.filter(tenant=self.request.tenant)
 
         if "added_products" not in self.request.session:

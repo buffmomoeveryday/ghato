@@ -1,62 +1,126 @@
 {% extends 'base.html' %}
-
 {% block main %}
-    <!--
-    Definition: The inventory level at which a new order should be placed to replenish stock.
-    Insight: Ensures timely restocking, preventing stockouts and maintaining smooth operations. -->
-
     <div class="container mx-auto p-6">
         <h1 class="text-5xl font-bold pb-5 text-blue-800">{{ product.name }}</h1>
-
-        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h3 class="text-3xl font-bold pb-2 text-gray-600">Detail</h3>
-            <p class="text-lg"><strong>Sell Through Rate:</strong> {{ sell_through_rate }} %</p>
-            <p class="text-lg"><strong>Opening Stock:</strong> {{ opening_stock }}</p>
-            <p class="text-lg"><strong>Remaining Stock:</strong> {{ remaining_stock }}</p>
-        </div>
-
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h3 class="text-3xl font-bold pb-2 text-gray-600">Movement</h3>
-            {% include 'inventory/movement.html#movement' %}
-            <div id="chart" class="mt-6">
-                <!-- Chart will be rendered here -->
+        <!-- Option 1: Chart at the top -->
+        <div class="mb-6">
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-3xl font-bold pb-4 text-gray-700">Inventory Movement</h3>
+                <div id="chart" class="mt-6" style="height: 400px;">
+                    <!-- Chart will be rendered here -->
+                </div>
             </div>
         </div>
-    </div>
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Product Details -->
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-3xl font-bold pb-4 text-gray-700">Product Details</h3>
+                <div class="space-y-3">
+                    <p class="text-lg flex justify-between">
+                        <span class="font-semibold text-gray-600">Sell Through Rate:</span>
+                        <span class="text-blue-600">{{ sell_through_rate }}%</span>
+                    </p>
+                    <p class="text-lg flex justify-between">
+                        <span class="font-semibold text-gray-600">Opening Stock:</span>
+                        <span>{{ opening_stock }}</span>
+                    </p>
+                    <p class="text-lg flex justify-between">
+                        <span class="font-semibold text-gray-600">Remaining Stock:</span>
+                        <span>{{ remaining_stock }}</span>
+                    </p>
+                </div>
+            </div>
+            <!-- Key Insights -->
+            <div class="bg-blue-50 shadow-md rounded-lg p-6">
+                <h3 class="text-3xl font-bold pb-4 text-blue-800">Key Insights</h3>
+                <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2 mt-1"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Current stock level is <strong>{{ stock_status }}</strong> based on historical sales data.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2 mt-1"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        <span>Sales trend is <strong>{{ sales_trend }}</strong> over the past 30 days.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2 mt-1"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Estimated time until reorder: <strong>{{ days_until_reorder }} days</strong>.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- Table Section -->
+        <div class="rounded-lg p-6 mt-6">
+            <h3 class="text-3xl font-bold pb-4 text-gray-700">Sales Data Table</h3>
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
 
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+        {% include 'inventory/movement.html#movement' %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 {% endblock main %}
-
 {% block js %}
-
     <script>
-        var options = {
-            chart: {
-                height: 380,
-                width: "100%",
-                type: "line"
-            },
-            series: [
-                {
-                    name: "Product",
-                    data: {{ sales_qty_list|safe }}
-                }, {
-                    name: "Stock SnapShot",
-                    data: {{ stock_snapshot|safe }}
-                }
-            ],
-            xaxis: {
-                categories: {{ sales_time|safe }}
-            },
-            stroke: {
-                curve: 'smooth',
+    var options = {
+        chart: {
+            height: 380,
+            width: "100%",
+            type: "line",
+            toolbar: {
+                show: false
             }
-        };
+        },
+        series: [
+            {
+                name: "Product",
+                data: {{ sales_qty_list|safe }}
+            }, {
+                name: "Stock Snapshot",
+                data: {{ stock_snapshot|safe }}
+            }
+        ],
+        xaxis: {
+            categories: {{ sales_time|safe }}
+        },
+        stroke: {
+            curve: 'smooth',
+        },
+        colors: ['#3B82F6', '#10B981'],
+        legend: {
+            position: 'top'
+        },
+        tooltip: {
+            theme: 'light',
+            x: {
+                format: 'dd MMM yyyy'
+            }
+        }
+    };
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-
-        chart.render();
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
 
     </script>
-
 {% endblock js %}

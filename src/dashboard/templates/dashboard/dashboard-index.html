@@ -1,5 +1,136 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block main %}
-    {{request.tenant}}
-{% endblock main %}
+<div class="container mx-auto py-8 px-4">
+    <h1 class="text-4xl font-bold mb-8 text-gray-800">Sales Dashboard</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-xl flex items-center space-x-4">
+                <div class="text-blue-600 text-3xl">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold mb-2 text-gray-700">Total Sales (Last 30 Days)</h2>
+                    <p class="text-3xl font-bold text-blue-600">${{ total_sales|floatformat:2 }}</p>
+                </div>
+            </div>
+        
+            <div class="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-xl flex items-center space-x-4">
+                <div class="text-green-600 text-3xl">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold mb-2 text-gray-700">Total Payments Received (Last 30 Days)</h2>
+                    <p class="text-3xl font-bold text-green-600">${{ total_payments_received|floatformat:2 }}</p>
+                </div>
+            </div>
+        
+            <div class="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-xl flex items-center space-x-4">
+                <div class="text-purple-600 text-3xl">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold mb-2 text-gray-700">Avg Order Value</h2>
+                    <p class="text-3xl font-bold text-purple-600">${{ customer_avg_order_value|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Top Selling Products (Last 30 Days)</h2>
+            <div id="top-selling-products-chart" class="h-80"></div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Customer Purchase Frequency (Last 30 Days)</h2>
+            <div id="customer-purchase-frequency-chart" class="h-80"></div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Outstanding Invoices</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="py-2 px-4 text-left">Invoice #</th>
+                        <th class="py-2 px-4 text-left">Customer</th>
+                        <th class="py-2 px-4 text-left">Amount</th>
+                        <th class="py-2 px-4 text-left">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in unpaid_invoices %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="py-2 px-4">{{ invoice.id }}</td>
+                        <td class="py-2 px-4">{{ invoice.customer_name }}</td>
+                        <td class="py-2 px-4">${{ invoice.total_amount|floatformat:2 }}</td>
+                        <td class="py-2 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                {{ invoice.payment_status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/fontawesome.min.css"></script>
+{% endblock %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var chartOptions = {
+            chart: {
+                type: 'bar',
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: true
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: ['#4F46E5'],
+            xaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return Math.round(value);
+                    }
+                }
+            }
+        };
+
+    var topSellingProductsData = {{ top_selling_products_data| safe }};
+    var topSellingProductsOptions = {
+        ...chartOptions,
+        series: [{
+            name: 'Total Sold',
+            data: topSellingProductsData
+        }]
+    };
+
+    var customerPurchasesData = {{ customer_purchases_data| safe }};
+    var customerPurchaseFrequencyOptions = {
+        ...chartOptions,
+        series: [{
+            name: 'Purchase Count',
+            data: customerPurchasesData
+        }]
+    };
+
+    new ApexCharts(document.querySelector("#top-selling-products-chart"), topSellingProductsOptions).render();
+    new ApexCharts(document.querySelector("#customer-purchase-frequency-chart"), customerPurchaseFrequencyOptions).render();
+});
+</script>
+{% endblock js %}

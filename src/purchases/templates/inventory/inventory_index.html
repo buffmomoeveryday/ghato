@@ -1,8 +1,37 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
+
 {% block main %}
 <div class="container mx-auto px-4 py-8">
 
     <div class="overflow-x-auto">
+
+<form method="get" class="px-4 py-6 mb-4">
+    <div class="flex flex-col md:flex-row md:flex-wrap md:-mx-2">
+        <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
+            <label for="id_purchase" class="block text-sm font-medium text-gray-700 mb-1">Purchase</label>
+            {% render_field inventory_form.purchase class="w-full mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %}
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
+            <label for="id_product" class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+            {% render_field inventory_form.product class="w-full mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %}
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
+            <label for="id_quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            {% render_field inventory_form.quantity class="w-full mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %}
+        </div>
+        <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
+            <label for="id_price" class="block text-sm font-medium text-gray-700 mb-1">Price</label>
+            {% render_field inventory_form.price class="w-full mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %}
+        </div>
+    </div>
+    <div class="flex justify-end mt-4">
+        <button type="submit"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Submit
+        </button>
+    </div>
+</form>
         <table class="min-w-full bg-white border border-gray-200">
             <thead>
                 <tr class="bg-gray-50">

@@ -45,13 +45,23 @@ class SalesInvoice(TenantAwareModel, BaseModelMixin):
     def __str__(self):
         return f"Invoice #{self.id} - {self.payment_status}"
 
+    def get_vat(self):
+        total = sum(item.vat_amount for item in self.sales.items.all())
+        return total
+
+    def get_total(self):
+        return self.total_amount
+
+    def get_total_with_vat(self):
+        return sum(item.total_with_vat for item in self.sales.items.all())
+
 
 class SalesItem(TenantAwareModel, BaseModelMixin):
     sales = models.ForeignKey(Sales, related_name="items", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_snapshot= models.IntegerField(null=True)
+    stock_snapshot = models.IntegerField(null=True)
     vat = models.IntegerField(
         choices=[
             (13, 13),

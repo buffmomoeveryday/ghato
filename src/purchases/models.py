@@ -8,8 +8,8 @@ from tenant.models import TenantAwareModel
 class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
     class FieldType(models.TextChoices):
-        CURRENT = "1", ""
-        SAVING = "2", "SAVING"
+        CURRENT = "1", "Float"
+        SAVING = "2", "Integer"
 
     name = models.CharField(max_length=100)
     field = models.CharField(
@@ -29,7 +29,7 @@ class Product(TenantAwareModel, BaseModelMixin):
     name = models.CharField(max_length=100)
     uom = models.ForeignKey(UnitOfMeasurements, on_delete=models.SET_NULL, null=True)
     sku = models.CharField(max_length=50, unique=True)
-    stock_quantity = models.IntegerField(null=True)
+    stock_quantity = models.FloatField(null=True)
     opening_stock = models.IntegerField(null=True)
 
     def __str__(self):
