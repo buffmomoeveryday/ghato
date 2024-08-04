@@ -100,4 +100,4 @@ class PaymentReceived(TenantAwareModel, BaseModelMixin):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Payment #{self.id} - {self.order.id}"
+        return f"Payment #{self.id}"
