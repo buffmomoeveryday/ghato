@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import Exists, OuterRef, Q
 
 from icecream import ic
 from django.shortcuts import redirect
@@ -34,7 +35,8 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     supplier = ""
     purchase_invoice_date: date = ""
     purchase_invoice_number = ""
-    received_date = date.today()
+    received_date: date = ""
+    order_date: date = ""
     total_invoice_amount: float = 0.00
 
     product = ""
@@ -81,12 +83,14 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 supplier_id=self.supplier,
                 purchase_date=self.purchase_invoice_date,
                 total_amount=self.total_invoice_amount,
-                received_date=self.received_date,
                 invoice_number=self.purchase_invoice_number,
                 tenant=self.request.tenant,
+                received_date=self.received_date,
+                order_date=self.order_date,
             )
             for item in self.product_to_be_purchased:
-                PurchaseItem.objects.create(
+
+                items = PurchaseItem.objects.create(
                     purchase=purchase,
                     product_id=item["product_id"],
                     quantity=item["quantity"],
@@ -99,17 +103,16 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 product.opening_stock = item["quantity"]
                 product.save()
 
-                self.request.session["added_products"] = []
-
-                messages.success(
-                    request=self.request,
-                    message="Added Successfully",
-                )
-                return redirect(reverse_lazy("purchase_index"))
+            self.request.session["added_products"] = []
+            messages.success(
+                request=self.request,
+                message="Added Successfully",
+            )
+            return redirect(reverse_lazy("purchase_index"))
 
         except Exception as e:
-            ic(e)
             messages.error(request=self.request, message=f"{e}")
+            raise (e)
 
     def remove_item_from_session(self, product_id):
         try:
@@ -166,6 +169,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                     "price": float(self.price),
                 }
                 self.product_to_be_purchased.append(product)
+
                 messages.success(self.request, "Product added successfully.")
 
             self.request.session["added_products"] = self.product_to_be_purchased
@@ -219,7 +223,16 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             self.new_product_uom = ""
             self.new_product_name = ""
 
-            self.products = Product.objects.filter(tenant=self.request.tenant)
+            self.products = (
+                Product.objects.filter(tenant=self.request.tenant)
+                .annotate(
+                    has_purchase=Exists(
+                        PurchaseItem.objects.filter(product=OuterRef("pk"))
+                    ),
+                )
+                .filter(has_purchase=False)
+                .order_by("name")
+            )
 
             messages.success(self.request, "Successfully created new product.")
 
@@ -227,11 +240,19 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             messages.error(self.request, f"Error: {e}")
 
     def check_date(self):
-        if self.purchase_invoice_date > date.today():
-            raise ValidationError(
-                {"purchase_invoice_date": "Date cannot be greater than today"},
-                code="invalid",
-            )
+        if self.received_date is not None:
+            if self.received_date > date.today():
+                raise ValidationError(
+                    {"received_date": "Date cannot be greater than today"},
+                    code="invalid",
+                )
+
+        if self.purchase_invoice_date is not None:
+            if self.purchase_invoice_date > date.today():
+                raise ValidationError(
+                    {"purchase_invoice_date": "Date cannot be greater than today"},
+                    code="invalid",
+                )
 
     def edit_product(self, product_id):
         try:
@@ -247,7 +268,9 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 self.product = product["product_id"]
                 self.quantity = product["quantity"]
                 self.price = product["price"]
+
                 messages.success(self.request, "Product details loaded for editing.")
+
                 self.product_to_be_purchased.remove(product)
                 self.request.session["added_products"] = self.product_to_be_purchased
             else:
@@ -262,12 +285,20 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
         )
 
     def mount(self):
+
         self.suppliers = Supplier.objects.filter(tenant=self.request.tenant).order_by(
             "name"
         )
-        self.products = Product.objects.filter(tenant=self.request.tenant).order_by(
-            "name"
+
+        self.products = (
+            Product.objects.filter(tenant=self.request.tenant)
+            .annotate(
+                has_purchase=Exists(PurchaseItem.objects.filter(product=OuterRef("pk")))
+            )
+            .filter(has_purchase=False)
+            .order_by("name")
         )
+
         self.uoms = UnitOfMeasurements.objects.filter(tenant=self.request.tenant)
 
         if "added_products" not in self.request.session:
@@ -277,7 +308,3 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
     def complete(self):
         self.calculate_total()
-
-    def updating(self, name, values):
-        ic(name)
-        ic(values)
