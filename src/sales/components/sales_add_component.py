@@ -33,11 +33,17 @@ class SalesAddComponentView(UnicornView):
 
     vat_choices: List[int] = [13, 0]
 
+    customer_first_name: str = ""
+    customer_last_name: str = ""
+    customer_phone: int = 0  # Default to 0 instead of an empty string
+    customer_address: str = ""
+    customer_email: str = ""
+
     disable_add_product_btn = False
     disable_edit_btn = False
 
     def calculate_total(self):
-        self.total_amount: float = sum(item["total"] for item in self.selected_products)
+        self.total_amount = sum(item["total"] for item in self.selected_products)
 
     def calculate_vat(self):
         self.total_vat = sum(
@@ -48,12 +54,11 @@ class SalesAddComponentView(UnicornView):
     @transaction.atomic
     def create_invoice(self):
         try:
-            if self.customer == "":
+            if not self.customer:
                 return messages.error(
                     request=self.request,
                     message="Please Select Customer First",
                 )
-
             customer = Customer.objects.get(id=self.customer)
             sales = Sales.objects.create(
                 customer=customer,
@@ -76,7 +81,7 @@ class SalesAddComponentView(UnicornView):
                 salesitem.stock_snapshop = product.stock_quantity
                 salesitem.save()
 
-                product.stock_quantity = product.stock_quantity - item["quantity"]
+                product.stock_quantity -= item["quantity"]
                 product.save()
 
             SalesInvoice.objects.create(
@@ -98,12 +103,35 @@ class SalesAddComponentView(UnicornView):
             messages.error(request=self.request, message=f"{e}")
             raise e
 
+    @transaction.atomic
+    def create_customer(self):
+        try:
+            first_name = self.customer_first_name
+            last_name = self.customer_last_name
+            number = self.customer_phone
+            address = self.customer_address
+            email = self.customer_email
+
+            customer = Customer.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=number,
+                address=address,
+                email=email,
+                tenant=self.request.tenant,
+            )
+            self.customers_list = Customer.objects.filter(tenant=self.request.tenant)
+            messages.success(self.request, "Customer Created")
+
+        except Exception as e:
+            ic(e)
+
     def add_product(self):
         try:
             if (
                 self.product_price == 0
                 or self.product_quantity == 0
-                or self.product_selected == " "
+                or not self.product_selected.strip()
             ):
                 return messages.error(
                     self.request, "Price or Quantity Could not be zero"
@@ -112,13 +140,12 @@ class SalesAddComponentView(UnicornView):
                 if item["product_id"] == int(self.product_selected):
                     messages.error(self.request, "Product already added")
                     raise ValidationError(
-                        {"product_selected": f"Already Added Product"},
+                        {"product_selected": "Already Added Product"},
                         code="invalid",
                     )
 
             self.validate_quantity()
             product = Product.objects.get(id=self.product_selected)
-
             self.selected_products.append(
                 {
                     "product_id": product.id,
@@ -145,9 +172,12 @@ class SalesAddComponentView(UnicornView):
         except Product.DoesNotExist:
             self.call("alert", "Product not found")
 
-    def validate_quantity(self):
+        except Exception as e:
+            ic(e)
+            raise e
 
-        if self.product_selected == None or self.product_selected == " ":
+    def validate_quantity(self):
+        if not self.product_selected.strip():
             messages.error(self.request, "Select A Product First")
             raise ValidationError(
                 {"product_selected": "Select A Product"},
@@ -165,8 +195,6 @@ class SalesAddComponentView(UnicornView):
                 },
                 code="invalid",
             )
-        else:
-            pass
 
     def remove_item(self, item_id: int):
         try:
@@ -181,11 +209,11 @@ class SalesAddComponentView(UnicornView):
 
                 messages.success(self.request, "Item Removed")
 
-                self.product_input: str = ""
-                self.product_price: int = 1
-                self.product_quantity: int = 1
-                self.product_vat: int = 13
-                self.product_selected: str = ""
+                self.product_input = ""
+                self.product_price = 1
+                self.product_quantity = 1
+                self.product_vat = 13
+                self.product_selected = ""
 
             else:
                 messages.error(self.request, "Not Found")
@@ -244,3 +272,6 @@ class SalesAddComponentView(UnicornView):
             .filter(has_purchase=True)
             .order_by("name")
         )
+
+    def updating(self, name, value):
+        ic(name, value)
