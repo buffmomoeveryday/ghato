@@ -1,6 +1,6 @@
 from typing import List
 from django.db import transaction
-
+from django.db.models import Exists, OuterRef
 from django.contrib import messages
 from django_unicorn.components import UnicornView
 from icecream import ic
@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 
 from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
+from purchases.models import PurchaseInovice, PurchaseItem
 
 
 class SalesAddComponentView(UnicornView):
@@ -54,7 +55,6 @@ class SalesAddComponentView(UnicornView):
                 )
 
             customer = Customer.objects.get(id=self.customer)
-
             sales = Sales.objects.create(
                 customer=customer,
                 total_amount=self.total_amount,
@@ -68,6 +68,7 @@ class SalesAddComponentView(UnicornView):
                     quantity=item["quantity"],
                     price=item["price"],
                     tenant=self.request.tenant,
+                    vat=item["vat"],
                 )
 
                 product = Product.objects.get(id=item["product_id"])
@@ -92,10 +93,10 @@ class SalesAddComponentView(UnicornView):
             self.product_selected = ""
             self.total_vat = 0
             messages.success(request=self.request, message="Created Successfully")
-            return redirect(reversed("sales_bill"))
 
         except Exception as e:
             messages.error(request=self.request, message=f"{e}")
+            raise e
 
     def add_product(self):
         try:
@@ -107,12 +108,7 @@ class SalesAddComponentView(UnicornView):
                 return messages.error(
                     self.request, "Price or Quantity Could not be zero"
                 )
-
             for item in self.selected_products:
-
-                ic(type(item["product_id"]))
-                ic(type(self.product_selected))
-
                 if item["product_id"] == int(self.product_selected):
                     messages.error(self.request, "Product already added")
                     raise ValidationError(
@@ -121,7 +117,6 @@ class SalesAddComponentView(UnicornView):
                     )
 
             self.validate_quantity()
-
             product = Product.objects.get(id=self.product_selected)
 
             self.selected_products.append(
@@ -140,6 +135,7 @@ class SalesAddComponentView(UnicornView):
                     "total": int(self.product_price) * int(self.product_quantity),
                 }
             )
+
             self.calculate_total()
             self.calculate_vat()
             self.product_input = ""
@@ -150,11 +146,12 @@ class SalesAddComponentView(UnicornView):
             self.call("alert", "Product not found")
 
     def validate_quantity(self):
-        ic(self.product_selected)
+
         if self.product_selected == None or self.product_selected == " ":
             messages.error(self.request, "Select A Product First")
             raise ValidationError(
-                {"product_selected": "Select A Product"}, code="invalid"
+                {"product_selected": "Select A Product"},
+                code="invalid",
             )
         product = Product.objects.get(
             id=self.product_selected, tenant=self.request.tenant
@@ -170,9 +167,6 @@ class SalesAddComponentView(UnicornView):
             )
         else:
             pass
-
-    def updating(self, name, value):
-        ic(name, value)
 
     def remove_item(self, item_id: int):
         try:
@@ -197,8 +191,7 @@ class SalesAddComponentView(UnicornView):
                 messages.error(self.request, "Not Found")
 
         except Exception as e:
-
-            ic(e)
+            messages.error(self.request, f"Some error {e}")
 
     def edit_item(self, item_id):
         if not self.disable_edit_btn:
@@ -227,7 +220,6 @@ class SalesAddComponentView(UnicornView):
                 ic(e)
 
     def cancel_editing(self):
-
         if self.original_product_details:
             self.selected_products.append(self.original_product_details)
 
@@ -241,7 +233,14 @@ class SalesAddComponentView(UnicornView):
 
     def mount(self):
         self.customers_list = Customer.objects.filter(tenant=self.request.tenant)
-        self.products_list = Product.objects.filter(
-            tenant=self.request.tenant,
-            stock_quantity__gt=0,
+        self.products_list = (
+            Product.objects.filter(
+                tenant=self.request.tenant,
+                stock_quantity__gt=0,
+            )
+            .annotate(
+                has_purchase=Exists(PurchaseItem.objects.filter(product=OuterRef("pk")))
+            )
+            .filter(has_purchase=True)
+            .order_by("name")
         )
