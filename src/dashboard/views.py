@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from django.db.models import Sum, Count, Avg
+from django.db.models import Sum, Count, Avg, ExpressionWrapper
+from django.db.models import DecimalField
 
 from datetime import datetime, timedelta
 
@@ -25,6 +26,34 @@ def dashboard_index(request):
         created_at__gte=start_date,
         tenant=request.tenant,
     ).aggregate(Sum("total_amount"))["total_amount__sum"]
+
+    total_sales_made = (
+        Sales.objects.filter(tenant=request.tenant).aggregate(
+            total_amount=Sum("total_amount")
+        )["total_amount"]
+        or 0
+    )
+
+    total_purchases_made = (
+        PurchaseInovice.objects.filter(tenant=request.tenant).aggregate(
+            total_amount=Sum("total_amount")
+        )["total_amount"]
+        or 0
+    )
+
+    total_stock_remaining = (
+        PurchaseItem.objects.filter(tenant=request.tenant)
+        .annotate(
+            total_value=ExpressionWrapper(
+                F("quantity") * F("price"), output_field=DecimalField()
+            )
+        )
+        .aggregate(total_value_sum=Sum("total_value"))["total_value_sum"]
+        or 0
+    )
+
+    cogs = total_purchases_made - total_stock_remaining
+    profit = total_sales_made - cogs
 
     top_selling_products = list(
         SalesItem.objects.filter(tenant=request.tenant)
@@ -87,6 +116,11 @@ def dashboard_index(request):
             }
             for invoice in unpaid_invoices
         ],
+        "profit": profit,
+        "cogs": cogs,
+        "total_stock_remaining": total_stock_remaining,
+        "total_purchase_made": total_purchases_made,
+        "total_sales_made": total_sales_made,
     }
 
     return render(request, "dashboard/dashboard-index.html", context)
