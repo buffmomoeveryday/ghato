@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from icecream import ic
 
-from .models import PaymentReceived, SalesInvoice, SalesItem
+from .models import PaymentReceived, SalesInvoice, SalesItem, Customer, Sales
 
 
 @login_required
@@ -115,4 +115,51 @@ def sales_invoice(request, sales_id):
     }
     return render(
         request=request, template_name="sales/sales_bill.html", context=context
+    )
+
+
+@login_required
+def customer_all(request):
+    customers = Customer.objects.filter(tenant=request.tenant)
+
+    context = {
+        "customers": customers,
+    }
+    return render(
+        request=request,
+        template_name="sales/customer_list.html",
+        context=context,
+    )
+
+
+@login_required
+def customer_detail(request, customer_id):
+
+    invoices = SalesInvoice.objects.filter(
+        tenant=request.tenant,
+        sales__customer=customer_id,
+    ).select_related(
+        "sales",
+    )
+    payments = PaymentReceived.objects.filter(
+        tenant=request.tenant,
+        customer=customer_id,
+    )
+    customer = Customer.objects.get(id=customer_id)
+
+    total_sales = invoices.aggregate(total_sales=Sum("total_amount"))["total_sales"]
+    total_payments = payments.aggregate(total_payments=Sum("amount"))["total_payments"]
+
+    context = {
+        "invoices": invoices,
+        "payments": payments,
+        "customer": customer,
+        "total_sales": total_sales,
+        "total_payments": total_payments or 0,
+    }
+
+    return render(
+        request=request,
+        template_name="sales/customer_detail.html",
+        context=context,
     )
