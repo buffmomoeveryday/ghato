@@ -4,6 +4,9 @@ from django.db import models
 from core.models import BaseModelMixin
 from tenant.models import TenantAwareModel
 
+from datetime import timedelta
+from typing import Optional
+
 
 class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
@@ -85,10 +88,15 @@ class PurchaseInovice(TenantAwareModel, BaseModelMixin):
     purchase_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     received_date = models.DateTimeField(blank=True, null=True)
-    order_date = models.DateTimeField(blank=True,null=True)
+    order_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Purchase #{self.id} - {self.supplier.name}"
+
+    def calculate_lead_time(self) -> Optional[timedelta]:
+        if self.order_date and self.received_date:
+            return self.received_date - self.order_date
+        return None
 
 
 class PurchaseItem(TenantAwareModel, BaseModelMixin):
