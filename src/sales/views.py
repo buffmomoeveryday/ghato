@@ -100,12 +100,6 @@ def sales_invoice(request, sales_id):
         tenant=request.tenant,
     ).select_related("product", "sales", "sales__salesinvoice")
 
-    for item in sales_items:
-        ic(item.product.name)
-        ic(item.quantity)
-
-    ic(sales)
-    ic(sales_items)
 
     context = {
         "company": request.tenant,
@@ -134,7 +128,6 @@ def customer_all(request):
 
 @login_required
 def customer_detail(request, customer_id):
-
     invoices = SalesInvoice.objects.filter(
         tenant=request.tenant,
         sales__customer=customer_id,
