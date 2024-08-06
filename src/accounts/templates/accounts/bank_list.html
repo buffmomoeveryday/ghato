@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load unicorn %}
 
 {% block main %}
 <div class="container mx-auto px-4 py-8">
@@ -26,9 +27,10 @@
             {% else %}
             <p class="text-gray-500 italic">No bank accounts available.</p>
             {% endif %}
-            <button type="button"
+            <a 
+            href="#create"
                 class="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add
-                Bank Account</button>
+                Bank Account</a>
         </div>
 
         <!-- Cash Accounts -->
@@ -52,9 +54,9 @@
             {% else %}
             <p class="text-gray-500 italic">No cash accounts available.</p>
             {% endif %}
-            <button type="button"
-                class="mt-4 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">Add
-                Cash Account</button>
+            <a href="#create"
+                class="scroll-smooth mt-4 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">Add
+                Cash Account</a>
         </div>
     </div>
 
@@ -96,6 +98,13 @@
         {% else %}
         <p class="text-gray-500 italic">No recent transactions.</p>
         {% endif %}
+
+
     </div>
+    <div id="create">
+
+        {% unicorn "account_create" %}
+    </div>
+
 </div>
 {% endblock main %}
