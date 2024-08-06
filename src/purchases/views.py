@@ -9,6 +9,15 @@ from .models import PaymentMade, PurchaseInovice, PurchaseItem, Supplier
 from sales.models import SalesItem
 
 import pandas as pd
+import json
+from django.utils.dateformat import DateFormat
+from decimal import Decimal
+
+
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
 
 
 class PurchaseForm(forms.ModelForm):
@@ -56,9 +65,47 @@ def purchase_detail(request, id):
         purchase_items = PurchaseItem.objects.filter(purchase=purchase).select_related(
             "purchase", "product"
         )
+
+        # Data for charts
+        purchase_dates = list(
+            PurchaseInovice.objects.values_list("purchase_date", flat=True)
+        )
+        formatted_dates = [DateFormat(date).format("Y-m-d") for date in purchase_dates]
+        purchase_amounts = list(
+            PurchaseInovice.objects.values_list("total_amount", flat=True)
+        )
+        top_products = (
+            PurchaseItem.objects.values("product__name")
+            .annotate(total_quantity=Sum("quantity"))
+            .order_by("-total_quantity")[:5]
+        )
+        suppliers = PurchaseInovice.objects.values("supplier__name").annotate(
+            total_amount=Sum("total_amount")
+        )
+
         context = {
             "purchase": purchase,
             "purchase_items": purchase_items,
+            "purchase_dates": json.dumps(formatted_dates, default=decimal_default),
+            "purchase_amounts": json.dumps(
+                list(purchase_amounts), default=decimal_default
+            ),
+            "top_products_names": json.dumps(
+                list(top_products.values_list("product__name", flat=True)),
+                default=decimal_default,
+            ),
+            "top_products_quantities": json.dumps(
+                list(top_products.values_list("total_quantity", flat=True)),
+                default=decimal_default,
+            ),
+            "suppliers_names": json.dumps(
+                list(suppliers.values_list("supplier__name", flat=True)),
+                default=decimal_default,
+            ),
+            "suppliers_amounts": json.dumps(
+                list(suppliers.values_list("total_amount", flat=True)),
+                default=decimal_default,
+            ),
         }
         return render(
             request=request,
