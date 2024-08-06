@@ -41,6 +41,9 @@ class SalesAddComponentView(UnicornView):
 
     disable_add_product_btn = False
     disable_edit_btn = False
+    
+    # TODO: Implement a feature where I can directly change the invoice's payment status
+    is_paid = False
 
     def calculate_total(self):
         self.total_amount = sum(item["total"] for item in self.selected_products)
