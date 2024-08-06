@@ -1,14 +1,18 @@
+from typing import Iterable
 from django.db import models
 
 from core.models import BaseModelMixin
 from tenant.models import TenantAwareModel
 
+from datetime import timedelta
+from typing import Optional
+
 
 class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
     class FieldType(models.TextChoices):
-        CURRENT = "1", ""
-        SAVING = "2", "SAVING"
+        CURRENT = "1", "Float"
+        SAVING = "2", "Integer"
 
     name = models.CharField(max_length=100)
     field = models.CharField(
@@ -25,11 +29,11 @@ class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
 class Product(TenantAwareModel, BaseModelMixin):
     # TODO: add product category
-
     name = models.CharField(max_length=100)
     uom = models.ForeignKey(UnitOfMeasurements, on_delete=models.SET_NULL, null=True)
     sku = models.CharField(max_length=50, unique=True)
-    stock_quantity = models.IntegerField(null=True)
+    stock_quantity = models.FloatField(null=True)
+    opening_stock = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
@@ -84,9 +88,15 @@ class PurchaseInovice(TenantAwareModel, BaseModelMixin):
     purchase_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     received_date = models.DateTimeField(blank=True, null=True)
+    order_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Purchase #{self.id} - {self.supplier.name}"
+
+    def calculate_lead_time(self) -> Optional[timedelta]:
+        if self.order_date and self.received_date:
+            return self.received_date - self.order_date
+        return None
 
 
 class PurchaseItem(TenantAwareModel, BaseModelMixin):

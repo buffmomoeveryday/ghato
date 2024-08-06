@@ -62,10 +62,8 @@ class TenantMiddleware:
         """
         Generate a cache key based on the user and request URL.
         """
-        user = request.user if request.user.is_authenticated else "anonymous"
-        url = request.build_absolute_uri()
         cookie_hash = hashlib.md5(str(request.COOKIES).encode("utf-8")).hexdigest()
-        return f"tenant_cache_{user}_{url}_{cookie_hash}"
+        return f"tenant_cache_{cookie_hash}"
 
 
 class UserMiddleware:

@@ -4,6 +4,7 @@
         <table class="min-w-full bg-white border border-gray-200">
             <thead>
                 <tr>
+                    <th class="py-2 px-4 border-b">S.N</th>
                     <th class="py-2 px-4 border-b">Customer Name</th>
                     <th class="py-2 px-4 border-b">Billing Address</th>
                     <th class="py-2 px-4 border-b">Total Amount Without Vat</th>
@@ -15,6 +16,9 @@
             <tbody>
                 {% for invoice in sales_invoice %}
                     <tr class="hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b">
+                            <a href="{% url 'sales_detail' invoice.id %}" class="underline">{{ forloop.counter }}</a>
+                        </td>
                         <td class="py-2 px-4 border-b">{{ invoice.sales.customer.first_name }} {{ invoice.order.customer.last_name }}</td>
                         <td class="py-2 px-4 border-b">{{ invoice.billing_address|truncatechars:30|default_if_none:None }}</td>
                         <td class="py-2 px-4 border-b">{{ invoice.total_amount }}</td>
