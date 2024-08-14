@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, ExpressionWrapper, F, DecimalField
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from icecream import ic
 
-from .models import PaymentReceived, SalesInvoice, SalesItem
+from .models import PaymentReceived, SalesInvoice, SalesItem, Customer, Sales
+from purchases.utils import number_to_words
 
 
 @login_required
@@ -82,5 +83,87 @@ def sales_detail(request, sales_id):
     return render(
         request=request,
         template_name="sales/sales_detail.html",
+        context=context,
+    )
+
+
+from datetime import datetime
+
+
+@login_required
+def sales_invoice(request, sales_id):
+
+    sales = get_object_or_404(SalesInvoice, id=sales_id, tenant=request.tenant)
+    time = datetime.now()
+
+    sales_items = SalesItem.objects.filter(
+        sales=sales.sales,
+        tenant=request.tenant,
+    ).select_related("product", "sales", "sales__salesinvoice")
+
+    total = sales_items.aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                (F("price") * F("quantity") * F("vat") / 100)
+                + (F("price") * F("quantity")),
+                output_field=DecimalField(max_digits=20, decimal_places=2),
+            ),
+        )
+    )["total"]
+
+    context = {
+        "company": request.tenant,
+        "sales": sales,
+        "sales_items": sales_items,
+        "time": time,
+        "total_in_words": number_to_words(total),
+    }
+    return render(
+        request=request, template_name="sales/sales_bill.html", context=context
+    )
+
+
+@login_required
+def customer_all(request):
+    customers = Customer.objects.filter(tenant=request.tenant)
+
+    context = {
+        "customers": customers,
+    }
+    return render(
+        request=request,
+        template_name="sales/customer_list.html",
+        context=context,
+    )
+
+
+@login_required
+def customer_detail(request, customer_id):
+    invoices = SalesInvoice.objects.filter(
+        tenant=request.tenant,
+        sales__customer=customer_id,
+    ).select_related(
+        "sales",
+    )
+    payments = PaymentReceived.objects.filter(
+        tenant=request.tenant,
+        customer=customer_id,
+    )
+    customer = Customer.objects.get(id=customer_id)
+
+    total_sales = invoices.aggregate(total_sales=Sum("total_amount"))["total_sales"]
+    total_payments = payments.aggregate(total_payments=Sum("amount"))["total_payments"]
+
+    context = {
+        "invoices": invoices,
+        "payments": payments,
+        "customer": customer,
+        "total_sales": total_sales,
+        "total_payments": total_payments or 0,
+    }
+
+    return render(
+        request=request,
+        template_name="sales/customer_detail.html",
         context=context,
     )

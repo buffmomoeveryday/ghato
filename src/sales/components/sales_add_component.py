@@ -1,10 +1,14 @@
 from typing import List
-
+from django.db import transaction
+from django.db.models import Exists, OuterRef
 from django.contrib import messages
 from django_unicorn.components import UnicornView
 from icecream import ic
+from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
 
 from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
+from purchases.models import PurchaseInvoice, PurchaseItem
 
 
 class SalesAddComponentView(UnicornView):
@@ -13,19 +17,33 @@ class SalesAddComponentView(UnicornView):
     customers_list = []
     products_list = []
     selected_products = []
+    original_product_details = []
 
     customer: str = ""
     billing_address: str = ""
+
     product_input: str = ""
     product_price: int = 1
     product_quantity: int = 1
     product_vat: int = 13
-
-    total_amount: float = 0.0
-    total_vat: float = 0.0
     product_selected: str = ""
 
+    total_amount: float = 0.00
+    total_vat: float = 0.00
+
     vat_choices: List[int] = [13, 0]
+
+    customer_first_name: str = ""
+    customer_last_name: str = ""
+    customer_phone: int = 0  # Default to 0 instead of an empty string
+    customer_address: str = ""
+    customer_email: str = ""
+
+    disable_add_product_btn = False
+    disable_edit_btn = False
+
+    # TODO: Implement a feature where I can directly change the invoice's payment status
+    is_paid = False
 
     def calculate_total(self):
         self.total_amount = sum(item["total"] for item in self.selected_products)
@@ -36,14 +54,14 @@ class SalesAddComponentView(UnicornView):
             for item in self.selected_products
         )
 
+    @transaction.atomic
     def create_invoice(self):
         try:
-            if self.customer == "":
+            if not self.customer:
                 return messages.error(
                     request=self.request,
                     message="Please Select Customer First",
                 )
-
             customer = Customer.objects.get(id=self.customer)
             sales = Sales.objects.create(
                 customer=customer,
@@ -52,18 +70,33 @@ class SalesAddComponentView(UnicornView):
             )
 
             for item in self.selected_products:
-                SalesItem.objects.create(
+
+                product = Product.objects.get(id=item["product_id"])
+
+                salesitem = SalesItem.objects.create(
                     sales=sales,
                     product_id=item["product_id"],
                     quantity=item["quantity"],
                     price=item["price"],
                     tenant=self.request.tenant,
+                    vat=item["vat"],
+                    stock_snapshot=product.stock_quantity,
                 )
+
+                ic("Before Remove", product.stock_quantity)
+
+                salesitem.save()
+                product.stock_quantity -= item["quantity"]
+                ic("After Remove", product.stock_quantity)
+
+                product.save()
+
             SalesInvoice.objects.create(
-                order=sales,
+                sales=sales,
                 billing_address=self.billing_address,
                 total_amount=self.total_amount,
                 tenant=self.request.tenant,
+                created_by=self.request.user,
             )
             self.selected_products = []
             self.total_amount = 0.0
@@ -75,9 +108,50 @@ class SalesAddComponentView(UnicornView):
 
         except Exception as e:
             messages.error(request=self.request, message=f"{e}")
+            raise e
+
+    @transaction.atomic
+    def create_customer(self):
+        try:
+            first_name = self.customer_first_name
+            last_name = self.customer_last_name
+            number = self.customer_phone
+            address = self.customer_address
+            email = self.customer_email
+
+            customer = Customer.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                phone_number=number,
+                address=address,
+                email=email,
+                tenant=self.request.tenant,
+            )
+            self.customers_list = Customer.objects.filter(tenant=self.request.tenant)
+            messages.success(self.request, "Customer Created")
+
+        except Exception as e:
+            ic(e)
 
     def add_product(self):
         try:
+            if (
+                self.product_price == 0
+                or self.product_quantity == 0
+                or not self.product_selected.strip()
+            ):
+                return messages.error(
+                    self.request, "Price or Quantity Could not be zero"
+                )
+            for item in self.selected_products:
+                if item["product_id"] == int(self.product_selected):
+                    messages.error(self.request, "Product already added")
+                    raise ValidationError(
+                        {"product_selected": "Already Added Product"},
+                        code="invalid",
+                    )
+
+            self.validate_quantity()
             product = Product.objects.get(id=self.product_selected)
             self.selected_products.append(
                 {
@@ -95,6 +169,7 @@ class SalesAddComponentView(UnicornView):
                     "total": int(self.product_price) * int(self.product_quantity),
                 }
             )
+
             self.calculate_total()
             self.calculate_vat()
             self.product_input = ""
@@ -104,13 +179,106 @@ class SalesAddComponentView(UnicornView):
         except Product.DoesNotExist:
             self.call("alert", "Product not found")
 
-    def updating(self, name, value):
-        ic(name, value)
-        return super().updating(name, value)
+        except Exception as e:
+            ic(e)
+            raise e
+
+    def validate_quantity(self):
+        if not self.product_selected.strip():
+            messages.error(self.request, "Select A Product First")
+            raise ValidationError(
+                {"product_selected": "Select A Product"},
+                code="invalid",
+            )
+        product = Product.objects.get(
+            id=self.product_selected, tenant=self.request.tenant
+        )
+
+        if product.stock_quantity < self.product_quantity:
+            messages.error(self.request, "Please Fix")
+            raise ValidationError(
+                {
+                    "product_quantity": f"The quantity cannot be greater than {product.stock_quantity}"
+                },
+                code="invalid",
+            )
+
+    def remove_item(self, item_id: int):
+        try:
+            item = next(
+                item for item in self.selected_products if item["product_id"] == item_id
+            )
+            if item:
+                self.selected_products.remove(item)
+
+                self.calculate_vat()
+                self.calculate_total()
+
+                messages.success(self.request, "Item Removed")
+
+                self.product_input = ""
+                self.product_price = 1
+                self.product_quantity = 1
+                self.product_vat = 13
+                self.product_selected = ""
+
+            else:
+                messages.error(self.request, "Not Found")
+
+        except Exception as e:
+            messages.error(self.request, f"Some error {e}")
+
+    def edit_item(self, item_id):
+        if not self.disable_edit_btn:
+            try:
+                self.disable_edit_btn = True
+
+                item = next(
+                    item
+                    for item in self.selected_products
+                    if item["product_id"] == item_id
+                )
+                if item:
+                    self.original_product_details = item.copy()
+                    self.product_input = item["product_name"]
+                    self.product_price = item["price"]
+                    self.product_quantity = item["quantity"]
+                    self.product_vat = item["vat"]
+                    self.product_selected = str(item["product_id"])
+
+                    self.selected_products.remove(item)
+
+                    messages.success(self.request, "Loaded For Editing")
+
+            except Exception as e:
+                self.disable_edit_btn = False
+                ic(e)
+
+    def cancel_editing(self):
+        if self.original_product_details:
+            self.selected_products.append(self.original_product_details)
+
+            self.disable_edit_btn = False
+            self.product_input = ""
+            self.product_price = 1
+            self.product_quantity = 1
+            self.product_vat = 13
+            self.product_selected = ""
+            self.original_product_details = []
 
     def mount(self):
         self.customers_list = Customer.objects.filter(tenant=self.request.tenant)
-        self.products_list = Product.objects.filter(
-            tenant=self.request.tenant,
-            stock_quantity__gt=0,
+        self.products_list = (
+            Product.objects.filter(
+                tenant=self.request.tenant,
+                stock_quantity__gt=0,
+            )
+            .annotate(
+                has_purchase=Exists(PurchaseItem.objects.filter(product=OuterRef("pk")))
+            )
+            .filter(has_purchase=True)
+            .order_by("name")
         )
+
+    def updating(self, name, value):
+        ic(name, value)

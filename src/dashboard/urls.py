@@ -1,7 +1,7 @@
 from django.http import HttpResponsePermanentRedirect
 from django.urls import path, reverse_lazy
 
-from .views import dashboard_index
+from .views import dashboard_index, chat
 
 appname = "dashboard"
 
@@ -13,4 +13,5 @@ def redirect_to_dashboard(request):
 urlpatterns = [
     path("", redirect_to_dashboard, name="dashboard_redirect"),
     path("dashboard/", dashboard_index, name="dashboard_index"),
+    path("chat/", chat, name="chat"),
 ]

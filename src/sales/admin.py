@@ -4,11 +4,6 @@ from .models import Customer, PaymentReceived, Sales, SalesInvoice, SalesItem
 
 # Register your models here.
 
-admin.site.register(Sales)
-admin.site.register(Customer)
-admin.site.register(PaymentReceived)
-admin.site.register(SalesInvoice)
-
 
 class SalesItemAdmin(admin.ModelAdmin):
     list_display = [
@@ -26,4 +21,30 @@ class SalesItemAdmin(admin.ModelAdmin):
         return obj.quantity * obj.price
 
 
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ["first_name", "last_name", "email", "phone_number", "address"]
+
+
+class SalesAdmin(admin.ModelAdmin):
+    list_display = ["customer", "total_amount"]
+
+
+class SalesInvoiceAdmin(admin.ModelAdmin):
+    list_display = ["sales", "billing_address", "total_amount", "payment_status"]
+
+
+class PaymentReceivedAdmin(admin.ModelAdmin):
+    list_display = [
+        "amount",
+        "payment_method",
+        "payment_date",
+        "transaction_id",
+        "customer",
+    ]
+
+
+admin.site.register(Customer, CustomerAdmin)
 admin.site.register(SalesItem, SalesItemAdmin)
+admin.site.register(Sales, SalesAdmin)
+admin.site.register(SalesInvoice, SalesInvoiceAdmin)
+admin.site.register(PaymentReceived, PaymentReceivedAdmin)

@@ -1,0 +1,65 @@
+<div class=" p-8 mb-4">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Create New Account</h2>
+    {% include 'partials/_messages.html' %}
+    <div class="mb-4">
+        <label for="account_type"
+               class="block text-gray-800 text-sm font-medium mb-2">Account Type:</label>
+        <select u:model="selected_account_type"
+                id="account_type"
+                class="block w-full mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm">
+            {% for value, label in account_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+    </div>
+    <div class="mb-4">
+        <label for="account_name"
+               class="block text-gray-800 text-sm font-medium mb-2">Account Name:</label>
+        <input u:model="account_name"
+               type="text"
+               id="account_name"
+               class="block w-full mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"
+               placeholder="Enter account name" />
+    </div>
+    <div class="mb-4">
+        <label for="account_balance"
+               class="block text-gray-800 text-sm font-medium mb-2">Account Balance:</label>
+        <input u:model="account_balance"
+               type="number"
+               step="0.01"
+               min="0"
+               id="account_balance"
+               class="block w-full mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"
+               placeholder="Enter initial balance" />
+    </div>
+    {% if selected_account_type == "bank" %}
+        <div class="mb-4">
+            <label for="bank_account_type"
+                   class="block text-gray-800 text-sm font-medium mb-2">Bank Account Type:</label>
+            <select u:model="bank_account_type"
+                    id="bank_account_type"
+                    class="block w-full mt-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm">
+                {% for value, label in bank_account_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+            </select>
+        </div>
+    {% endif %}
+    <div class="flex items-center justify-between">
+        <button u:click="create_account"
+                u:key="create_account"
+                u:dirty.attr="readonly"
+                u:dirty.class="bg-gray-600"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="button">
+            <span u:loading u:key="create_account">
+                <svg aria-hidden="true"
+                     role="status"
+                     class="inline w-4 h-4 me-3 text-white animate-spin"
+                     viewBox="0 0 100 101"
+                     fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB" />
+                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor" />
+                </svg>
+            </span>
+            Create Account
+        </button>
+    </div>
+</div>

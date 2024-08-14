@@ -12,6 +12,10 @@ THIRD_PARTY = [
     "django_celery_results",
     "debug_toolbar",
     "django_filters",
+    "django_pandas",
+    "rest_framework",
+    "widget_tweaks",
+    "active_link",
 ]
 
 
@@ -20,6 +24,7 @@ USER = [
     "dashboard",
     "accounts",
     "sales",
+    "analytics",
 ]
 
 INSTALLED_APPS = [
@@ -128,7 +133,6 @@ TIME_ZONE = "Asia/Kathmandu"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
@@ -137,31 +141,31 @@ BASE_URL = "buffmomo.xyz"
 AUTH_USER_MODEL = "users.CustomUser"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "core/templates/components"),
+    os.path.join(BASE_DIR, "core/static"),
 ]
 
 from decouple import config
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 SECRET_KEY = config("SECRET_KEY")
-ALLOWED_HOST = ["*.localhost", "0.0.0.0", "*.buffmomo.xyz", "buffmomo.xyz"]
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    "pg": {
+        "ENGINE": "django.db.backends.postgresql",  # Specify the PostgreSQL backend
+        "NAME": config("POSTGRES_NAME"),  # Name of your PostgreSQL database
+        "USER": config("POSTGRES_USER"),  # Your PostgreSQL username
+        "PASSWORD": config("POSTGRES_PASSWORD"),  # Your PostgreSQL password
+        "HOST": config("DB_HOST"),  # Database host, e.g., 'localhost' or an IP address
+        "PORT": config("DB_PORT"),
+    },
 }
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": config("POSTGRES_DB"),
-#         "USER": config("POSTGRES_USER"),
-#         "PASSWORD": config("POSTGRES_PASSWORD"),
-#         "HOST": config("DB_HOST"),
-#         "PORT": config("DB_PORT", cast=int),
-#     }
-# }
+
 
 # Redis
 REDIS_URL = config("REDIS_URL")
@@ -205,4 +209,32 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "unique-snowflake",
     }
+}
+
+STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "core/staticfiles")
+
+
+HUGGING_FACE_TOKEN = config("HUGGING_FACE_TOKEN")
+
+
+DB_SCHEMA = {
+    """
+    CREATE TABLE IF NOT EXISTS "tenant_tenantmodel" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(255) NOT NULL UNIQUE, "domain" varchar(10) NOT NULL UNIQUE);
+    CREATE TABLE IF NOT EXISTS "purchases_stockmovement" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "movement_type" varchar(3) NOT NULL, "quantity" integer NOT NULL, "date" datetime NOT NULL, "description" text NULL, "product_id" bigint NOT NULL REFERENCES "purchases_product" ("id") DEFERRABLE INITIALLY DEFERRED, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "purchases_supplier" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "name" varchar(100) NOT NULL, "contact_person" varchar(100) NULL, "email" varchar(254) NULL, "phone_number" varchar(15) NULL, "address" text NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "purchases_purchaseinvoice" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "invoice_number" varchar(10) NULL, "purchase_date" datetime NOT NULL, "total_amount" decimal NOT NULL, "received_date" datetime NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "supplier_id" bigint NOT NULL REFERENCES "purchases_supplier" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED, "order_date" datetime NULL);
+    CREATE TABLE IF NOT EXISTS "purchases_purchaseitem" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "price" decimal NOT NULL, "product_id" bigint NOT NULL REFERENCES "purchases_product" ("id") DEFERRABLE INITIALLY DEFERRED, "purchase_id" bigint NOT NULL REFERENCES "purchases_purchaseinvoice" ("id") DEFERRABLE INITIALLY DEFERRED, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "quantity" integer NOT NULL, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "purchases_paymentmade" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "amount" decimal NOT NULL, "payment_method" varchar(50) NOT NULL, "payment_date" datetime NOT NULL, "transaction_id" varchar(50) NOT NULL UNIQUE, "supplier_id" bigint NOT NULL REFERENCES "purchases_supplier" ("id") DEFERRABLE INITIALLY DEFERRED, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "accounts_account" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(255) NOT NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "balance" decimal NOT NULL);
+    CREATE TABLE IF NOT EXISTS "accounts_bankaccount" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(255) NOT NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "accounttype" varchar(25) NOT NULL, "balance" decimal NOT NULL);
+    CREATE TABLE IF NOT EXISTS "accounts_cashaccount" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(255) NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "balance" decimal NOT NULL);
+    CREATE TABLE IF NOT EXISTS "purchases_unitofmeasurements" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "name" varchar(100) NOT NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "field" varchar(255) NULL, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "sales_customer" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "first_name" varchar(50) NOT NULL, "last_name" varchar(50) NOT NULL, "email" varchar(254) NOT NULL UNIQUE, "phone_number" varchar(15) NULL, "address" text NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "sales_paymentreceived" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "amount" decimal NOT NULL, "payment_method" varchar(50) NOT NULL, "payment_date" datetime NOT NULL, "transaction_id" varchar(100) NOT NULL UNIQUE, "customer_id" bigint NOT NULL REFERENCES "sales_customer" ("id") DEFERRABLE INITIALLY DEFERRED, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "sales_sales" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "total_amount" decimal NOT NULL, "customer_id" bigint NOT NULL REFERENCES "sales_customer" ("id") DEFERRABLE INITIALLY DEFERRED, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "sales_salesitem" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "quantity" integer NOT NULL, "price" decimal NOT NULL, "vat" integer NOT NULL, "vat_amount" decimal GENERATED ALWAYS AS ((CAST(((CAST(((CAST(("price" * "quantity") AS NUMERIC)) * "vat") AS NUMERIC)) / 100) AS NUMERIC))) STORED, "product_id" bigint NOT NULL REFERENCES "purchases_product" ("id") DEFERRABLE INITIALLY DEFERRED, "sales_id" bigint NOT NULL REFERENCES "sales_sales" ("id") DEFERRABLE INITIALLY DEFERRED, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "stock_snapshot" integer NULL, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "sales_salesinvoice" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "billing_address" text NOT NULL, "total_amount" decimal NOT NULL, "payment_status" varchar(20) NOT NULL, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "sales_id" bigint NOT NULL UNIQUE REFERENCES "sales_sales" ("id") DEFERRABLE INITIALLY DEFERRED, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+    CREATE TABLE IF NOT EXISTS "purchases_product" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "name" varchar(100) NOT NULL, "sku" varchar(50) NOT NULL UNIQUE, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "uom_id" bigint NULL REFERENCES "purchases_unitofmeasurements" ("id") DEFERRABLE INITIALLY DEFERRED, "opening_stock" integer NULL, "stock_quantity" real NULL, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
+"""
 }

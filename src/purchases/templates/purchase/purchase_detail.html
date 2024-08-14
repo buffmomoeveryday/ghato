@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 {% block title %}
-{{purchase.invoice_number}} | {{ super }}
+{{ purchase.invoice_number }} | {{ super }}
 {% endblock title %}
 {% block main %}
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">{{ purchase.supplier.name | upper }} Refrences: {{ purchase.invoice_number }}
-    </h1>
-    <hr>
+    <h1 class="text-3xl font-bold mb-8">{{ purchase.supplier.name | upper }} - Reference: {{ purchase.invoice_number }}</h1>
+    <hr class="mb-6">
+
     <!-- Purchase Information -->
-    <h1 class="text-2xl mt-8 mb-4">Invoice Detail</h1>
-    <div class="bg-white shadow-md rounded my-6">
+    <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Invoice Detail</h2>
         <div class="overflow-x-auto">
-            <table class="w-full table-auto">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm">
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-200 text-gray-600 uppercase text-sm">
+                    <tr>
                         <th class="py-3 px-6 text-left">Purchase Invoice Number</th>
                         <th class="py-3 px-6 text-left">Supplier</th>
                         <th class="py-3 px-6 text-left">Purchase Date</th>
@@ -21,12 +21,12 @@
                         <th class="py-3 px-6 text-left">Received Date</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-gray-700">
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left whitespace-nowrap">{{ purchase.invoice_number }}</td>
                         <td class="py-3 px-6 text-left">{{ purchase.supplier.name }}</td>
                         <td class="py-3 px-6 text-left">{{ purchase.purchase_date }}</td>
-                        <td class="py-3 px-6 text-left">{{ purchase.total_amount }}</td>
+                        <td class="py-3 px-6 text-left">Rs. {{ purchase.total_amount }}</td>
                         <td class="py-3 px-6 text-left">{{ purchase.received_date }}</td>
                     </tr>
                 </tbody>
@@ -35,28 +35,24 @@
     </div>
 
     <!-- Purchase Items -->
-    <h2 class="text-2xl mt-8 mb-4">Purchase Items</h2>
-
-    <!-- Search Form -->
-
-    <!-- Purchase Items Table -->
-    <div class="bg-white shadow-md rounded my-6">
+    <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold mb-4">Purchase Items</h2>
         <div class="overflow-x-auto">
-            <table class="w-full table-auto">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm">
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-200 text-gray-600 uppercase text-sm">
+                    <tr>
                         <th class="py-3 px-6 text-left">Product</th>
                         <th class="py-3 px-6 text-left">Quantity</th>
                         <th class="py-3 px-6 text-left">Price</th>
                         <th class="py-3 px-6 text-left">Received Quantity</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-gray-700">
                     {% for item in purchase_items %}
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">{{ item.product.name }} ({{ item.product.sku }})</td>
                         <td class="py-3 px-6 text-left">{{ item.quantity }}</td>
-                        <td class="py-3 px-6 text-left">{{ item.price }}</td>
+                        <td class="py-3 px-6 text-left">Rs. {{ item.price }}</td>
                         <td class="py-3 px-6 text-left">{{ item.received_quantity }}</td>
                     </tr>
                     {% empty %}
@@ -68,5 +64,10 @@
             </table>
         </div>
     </div>
+
+    <!-- Charts -->
+
 </div>
 {% endblock main %}
+
+

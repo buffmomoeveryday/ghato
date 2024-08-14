@@ -1,4 +1,10 @@
 <div class="p-4">
+    <style>
+        .editingHidden{
+                display: none;
+        }
+    </style>
+
     {% include "partials/_messages.html" %}
     <div class="flex items-center mb-4">
         <h1 class="text-2xl font-bold">UOM</h1>
@@ -14,6 +20,20 @@
             <span class="sr-only">Loading...</span>
         </div>
     </div>
+    {% if editing %}
+    <label for="Editing" class="editingHidden">Editing</label>
+    <input type="text" class="border border-gray-300 rounded p-2 mt-4 w-full" u:model="editing_uom" u:key="editing_uom"
+        placeholder="Edit" />
+    <button u:click="update_uom" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2">Save</button>
+    <button u:click="$toggle('editing')" u:confirm.prompt="Are you sure you want to cancel?"
+        class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700 mt-2">Cancel (x)</button>
+    {% else %}
+    <input u:model="new_uom" u:key='new_uom' type="text" class="border border-gray-300 rounded p-2 mt-4 w-full"
+        placeholder="Enter new UOM" />
+    <button u:click="add_new_uom" u:key="add_new_uom_key" u:dirty.attr="disabled"
+        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mt-2">Add +</button>
+    {% endif %}
+
     {% if uoms %}
         <ul class="list-disc pl-5">
             {% for uom in uoms %}
@@ -49,27 +69,5 @@
             {% endfor %}
         </ul>
     {% endif %}
-    {% if editing %}
-        <label for="Editing">Editing</label>
-        <input type="text"
-               class="border border-gray-300 rounded p-2 mt-4 w-full"
-               u:model="editing_uom"
-               u:key="editing_uom"
-               placeholder="Edit" />
-        <button u:click="update_uom" 
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2">Save</button>
-        <button u:click="$toggle('editing')"
-                u:confirm.prompt="Are you sure you want to cancel?"
-                class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700 mt-2">Cancel (x)</button>
-    {% else %}
-        <input u:model="new_uom"
-               u:key='new_uom'
-               type="text"
-               class="border border-gray-300 rounded p-2 mt-4 w-full"
-               placeholder="Enter new UOM" />
-        <button u:click="add_new_uom"
-                u:key="add_new_uom_key"
-                u:dirty.attr="disabled"
-                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mt-2">Add +</button>
-    {% endif %}
+
 </div>

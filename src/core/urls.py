@@ -5,7 +5,8 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("unicorn/", include("django_unicorn.urls")),
-    path(r"^__debug__/", include(debug_toolbar.urls)),
+    path("__debug__/", include(debug_toolbar.urls)),
+    path("api-auth/", include("rest_framework.urls")),
 ]
 
 
@@ -14,6 +15,8 @@ auth_urls = [
     path("", include("users.urls")),
     path("", include("purchases.urls")),
     path("", include("sales.urls")),
+    path("", include("accounts.urls")),
+    path("analytics/", include("analytics.urls")),
 ]
 
 

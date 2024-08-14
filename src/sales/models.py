@@ -13,6 +13,10 @@ class Customer(TenantAwareModel, BaseModelMixin):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
 
+    @property
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -34,6 +38,7 @@ class SalesInvoice(TenantAwareModel, BaseModelMixin):
         choices=[
             ("Paid", "Paid"),
             ("Unpaid", "Unpaid"),
+            ("Partial", "Partial"),
         ],
         default="Unpaid",
     )
@@ -41,12 +46,23 @@ class SalesInvoice(TenantAwareModel, BaseModelMixin):
     def __str__(self):
         return f"Invoice #{self.id} - {self.payment_status}"
 
+    def get_vat(self):
+        total = sum(item.vat_amount for item in self.sales.items.all())
+        return total
+
+    def get_total(self):
+        return self.total_amount
+
+    def get_total_with_vat(self):
+        return sum(item.total_with_vat for item in self.sales.items.all())
+
 
 class SalesItem(TenantAwareModel, BaseModelMixin):
     sales = models.ForeignKey(Sales, related_name="items", on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock_snapshot = models.IntegerField(null=True)
     vat = models.IntegerField(
         choices=[
             (13, 13),
@@ -72,6 +88,10 @@ class SalesItem(TenantAwareModel, BaseModelMixin):
     def total_with_vat(self):
         return self.total + self.vat_amount
 
+    @property
+    def stock_before_sales(self):
+        return self.product.opening_stock - self.quantity
+
 
 class PaymentReceived(TenantAwareModel, BaseModelMixin):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -81,4 +101,4 @@ class PaymentReceived(TenantAwareModel, BaseModelMixin):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Payment #{self.id} - {self.order.id}"
+        return f"Payment #{self.id}"

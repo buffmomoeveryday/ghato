@@ -2,7 +2,7 @@
     {% include "partials/_messages.html" %}
     <div class="p-8 bg-white rounded-lg shadow-md">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+                <div>
                 <label for="supplier" class="block text-sm font-medium text-gray-700">Supplier</label>
                 <div class="mt-1 flex rounded-md shadow-sm">
                     <select u:model="supplier"
@@ -13,7 +13,9 @@
                         <option value="">Select a supplier</option>
                         {% for supplier in suppliers %}<option value="{{ supplier.id }}">{{ supplier.name|capfirst }}</option>{% endfor %}
                     </select>
+
                 </div>
+
                 <div class="mt-2">
                     {% include "purchase/partials/add_supplier_modal.html" with id="add_supplier" button_label="Add New Supplier" title="Add Supplier" %}
                 </div>
@@ -21,30 +23,52 @@
             <div>
                 <label for="purchase_invoice_date"
                        class="block text-sm font-medium text-gray-700">Purchase Date</label>
-                <input u:model.defer="purchase_invoice_date"
-                       type="date"
-                       u:input="check_date"
-                       id="purchase_invoice_date"
-                       name="purchase_invoice_date"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <div class="relative max-w-sm">
+                    <input u:model.defer="purchase_invoice_date"
+                           u:input="check_date"
+                           id="purchase_invoice_date"
+                           name="purchase_invoice_date"
+                           type="date"
+                           class="form-input block w-full mt-1 rounded-md border-gray-300">
+                    <!-- class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" -->
+                    <!-- placeholder="Select date"> -->
+                </div>
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.purchase_invoice_date.0.message.0 }}</p>
             </div>
             <div>
                 <label for="total_invoice_amount"
                        class="block text-sm font-medium text-gray-700">Total Amount</label>
-                <input u:model.lazy="total_invoice_amount"
+                <input disabled
+                       u:model="total_invoice_amount"
                        type="number"
                        id="total_invoice_amount"
                        name="total_invoice_amount"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                       id="disabled-input-2"
+                       aria-label="disabled input 2"
+                       class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed"
+                       value="Disabled readonly input"
+                       disabled
+                       readonly>
             </div>
             <div>
                 <label for="received_date" class="block text-sm font-medium text-gray-700">Received Date</label>
                 <input u:model="received_date"
+                       u:input="check_date"
                        type="date"
                        id="received_date"
                        name="received_date"
                        class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.received_date.0.message.0 }}</p>
+            </div>
+            <div>
+                <label for="order_date" class="block text-sm font-medium text-gray-700">Order Date</label>
+                <input u:model="order_date"
+                       u:input="order_date"
+                       type="date"
+                       id="order_date"
+                       name="order_date"
+                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.order_date.0.message.0 }}</p>
             </div>
             <div>
                 <label for="purchase_invoice_number"
@@ -66,7 +90,7 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div>
                 <label for="product" class="block text-sm font-medium text-gray-700">Product</label>
-                <select u:model.defer="product"
+                <select u:model="product"
                         u:key="product_list"
                         id="product"
                         name="product"
@@ -96,19 +120,6 @@
                        name="price"
                        class="form-input block w-full mt-1 rounded-md border-gray-300" />
             </div>
-            
-            {% comment  %}
-            <!-- <div> -->
-                <!-- <label for="received_quantity" -->
-                       <!-- class="block text-sm font-medium text-gray-700">Received Quantity</label> -->
-                <!-- <input u:model.lazy="received_quantity" -->
-                       <!-- type="number" -->
-                       <!-- id="received_quantity" -->
-                       <!-- name="received_quantity" -->
-                       <!-- class="form-input block w-full mt-1 rounded-md border-gray-300" /> -->
-            <!-- </div> -->
-            {% endcomment %}
-
             <div class="flex items-end">
                 <button u:partial.key="product_table"
                         u:click="add_item_to_session"
@@ -158,9 +169,15 @@
             </table>
         </div>
         <div class="mt-4">
-            <button u:click="save_all"
-                    name="save_all"
-                    class="bg-pink-500 text-white p-3 rounded-md hover:bg-pink-400">Save All</button>
+            {% if product_to_be_purchased %}
+                <button u:click="save_all"
+                        name="save_all"
+                        class="bg-pink-500 text-white p-3 rounded-md hover:bg-pink-400">Save All</button>
+            {% else %}
+                <button disabled
+                        id="save_all"
+                        class="bg-gray-500 text-white p-3 rounded-md hover:bg-gray-400">Save All</button>
+            {% endif %}
         </div>
     </div>
 </div>
