@@ -8,7 +8,7 @@ from purchases.models import (
     StockMovement,
     PaymentMade,
     Supplier,
-    PurchaseInovice,
+    PurchaseInvoice,
     PurchaseItem,
 )
 
@@ -126,7 +126,7 @@ class Command(BaseCommand):
         purchase_invoices = []
         for _ in range(num_purchase_invoices):
             supplier = random.choice(suppliers)
-            purchase_invoice = PurchaseInovice.objects.create(
+            purchase_invoice = PurchaseInvoice.objects.create(
                 supplier=supplier,
                 invoice_number=faker.unique.bothify(text="INV-#####"),
                 total_amount=random.uniform(100.00, 5000.00),

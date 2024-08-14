@@ -1,3 +1,5 @@
+{% load active_link_tags %}
+
 {% include 'partials/_navbar.html' %}
 <aside id="logo-sidebar"
        class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
@@ -6,21 +8,20 @@
         <ul class="space-y-2 font-medium">
             <li>
                 <a href="{% url 'dashboard_index' %}"
-                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-    height="24" fill="currentColor" viewBox="0 0 24 24">
-    <path
-        d="M13.5 2c-.178 0-.356.013-.492.022l-.074.005a1 1 0 0 0-.934.998V11a1 1 0 0 0 1 1h7.975a1 1 0 0 0 .998-.934l.005-.074A7.04 7.04 0 0 0 22 10.5 8.5 8.5 0 0 0 13.5 2Z" />
-    <path d="M11 6.025a1 1 0 0 0-1.065-.998 8.5 8.5 0 1 0 9.038 9.039A1 1 0 0 0 17.975 13H11V6.025Z" />
-</svg>
-
+                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% active_link 'dashboard_index' 'dark:bg-gray-700 group' %}">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M13.5 2c-.178 0-.356.013-.492.022l-.074.005a1 1 0 0 0-.934.998V11a1 1 0 0 0 1 1h7.975a1 1 0 0 0 .998-.934l.005-.074A7.04 7.04 0 0 0 22 10.5 8.5 8.5 0 0 0 13.5 2Z" />
+                    <path d="M11 6.025a1 1 0 0 0-1.065-.998 8.5 8.5 0 1 0 9.038 9.039A1 1 0 0 0 17.975 13H11V6.025Z" />
+                </svg>
 
                     <span class="ms-3">Dashboard</span>
                 </a>
             </li>
             <li>
                 <button type="button"
-                        class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                        class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 {% active_link 'purchase_add || purchase_detail || purchase_index ' 'dark:bg-gray-700 group' %}"
                         aria-controls="dropdown-purchase"
                         data-collapse-toggle="dropdown-purchase">
                     <svg class="w-6 h-6 text-gray-800 dark:text-white"
@@ -42,18 +43,14 @@
                     </svg>
                 </button>
                 <ul id="dropdown-purchase" class="hidden py-2 space-y-2">
-                    <li>
-                        <a href="{% url 'inventory' %}"
-                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                        Inventory</a>
-                    </li>
+
                     <li>
                         <a href="{% url 'purchase_add' %}"
-                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Add Purchase</a>
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"> + Add Purchase</a>
                     </li>
                     <li>
                         <a href="{% url 'purchase_index' %}"
-                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Invoice</a>
+                           class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Purcahse Invoices</a>
                     </li>
                 </ul>
             </li>
@@ -111,42 +108,42 @@
                 </a>
             </li>
             <li>
-                <a href="#"
+                <a href="{% url 'supplier_list' %}"
                    class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                         aria-hidden="true"
-                         xmlns="http://www.w3.org/2000/svg"
-                         fill="currentColor"
-                         viewBox="0 0 20 18">
-                        <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
-                    </svg>
+<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+    height="24" fill="currentColor" viewBox="0 0 24 24">
+    <path fill-rule="evenodd"
+        d="M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H6Zm7.25-2.095c.478-.86.75-1.85.75-2.905a5.973 5.973 0 0 0-.75-2.906 4 4 0 1 1 0 5.811ZM15.466 20c.34-.588.535-1.271.535-2v-1a5.978 5.978 0 0 0-1.528-4H18a4 4 0 0 1 4 4v1a2 2 0 0 1-2 2h-4.535Z"
+        clip-rule="evenodd" />
+</svg>
+
                     <span class="flex-1 ms-3 whitespace-nowrap">Suppliers</span>
                 </a>
             </li>
             <li>
-                <a href="#"
-                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                         aria-hidden="true"
-                         xmlns="http://www.w3.org/2000/svg"
-                         fill="currentColor"
-                         viewBox="0 0 18 20">
-                        <path d="M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z" />
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Products</span>
+                <a href="{% url 'inventory' %}"
+                   class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% active_link 'inventory' 'bg-gray-700 group' %}">
+<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+    height="24" fill="currentColor" viewBox="0 0 24 24">
+    <path fill-rule="evenodd"
+        d="M14 7h-4v3a1 1 0 0 1-2 0V7H6a1 1 0 0 0-.997.923l-.917 11.924A2 2 0 0 0 6.08 22h11.84a2 2 0 0 0 1.994-2.153l-.917-11.924A1 1 0 0 0 18 7h-2v3a1 1 0 1 1-2 0V7Zm-2-3a2 2 0 0 0-2 2v1H8V6a4 4 0 0 1 8 0v1h-2V6a2 2 0 0 0-2-2Z"
+        clip-rule="evenodd" />
+</svg>
+
+                    <span class="flex-1 ms-3 whitespace-nowrap">Inventory</span>
                 </a>
             </li>
             <li>
-                <a href="#"
+                <a href="{% url 'chat' %}"
                    class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                         aria-hidden="true"
-                         xmlns="http://www.w3.org/2000/svg"
-                         fill="none"
-                         viewBox="0 0 18 16">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 8h11m0 0L8 4m4 4-4 4m4-11h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3" />
-                    </svg>
-                    <span class="flex-1 ms-3 whitespace-nowrap">Sign In</span>
+<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
+    height="24" fill="currentColor" viewBox="0 0 24 24">
+    <path
+        d="M8 3a3 3 0 0 0-1 5.83v6.34a3.001 3.001 0 1 0 2 0V15a2 2 0 0 1 2-2h1a5.002 5.002 0 0 0 4.927-4.146A3.001 3.001 0 0 0 16 3a3 3 0 0 0-1.105 5.79A3.001 3.001 0 0 1 12 11h-1c-.729 0-1.412.195-2 .535V8.83A3.001 3.001 0 0 0 8 3Z" />
+</svg>
+
+
+                    <span class="flex-1 ms-3 whitespace-nowrap">Assitant</span>
                 </a>
             </li>
             <li>

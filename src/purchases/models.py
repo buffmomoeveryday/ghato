@@ -1,10 +1,12 @@
 from typing import Iterable
 from django.db import models
+from django.db.models import Sum
 
 from core.models import BaseModelMixin
 from tenant.models import TenantAwareModel
 
 from datetime import timedelta
+from datetime import datetime
 from typing import Optional
 
 
@@ -28,7 +30,6 @@ class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
 
 class Product(TenantAwareModel, BaseModelMixin):
-    # TODO: add product category
     name = models.CharField(max_length=100)
     uom = models.ForeignKey(UnitOfMeasurements, on_delete=models.SET_NULL, null=True)
     sku = models.CharField(max_length=50, unique=True)
@@ -76,8 +77,28 @@ class Supplier(TenantAwareModel, BaseModelMixin):
     def __str__(self):
         return self.name
 
+    def get_remaining_balance(self, tenant):
+        total_purchases_made = (
+            PurchaseInvoice.objects.filter(
+                tenant=tenant,
+                supplier=self.pk,
+            ).aggregate(
+                total=Sum("total_amount")
+            )["total"]
+            or 0
+        )
 
-class PurchaseInovice(TenantAwareModel, BaseModelMixin):
+        total_payments_made = (
+            PaymentMade.objects.filter(tenant=tenant, supplier=self.pk).aggregate(
+                total=Sum("amount")
+            )["total"]
+            or 0
+        )
+
+        return total_purchases_made - total_payments_made
+
+
+class PurchaseInvoice(TenantAwareModel, BaseModelMixin):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     invoice_number = models.CharField(
         verbose_name="Purchase Invoice Number",
@@ -101,7 +122,7 @@ class PurchaseInovice(TenantAwareModel, BaseModelMixin):
 
 class PurchaseItem(TenantAwareModel, BaseModelMixin):
     purchase = models.ForeignKey(
-        PurchaseInovice,
+        PurchaseInvoice,
         related_name="items",
         on_delete=models.CASCADE,
     )

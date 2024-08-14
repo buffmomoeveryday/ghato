@@ -1,0 +1,119 @@
+<div>
+    <!-- put component code here -->
+
+        <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Analytics</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Purchase Amount Over Time</h3>
+                    <div id="purchase-amount-over-time-chart"></div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Top Purchased Products</h3>
+                    <div id="top-purchased-products-chart"></div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-4">Supplier Contributions</h3>
+                    <div id="supplier-contributions-chart"></div>
+                </div>
+            </div>
+        </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var commonChartOptions = {
+            chart: {
+                toolbar: {
+                    show: false
+                },
+                height: 350
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: ['#4F46E5'],
+            xaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return Math.round(value);
+                    }
+                }
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: true
+                }
+            }
+        };
+
+        // Purchase Amount Over Time
+        var purchaseAmountOptions = {
+            ...commonChartOptions,
+            chart: {
+                ...commonChartOptions.chart,
+                type: 'line'
+            },
+            series: [{
+                name: "Total Amount",
+                data: JSON.parse('{{ purchase_amounts|escapejs }}')
+            }],
+            xaxis: {
+                categories: JSON.parse('{{ purchase_dates|escapejs }}'),
+                title: {
+                    text: 'Date'
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Total Amount'
+                }
+            }
+        };
+        var purchaseAmountChart = new ApexCharts(document.querySelector("#purchase-amount-over-time-chart"), purchaseAmountOptions);
+        purchaseAmountChart.render();
+
+        var topProductsOptions = {
+            ...commonChartOptions,
+            chart: {
+                ...commonChartOptions.chart,
+                type: 'bar'
+            },
+            series: [{
+                name: "Quantity",
+                data: JSON.parse('{{ top_product_quantites|escapejs }}')
+            }],
+            xaxis: {
+                categories: JSON.parse('{{ top_product_names|escapejs }}'),
+                title: {
+                    text: 'Products'
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Quantity'
+                }
+            }
+        };
+        var topProductsChart = new ApexCharts(document.querySelector("#top-purchased-products-chart"), topProductsOptions);
+        topProductsChart.render();
+
+        var supplierContributionsOptions = {
+            ...commonChartOptions,
+            chart: {
+                ...commonChartOptions.chart,
+                type: 'pie'
+            },
+            series: JSON.parse('{{ suppliers_amount|escapejs }}'),
+            labels: JSON.parse('{{ suppliers_names|escapejs }}'),
+            legend: {
+                position: 'bottom'
+            },
+            colors: ['#4299E1', '#48BB78', '#ED8936', '#ECC94B', '#ED64A6', '#9F7AEA']
+        };
+        var supplierContributionsChart = new ApexCharts(document.querySelector("#supplier-contributions-chart"), supplierContributionsOptions);
+        supplierContributionsChart.render();
+    });
+</script>
+
+
+    </div>

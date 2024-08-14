@@ -38,6 +38,7 @@ class SalesInvoice(TenantAwareModel, BaseModelMixin):
         choices=[
             ("Paid", "Paid"),
             ("Unpaid", "Unpaid"),
+            ("Partial", "Partial"),
         ],
         default="Unpaid",
     )

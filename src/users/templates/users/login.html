@@ -1,29 +1,42 @@
 {% extends "base.html" %}
 {% block main %}
-    <div class="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div class="text-center">
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                    Login to
-                    <br>
-                    <span class="underline">{{ request.tenant.name }}</span>
-                </h2>
+<div
+    class="h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white bg-opacity-80 p-8 rounded-lg shadow-lg backdrop-blur-sm">
+        <div class="text-center">
+            <h2 class="mt-6 text-3xl font-extrabold text-gray-900 animate-bounce">
+                Login to
+                <br>
+                <span class="underline text-indigo-700">{{ request.tenant.name }}</span>
+            </h2>
+        </div>
+        <form action="{% url 'login' %}" method="post" class="mt-8 space-y-6">
+            {% csrf_token %}
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div class="p-2">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input id="email" name="email" type="email" required
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        placeholder="user@email.com">
+                </div>
+                <div class="p-2">
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" required
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                        placeholder="********">
+                </div>
             </div>
-            <div hx-boost="true" data-loading-target="#login_button">
-                <form action="{% url 'login' %}" method="post" class="mt-8 space-y-6">
-                    {% csrf_token %}
-                    <div class="rounded-md shadow-sm -space-y-px">
-                        <div class="p-2">
-                            {% component "input" id="email" label="Email Address" type="email" name="email" placeholder="user@email.com" required=True %}{% endcomponent %}
-                        </div>
-                        <div class="p-2">
-                            {% component "input" id="password" label="Password" type="password" name="password" placeholder="********" required=True %}{% endcomponent %}
-                        </div>
-                        <div class="pt-2">{% component "button" id="login_button" label="Login" %}{% endcomponent %}</div>
-                    </div>
-                </form>
-                <div class="text-center">{% component "link" label="Register" url="register" boost="true" %} {% endcomponent %}</div>
+            <div class="pt-2">
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white
+                                            bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transform transition-all duration-300 hover:scale-105">
+                        Login ✨
+                    </button>
             </div>
+        </form>
+        <div class="text-center pt-4">
+            <a href="{% url 'register' %}" class="text-indigo-700 hover:text-indigo-900 font-semibold">Register</a>
         </div>
     </div>
+</div>
 {% endblock main %}

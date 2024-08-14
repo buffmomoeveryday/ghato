@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 
 from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
-from purchases.models import PurchaseInovice, PurchaseItem
+from purchases.models import PurchaseInvoice, PurchaseItem
 
 
 class SalesAddComponentView(UnicornView):
@@ -41,7 +41,7 @@ class SalesAddComponentView(UnicornView):
 
     disable_add_product_btn = False
     disable_edit_btn = False
-    
+
     # TODO: Implement a feature where I can directly change the invoice's payment status
     is_paid = False
 
@@ -70,6 +70,9 @@ class SalesAddComponentView(UnicornView):
             )
 
             for item in self.selected_products:
+
+                product = Product.objects.get(id=item["product_id"])
+
                 salesitem = SalesItem.objects.create(
                     sales=sales,
                     product_id=item["product_id"],
@@ -77,14 +80,15 @@ class SalesAddComponentView(UnicornView):
                     price=item["price"],
                     tenant=self.request.tenant,
                     vat=item["vat"],
+                    stock_snapshot=product.stock_quantity,
                 )
 
-                product = Product.objects.get(id=item["product_id"])
+                ic("Before Remove", product.stock_quantity)
 
-                salesitem.stock_snapshop = product.stock_quantity
                 salesitem.save()
-
                 product.stock_quantity -= item["quantity"]
+                ic("After Remove", product.stock_quantity)
+
                 product.save()
 
             SalesInvoice.objects.create(

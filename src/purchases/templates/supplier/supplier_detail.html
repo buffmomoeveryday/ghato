@@ -143,8 +143,9 @@
         <hr class="my-8">
         <div>
             <h2 class="text-2xl font-semibold mb-6">Payments Made</h2>
+            {% include 'partials/_search.html' with search_input='payment_search' table_id='payment_made' %}
             <div class="relative overflow-x-auto">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <table id="payment_made" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">Amount</th>
@@ -202,23 +203,6 @@
                 chart.render();
             });
 
-            function searchInvoices() {
-                let input = document.getElementById('invoiceSearch').value.toUpperCase();
-                let invoiceList = document.getElementById('invoiceList');
-                let invoices = invoiceList.getElementsByTagName('tr');
-
-                for (let i = 0; i < invoices.length; i++) {
-                    let invoiceNumber = invoices[i].getElementsByTagName('td')[0];
-                    if (invoiceNumber) {
-                        let txtValue = invoiceNumber.textContent || invoiceNumber.innerText;
-                        if (txtValue.toUpperCase().indexOf(input) > -1) {
-                            invoices[i].style.display = "";
-                        } else {
-                            invoices[i].style.display = "none";
-                        }
-                    }
-                }
-            }
             </script>
         {% endif %}
     </div>

@@ -13,7 +13,7 @@ from django_unicorn.components import UnicornView
 
 from purchases.models import (
     Product,
-    PurchaseInovice,
+    PurchaseInvoice,
     PurchaseItem,
     Supplier,
     UnitOfMeasurements,
@@ -79,7 +79,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             messages.error(self.request, "No Items in Invoice")
 
         try:
-            purchase = PurchaseInovice.objects.create(
+            purchase = PurchaseInvoice.objects.create(
                 supplier_id=self.supplier,
                 purchase_date=self.purchase_invoice_date,
                 total_amount=self.total_invoice_amount,

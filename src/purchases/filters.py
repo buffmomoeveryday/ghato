@@ -1,6 +1,6 @@
 import django_filters
 
-from .models import PurchaseInovice, Supplier, PurchaseItem
+from .models import PurchaseInvoice, Supplier, PurchaseItem
 from .models import *
 from users.models import CustomUser
 
@@ -15,7 +15,7 @@ class PurchaseFilter(django_filters.FilterSet):
     )
 
     class Meta:
-        model = PurchaseInovice
+        model = PurchaseInvoice
         fields = "__all__"
         exclude = [
             "tenant",
@@ -67,7 +67,7 @@ class InventoryFilter(django_filters.FilterSet):
     def get_queryset(self, queryset_name):
 
         user = CustomUser.objects.filter(tenant=self.tenant)
-        purchase_invoice = PurchaseInovice.objects.filter(
+        purchase_invoice = PurchaseInvoice.objects.filter(
             tenant=self.tenant
         ).select_related("tenant", "supplier")
 

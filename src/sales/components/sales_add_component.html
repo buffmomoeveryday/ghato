@@ -21,7 +21,8 @@
                     <div class="p-4">
                         <!-- Modal toggle -->
                         <button onclick="document.getElementById('add-customer-modal').showModal()"
-                                class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center 
+                                
                                 type="button">Add Customer</button>
                     </div>
                 </div>
@@ -131,8 +132,8 @@
                 Total VAT: <span class="font-bold pl-4">Rs: {{ total_vat }}</span>
             </h3>
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3">Product Name</th>
                             <th scope="col" class="px-6 py-3">Quantity</th>
@@ -145,7 +146,7 @@
                     </thead>
                     <tbody>
                         {% for item in selected_products %}
-                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <tr class="bg-white border-b">
                                 <td class="px-6 py-4">{{ item.product_name }}</td>
                                 <td class="px-6 py-4">{{ item.quantity }}</td>
                                 <td class="px-6 py-4">Rs. {{ item.total }}</td>
@@ -191,13 +192,13 @@
             </div>
             <!-- Add Customer Modal -->
             <dialog id="add-customer-modal"
-                    class="p-4 w-full max-w-md max-h-full rounded-lg shadow bg-white dark:bg-gray-700">
+                    class="p-4 w-full max-w-md max-h-full rounded-lg shadow bg-white">
                 <!-- Modal content -->
                 <!-- Modal header -->
-                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Create New Customer</h3>
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                    <h3 class="text-lg font-semibold text-gray-900">Create New Customer</h3>
                     <button type="button"
-                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
                             onclick="document.getElementById('add-customer-modal').close()">
                         <svg class="w-3 h-3"
                              aria-hidden="true"
@@ -214,64 +215,64 @@
                     <div class="grid gap-4 mb-4 grid-cols-2">
                         <div>
                             <label for="customer_first_name"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                   class="block mb-2 text-sm font-medium text-gray-900 ">
                                 First Name
                             </label>
                             <input type="text"
                                    id="customer_first_name"
                                    u:model.defer="customer_first_name"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
                                    placeholder="Type customer first name"
                                    required>
                         </div>
                         <div>
                             <label for="customer_last_name"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                   class="block mb-2 text-sm font-medium text-gray-900 ">
                                 Last Name
                             </label>
                             <input type="text"
                                    id="customer_last_name"
                                    u:model.defer="customer_last_name"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5
                                    placeholder="Type customer last name"
                                    required>
                         </div>
                         <div class="col-span-2 sm:col-span-1">
                             <label for="customer_phone"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                   class="block mb-2 text-sm font-medium text-gray-900 ">
                                 Phone Number
                             </label>
                             <input type="number"
                                    id="customer_phone"
                                    u:model.defer="customer_phone"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
                                    placeholder="+977-9861857071"
                                    required>
                         </div>
                         <div class="col-span-2 sm:col-span-1">
                             <label for="customer_email"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                                   class="block mb-2 text-sm font-medium text-gray-900 ">Email</label>
                             <input type="text"
                                    id="customer_email"
                                    u:model.defer="customer_email"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
                                    placeholder="helo@gmail.com"
                                    required>
                         </div>
                         <div class="col-span-4 sm:col-span-1">
                             <label for="customer_address"
-                                   class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
+                                   class="block mb-2 text-sm font-medium text-gray-900 ">Address</label>
                             <input type="text"
                                    id="customer_address"
                                    u:model.defer="customer_address"
-                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 
                                    placeholder="Saraswatinagar-06"
                                    required>
                         </div>
                     </div>
                     <button u:click="create_customer"
                             u:partial.key="customers_list"
-                            class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                            class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center 
                         <svg class="me-1 -ms-1 w-5 h-5"
                              fill="currentColor"
                              viewBox="0 0 20 20"

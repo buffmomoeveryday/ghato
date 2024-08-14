@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, ExpressionWrapper, F, DecimalField
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from icecream import ic
 
 from .models import PaymentReceived, SalesInvoice, SalesItem, Customer, Sales
+from purchases.utils import number_to_words
 
 
 @login_required
@@ -100,12 +101,22 @@ def sales_invoice(request, sales_id):
         tenant=request.tenant,
     ).select_related("product", "sales", "sales__salesinvoice")
 
+    total = sales_items.aggregate(
+        total=Sum(
+            ExpressionWrapper(
+                (F("price") * F("quantity") * F("vat") / 100)
+                + (F("price") * F("quantity")),
+                output_field=DecimalField(max_digits=20, decimal_places=2),
+            ),
+        )
+    )["total"]
 
     context = {
         "company": request.tenant,
         "sales": sales,
         "sales_items": sales_items,
         "time": time,
+        "total_in_words": number_to_words(total),
     }
     return render(
         request=request, template_name="sales/sales_bill.html", context=context

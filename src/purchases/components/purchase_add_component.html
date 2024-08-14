@@ -2,7 +2,7 @@
     {% include "partials/_messages.html" %}
     <div class="p-8 bg-white rounded-lg shadow-md">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+                <div>
                 <label for="supplier" class="block text-sm font-medium text-gray-700">Supplier</label>
                 <div class="mt-1 flex rounded-md shadow-sm">
                     <select u:model="supplier"
@@ -13,7 +13,9 @@
                         <option value="">Select a supplier</option>
                         {% for supplier in suppliers %}<option value="{{ supplier.id }}">{{ supplier.name|capfirst }}</option>{% endfor %}
                     </select>
+
                 </div>
+
                 <div class="mt-2">
                     {% include "purchase/partials/add_supplier_modal.html" with id="add_supplier" button_label="Add New Supplier" title="Add Supplier" %}
                 </div>
@@ -43,7 +45,7 @@
                        name="total_invoice_amount"
                        id="disabled-input-2"
                        aria-label="disabled input 2"
-                       class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                       class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed"
                        value="Disabled readonly input"
                        disabled
                        readonly>

@@ -1,42 +1,62 @@
 {% extends "base.html" %}
 {% block main %}
-    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
-            <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Register Page</h2>
-            </div>
-            <div unicorn:view>
-                {% include "partials/_messages.html" %}
-                <form hx-post="{% url 'register' %}" class="mt-8 space-y-6">
-                    <div class="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            {% component "input" id="email" type="email" name="email" label="Email" placeholder="email" required="true" %}
-                        {% endcomponent %}
-                        <div>
-                            {% component "input" id="password1" type="password" name="password1" label="Password" placeholder="******" required="true" %}
-                        {% endcomponent %}
+<div
+    class="h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
+        <div>
+            <h2 class="text-center text-3xl font-extrabold text-gray-900 mb-6">
+                ✨ Register Page ✨
+            </h2>
+        </div>
+        <div>
+            {% include "partials/_messages.html" %}
+            <form action="{% url 'register' %}" method="post" class="space-y-6">
+                {% csrf_token %}
+                <div class="rounded-md shadow-sm space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input id="email" name="email" type="email" required
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Email">
                     </div>
                     <div>
-                        {% component "input" id="password2" type="password" name="password2" label="Confirm Password" placeholder="******" required="true" %}
-                    {% endcomponent %}
+                        <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input id="password1" name="password1" type="password" required
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Password">
+                    </div>
+                    <div>
+                        <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                        <input id="password2" name="password2" type="password" required
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Confirm Password">
+                    </div>
+                    <div>
+                        <label for="domain" class="block text-sm font-medium text-gray-700">Domain</label>
+                        <input id="domain" name="domain" required
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Domain">
+                    </div>
+                    <div>
+                        <label for="company_name" class="block text-sm font-medium text-gray-700">Company Name</label>
+                        <input id="company_name" name="company_name" required
+                            class="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            placeholder="Company Name">
+                    </div>
                 </div>
                 <div>
-                    {% component "input" id="domain" name="domain" label="Domain" placeholder="test" required="true" %}
-                {% endcomponent %}
-            </div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white
+                        bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transform transition-all duration-300 hover:scale-105">
+                        Register ✨
+                    </button>
+                </div>
+                <div class="text-center pt-4">
+                    <a href="{% url 'login' %}"
+                        class="text-indigo-700 hover:text-indigo-900 font-semibold transition-all duration-300">Login</a>
+                </div>
+            </form>
         </div>
     </div>
-    <div>
-        <label for="company_name" class="sr-only">Company Name</label>
-        {% component "input" id="company_name" name="company_name" label="Company Name" required="true" %}
-    {% endcomponent %}
-</div>
-</div>
-<div>
-    {% component "button" type="submit" label="Register" %}  {% endcomponent %}
-    <div>{% component "link" label="Login" url="login" boost="true" %}    {% endcomponent %}</div>
-</div>
-</form>
-</div>
 </div>
 {% endblock main %}

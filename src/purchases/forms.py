@@ -1,11 +1,11 @@
 from django import forms
 
-from .models import PurchaseInovice, PurchaseItem
+from .models import PurchaseInvoice, PurchaseItem
 
 
 class PurchaseForm(forms.ModelForm):
     class Meta:
-        model = PurchaseInovice
+        model = PurchaseInvoice
         fields = ["supplier", "total_amount", "received_date"]
 
 
