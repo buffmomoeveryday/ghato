@@ -35,7 +35,7 @@ def dashboard_index(request):
     )
 
     total_purchases_made = (
-        PurchaseInovice.objects.filter(tenant=request.tenant).aggregate(
+        PurchaseInvoice.objects.filter(tenant=request.tenant).aggregate(
             total_amount=Sum("total_amount")
         )["total_amount"]
         or 0
@@ -49,6 +49,12 @@ def dashboard_index(request):
             )
         )
         .aggregate(total_value_sum=Sum("total_value"))["total_value_sum"]
+        or 0
+    )
+    total_payments_made = (
+        PaymentMade.objects.filter(tenant=request.tenant).aggregate(
+            total_value=Sum("amount")
+        )["total_value"]
         or 0
     )
 
@@ -121,6 +127,7 @@ def dashboard_index(request):
         "total_stock_remaining": total_stock_remaining,
         "total_purchase_made": total_purchases_made,
         "total_sales_made": total_sales_made,
+        "total_payments_made": total_payments_made,
     }
 
     return render(request, "dashboard/dashboard-index.html", context)
@@ -131,3 +138,23 @@ def add_uom(request):
     if request.method == "POST":
         uom = request.POST.get("UOM")
         unit_of_measurements = UnitOfMeasurements.objects.get_or_create(name="uom")
+
+
+from django.http import JsonResponse
+from .sqlutils import process_natural_language_query
+
+
+from django.http import StreamingHttpResponse
+import time
+
+
+@login_required
+def chat(request):
+    if request.method == "GET":
+        return render(request=request, template_name="dashboard/query.html")
+    if request.method == "POST":
+        nl_query = request.POST.get("query", "")
+        result = process_natural_language_query(nl_query, request.tenant.id)
+        return JsonResponse(result)
+
+    return JsonResponse({"error": "Only GET and POST requests are allowed"}, status=405)
