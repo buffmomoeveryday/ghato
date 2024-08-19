@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponseNotFound, Http404  # Import explicitly
 from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponsePermanentRedirect
 from django.urls import reverse
 from django.utils.cache import patch_vary_headers
 from django.core.cache import cache
@@ -9,7 +10,7 @@ from icecream import ic
 
 
 from .models import TenantModel
-from .utils import get_subdomain
+from .utils import get_subdomain, get_host_name
 
 
 class TenantMiddleware:
@@ -37,7 +38,10 @@ class TenantMiddleware:
                     )  # Cache for 15 minutes
                 except (TenantModel.DoesNotExist, Http404):
                     if settings.DEBUG:
-                        response = HttpResponseNotFound("Tenant not found.")
+                        domain: str = request.get_host().split(".")[1]
+                        response = HttpResponsePermanentRedirect(
+                            f"http://{domain}/register"
+                        )
                     else:
                         response = HttpResponseNotFound()
                     patch_vary_headers(response, ["Cookie"])
