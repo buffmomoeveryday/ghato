@@ -13,13 +13,14 @@ from typing import Optional
 class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
 
     class FieldType(models.TextChoices):
-        CURRENT = "1", "Float"
-        SAVING = "2", "Integer"
+        FLOAT = "FLOAT", "Float"
+        INT = "INTEGER", "Integer"
 
     name = models.CharField(max_length=100)
+
     field = models.CharField(
         choices=FieldType.choices,
-        default=FieldType.CURRENT,
+        default=FieldType.FLOAT,
         max_length=255,
         null=True,
         blank=True,
