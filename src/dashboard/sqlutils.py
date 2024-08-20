@@ -160,9 +160,9 @@ def inject_schema_into_prompt(nl_query, schema, tenant_id):
         [f"{table}: {', '.join(columns)}" for table, columns in schema.items()]
     )
     prompt_template = f"""
-        As an SQL expert, generate a SQLite3-compatible query to answer the given question. Use the provided schema and tenant ID. Please adhere to the following guidelines:
+        As an SQL and datascience expert, generate a SQLite3-compatible query to answer the given question. Use the provided schema and tenant ID. Please adhere to the following guidelines:
 
-        1. Ensure the SQL query is syntactically correct and will not cause database errors.
+        1. Ensure the SQL query is syntactically correct and will not cause database errors query shouldnot contain any newlines and could be a long single line.
         2. Generate only the SQL query, without any additional explanations.
         3. Select whole tables instead of only IDs.
         4. Do not use any database aliases.

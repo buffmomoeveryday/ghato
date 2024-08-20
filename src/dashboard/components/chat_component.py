@@ -1,12 +1,15 @@
 # chat/components.py
 from django_unicorn.components import UnicornView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from icecream import ic
+from pprint import pprint as ic
 from django.contrib import messages
 from dashboard.sqlutils import process_natural_language_query
 
 
 class ChatComponentView(LoginRequiredMixin, UnicornView):
+
+    template_name = "chat_component.html"
+
     query = ""
     conversation = []
     my_message = []
