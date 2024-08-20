@@ -1,6 +1,7 @@
 {% load django_htmx %}
 {% load unicorn %}
 {# djlint:off H031,H030 #}
+{# djlint:off H006,H026 #}
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -13,25 +14,17 @@
             Ghato
         </title>
         {% unicorn_scripts %}
-        <script>
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
-        </script>
     </head>
-    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-        {% csrf_token %}
+    <body>
         {% block style %}
         {% endblock style %}
         {% with request.user.is_authenticated as auth %}
             {% if auth %}
                 {% if not request.user.is_superuser %}
                     {% include "partials/sidebar.html" %}
-                    {% endif %}
+                {% endif %}
             {% endif %}
-            <main class="{% if auth %} {%  if not request.user.is_superuser %} authenticated-main p-4 pt-20 sm:ml-64 {% endif %} {% endif %} flex flex-col h-screen" hx-boost="true">
+            <main class="{% if auth %} {% if not request.user.is_superuser %}authenticated-main p-4 pt-20 sm:ml-64{% endif %} {% endif %} flex flex-col h-screen">
                 {% include "partials/_messages.html" %}
                 {% block main %}
                 {% endblock main %}
