@@ -73,7 +73,10 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
+            os.path.join(BASE_DIR, "accounts/components"),
+            os.path.join(BASE_DIR, "analytics/components"),
             os.path.join(BASE_DIR, "core/templates"),
+            os.path.join(BASE_DIR, "dashboard/components"),
             os.path.join(BASE_DIR, "purchases/components"),
             os.path.join(BASE_DIR, "sales/components"),
         ],
