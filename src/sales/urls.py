@@ -3,6 +3,7 @@ from django.urls import path
 from .views import sales_add, sales_all, sales_detail, sales_invoice
 from .views import customer_all, customer_detail
 from .views import payments_received
+from sales.components.payment_received_component import PaymentReceivedComponentView
 
 sales = [
     path("sales/all/", sales_all, name="sales_list"),
@@ -20,6 +21,11 @@ customers = [
 
 payments = [
     path("payments/received/", payments_received, name="payments_received"),
+    path(
+        "payments/received/create/",
+        PaymentReceivedComponentView.as_view(),
+        name="payments_received_create",
+    ),
 ]
 
 

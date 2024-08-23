@@ -1,12 +1,9 @@
+{% load compress %}
 {% load static %}
+
+{% compress css %}
 <link href="{% static 'css/flowbite.min.css' %}" rel="stylesheet" />
-
-<style>
-    [data-loading] {
-         display: none;
-}
-</style>
-
+{% endcompress %}
 
 <style>
     [unicorn\:error\:invalid] {
@@ -33,5 +30,10 @@
         position: relative;
         padding: .25rem 2.5rem 1.25rem 1.5rem;
         margin-bottom: 2rem;
+    }
+</style>
+<style>
+    @view-transition {
+         navigation: auto;
     }
 </style>

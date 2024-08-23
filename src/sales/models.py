@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Sum
 
 from core.models import BaseModelMixin
 from purchases.models import Product
@@ -16,6 +16,23 @@ class Customer(TenantAwareModel, BaseModelMixin):
     @property
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def get_balance(self):
+        total = (
+            Sales.objects.filter(customer=self).aggregate(total=Sum("total_amount"))[
+                "total"
+            ]
+            or 0
+        )
+        payment_received = (
+            PaymentReceived.objects.filter(customer=self).aggregate(
+                total=Sum("amount")
+            )["total"]
+            or 0
+        )
+
+        return total - payment_received
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -97,7 +114,7 @@ class PaymentReceived(TenantAwareModel, BaseModelMixin):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=50)
     payment_date = models.DateTimeField(auto_now_add=True)
-    transaction_id = models.CharField(max_length=100, unique=True)
+    transaction_id = models.CharField(max_length=100)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
     def __str__(self):

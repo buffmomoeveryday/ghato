@@ -7,6 +7,8 @@ from icecream import ic
 
 
 class AccountCreateView(UnicornView):
+    template_name = "account_create.html"
+
     account_types = [
         ("bank", "Bank Account"),
         ("cash", "Cash Account"),

@@ -18,19 +18,21 @@
                     </svg>
                 </button>
                 <a href="{% url 'dashboard_index' %}" class="flex ms-2 md:me-24">
-                    <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">{{ request.tenant.name|capfirst }}</span>
+                    <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
+                        Ghato System
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400 border border-gray-500">{{ request.tenant.name|capfirst }}</span>
+                    </span>
                 </a>
             </div>
             <div class="flex items-center">
                 <div class="flex items-center ms-3">
                     <div>
                         <button type="button"
-                                class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                                class="flex text-sm rounded-full focus:ring-4"
                                 aria-expanded="false"
                                 data-dropdown-toggle="dropdown-user">
                             <span class="sr-only">Open user menu</span>
-                            {# djlint:off H006,H026 #}
-                            <span class="text-white"
+                            <span class="text-gray-600"
                                   src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
                                   alt="user photo">{{ request.user.first_name }}</span>
                         </button>
@@ -60,7 +62,7 @@
                             <p class="text-sm text-gray-900 dark:text-white" role="none">
                                 {{ request.user.first_name }} {{ request.user.last_name }}
                             </p>
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
+                            <p class="text-sm font-medium text-gray-900 truncate"
                                role="none">{{ request.user.email }}</p>
                         </div>
                         <ul class="py-1" role="none">

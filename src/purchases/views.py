@@ -110,6 +110,8 @@ def supplier_list(request):
 
 @login_required
 def supplier_detail(request, supplier_id):
+    advance_made_amount = None
+
     supplier = get_object_or_404(Supplier, id=supplier_id, tenant=request.tenant)
     supplier_invoice = PurchaseInvoice.objects.filter(
         supplier=supplier, tenant=request.tenant
@@ -122,7 +124,11 @@ def supplier_detail(request, supplier_id):
     payments_made_amount = payments_made.aggregate(Sum("amount"))["amount__sum"] or 0
     payment_remaining = payment_to_be_made - payments_made_amount
 
+    if payment_remaining < 0:
+        advance_made_amount = abs(payment_remaining)
+
     context = {
+        "advance_made_amount": advance_made_amount,
         "supplier": supplier,
         "supplier_invoice": supplier_invoice,
         "payment_to_be_made": payment_to_be_made,
@@ -151,26 +157,6 @@ def payments_made(request):
 
 @login_required
 def payments_made_create(request):
-
-    # if request.method == "POST":
-
-    #     amount = request.POST.get("amount")
-    #     payment_method = request.POST.get("payment_method")
-    #     payment_date = request.POST.get("payment_date")
-    #     transaction_id = request.POST.get("transaction_id")
-    #     supplier_id = request.POST.get("supplier_id")
-
-    #     bank = request.POST.get("bank_id")
-    #     cash = request.POST.get("cash_id")
-
-    #     with transaction.atomic():
-    #         payment_made = PaymentMade.objects.create(
-    #             amount=amount,
-    #             payment_method=payment_method,
-    #             payment_date=payment_date,
-    #             transaction_id=transaction_id,
-    #             supplier=supplier_id,
-    #         )
 
     context = {"suppliers": Supplier.objects.filter(tenant=request.tenant)}
 
@@ -370,3 +356,7 @@ def product_analytics(request, product_id):
         template_name="products/product_details.html",
         context=context,
     )
+
+
+@login_required
+def payment_received_list(self): ...

@@ -1,6 +1,8 @@
 from django.urls import path
+from .api import purchase_api
 
-# , payments_received
+from sales.components.payment_received_component import PaymentReceivedComponentView
+
 from .views import (
     inventory,
     payments_made,
@@ -15,6 +17,9 @@ from .views import (
     supplier_list,
 )
 
+api = []
+
+
 purchase = [
     path("purchase/all/", purchase_index, name="purchase_index"),
     path("purchase/add/", purchase_add, name="purchase_add"),
@@ -27,33 +32,17 @@ payments = [
 ]
 
 supplier = [
-    path(
-        "supplier/<int:supplier_id>/detail/",
-        supplier_detail,
-        name="supplier_detail",
-    ),
+    path("supplier/<int:supplier_id>/detail/", supplier_detail, name="supplier_detail"),
     path("supplier/all/", supplier_list, name="supplier_list"),
 ]
 
 stock = [
-    path(
-        "inventory/",
-        inventory,
-        name="inventory",
-    ),
-    path(
-        "inventory/movement/",
-        stock_movement,
-        name="stock_movement",
-    ),
+    path("inventory/", inventory, name="inventory"),
+    path("inventory/movement/", stock_movement, name="stock_movement"),
 ]
 
 setting = [
-    path(
-        "purchase/settings/",
-        settings,
-        name="purchase_settings",
-    ),
+    path("purchase/settings/", settings, name="purchase_settings"),
 ]
 
 product = [
@@ -74,3 +63,5 @@ urlpatterns += supplier
 urlpatterns += stock
 urlpatterns += setting
 urlpatterns += product
+
+urlpatterns += api

@@ -27,8 +27,10 @@ def get_subdomain(request):
 
 def get_tenant(request):
     subdomain = get_subdomain(request=request)
+
     if subdomain is None:
         return None
+
     try:
         return TenantModel.objects.filter(domain=subdomain).first()
     except Exception as e:
