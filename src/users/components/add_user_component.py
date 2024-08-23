@@ -61,8 +61,12 @@ class AddUserComponentView(UnicornView):
         messages.success(self.request, "User Created Successfully")
 
     def mount(self):
-        self.employees = CustomUser.objects.filter(tenant=self.request.tenant).exclude(
-            id=self.request.user.id
-        )
+        self.employees = CustomUser.objects.filter(
+            tenant=self.request.tenant,
+        ).exclude(id=self.request.user.id)
+        
+
+    def user_permissions(self):
+        pass
 
     class Meta: ...

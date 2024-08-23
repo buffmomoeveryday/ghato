@@ -37,12 +37,14 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     purchase_invoice_number = ""
     received_date: date = ""
     order_date: date = ""
-    total_invoice_amount: float = 0.00
+    total_invoice_amount: float = None
 
     product = ""
     uom = ""
-    quantity = 0
+    quantity: int | float = 0
     price = 0.00
+
+    field_int = False
 
     new_product_name = ""
     new_product_uom = ""
@@ -284,6 +286,42 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             for item in self.product_to_be_purchased
         )
 
+    def uom_field_change(self):
+        # try:
+        product = Product.objects.get(tenant=self.request.tenant, id=self.product)
+        product_uom = product.uom.field
+
+        if product_uom == "INTEGER":
+            if isinstance(self.quantity, float):
+                print("integer vayera float haldchas radi")
+                return  # raise ValidationError("Quantity must be an integer for this UOM.")
+
+            self.field_int = True
+
+            if self.quantity is not None:
+                self.quantity = int(float(self.quantity))
+
+            return
+
+        if product_uom == "FLOAT":
+            if isinstance(self.quantity, int):
+                self.quantity = float(self.quantity)  # Convert to float if necessary
+            elif not isinstance(self.quantity, float):
+                raise ValidationError("Quantity must be a float for this UOM.")
+            self.field_int = False
+
+            return
+
+    # except Product.DoesNotExist:
+    #     messages.error(self.request, "Selected product does not exist.")
+    # except ValidationError as e:
+    #     ic("vad", e)
+    #     messages.error(self.request, str(e))
+    # except Exception as e:
+    #     ic("exe", e)
+
+    #     messages.error(self.request, f"An error occurred: {e}")
+
     def mount(self):
 
         self.suppliers = Supplier.objects.filter(tenant=self.request.tenant).order_by(
@@ -308,3 +346,8 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
     def complete(self):
         self.calculate_total()
+
+    def updated(self, name, value):
+        print("---------")
+        ic("updated", name, value)
+        print("---------")

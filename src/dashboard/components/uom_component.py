@@ -9,13 +9,15 @@ from purchases.models import UnitOfMeasurements
 
 
 class UomComponentView(UnicornView):
-    template_name = "unicorn/uom_component.html"
+    template_name = "uom_component.html"
 
     uoms: List = []
     new_uom: str = ""
+    new_uom_field: int = None
 
     editing_uom: str = ""
     editing_uom_id: int = None
+    editing_uom_field: int = None
     editing = False
 
     def add_new_uom(self):
@@ -54,6 +56,7 @@ class UomComponentView(UnicornView):
         )
 
         self.editing_uom = editing_uom.name
+        self.editing_uom_field = editing_uom.field
 
     @transaction.atomic()
     def update_uom(self):
@@ -73,11 +76,14 @@ class UomComponentView(UnicornView):
             ic("UOM updated")
 
             self.uoms = UnitOfMeasurements.objects.filter(tenant=self.request.tenant)
+
             messages.success(self.request, "Successfully updated")
+
             self.editing = False
             self.editing_uom = ""
             self.editing_uom_id = None
             self.call("refresh_component")
+
         except UnitOfMeasurements.DoesNotExist:
             messages.error(self.request, "UOM not found")
             ic("UOM not found")

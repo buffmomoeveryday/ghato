@@ -16,6 +16,8 @@ THIRD_PARTY = [
     "rest_framework",
     "widget_tweaks",
     "active_link",
+    "compressor",
+    "django_extensions",
 ]
 
 
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "tenant.middlewares.APIKeyMiddleware",
     "tenant.middlewares.TenantMiddleware",
 ]
 
@@ -216,7 +219,12 @@ CACHES = {
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "core/staticfiles")
-
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # other finders..
+    "compressor.finders.CompressorFinder",
+)
 
 HUGGING_FACE_TOKEN = config("HUGGING_FACE_TOKEN")
 

@@ -24,12 +24,25 @@
     <label for="Editing" class="editingHidden">Editing</label>
     <input type="text" class="border border-gray-300 rounded p-2 mt-4 w-full" u:model="editing_uom" u:key="editing_uom"
         placeholder="Edit" />
-    <button u:click="update_uom" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2">Save</button>
+    
+    <select u:model="new_uom_field"" name=" new_uom_field" id="new_uom_field">
+        <option value="1">Float</option>
+        <option value="2">Integer</option>
+    </select>
+
+        <button u:click="update_uom" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2">Save</button>
     <button u:click="$toggle('editing')" u:confirm.prompt="Are you sure you want to cancel?"
         class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700 mt-2">Cancel (x)</button>
     {% else %}
     <input u:model="new_uom" u:key='new_uom' type="text" class="border border-gray-300 rounded p-2 mt-4 w-full"
         placeholder="Enter new UOM" />
+
+    <select u:model="new_uom_field"" name="new_uom_field" id="new_uom_field">
+        <option value="" disabled selected>Select a UOM field</option>
+        <option value="1">Float</option>
+        <option value="2">Integer</option>
+    </select>
+
     <button u:click="add_new_uom" u:key="add_new_uom_key" u:dirty.attr="disabled"
         class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mt-2">Add +</button>
     {% endif %}
@@ -52,7 +65,7 @@
                                 <path stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
                             </svg>
                         </button>
-                        <button u:click="edit({{ uom.id }})"
+                        <button u:click="edit({{ uom.id}})"
                                 class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">
                             <svg class="w-6 h-6 text-gray-800 dark:text-white"
                                  aria-hidden="true"

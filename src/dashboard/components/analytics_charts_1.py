@@ -17,6 +17,9 @@ def decimal_default(obj):
 
 
 class AnalyticsCharts1View(UnicornView):
+
+    template_name = "analytics_charts_1.html"
+
     purchase_amounts = []
     top_product_names = []
     top_product_quantites = []

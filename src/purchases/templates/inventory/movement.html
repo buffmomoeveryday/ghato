@@ -42,7 +42,12 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 {% for item in sales %}
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.product }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <a href="{% url 'product_analytics' item.product.id %}" class="underline hover:text-blue-400">
+                        
+                        {{ item.product }}
+                    </a>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.sales.customer.get_full_name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.quantity }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.price }}</td>

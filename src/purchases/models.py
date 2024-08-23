@@ -1,13 +1,20 @@
 from typing import Iterable
+from datetime import timedelta
+from datetime import datetime
+from typing import Optional
+
 from django.db import models
 from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 from core.models import BaseModelMixin
 from tenant.models import TenantAwareModel
 
-from datetime import timedelta
-from datetime import datetime
-from typing import Optional
+
+from icecream import ic
 
 
 class UnitOfMeasurements(TenantAwareModel, BaseModelMixin):
@@ -41,17 +48,29 @@ class Product(TenantAwareModel, BaseModelMixin):
         return self.name
 
 
+#####################
+### STOCK MOVEMENT###
+####################
+
+
 class StockMovement(TenantAwareModel, BaseModelMixin):
     MOVEMENT_TYPE_CHOICES = [
         ("IN", "Stock In"),
         ("OUT", "Stock Out"),
+        ("IN SALES RETURN", "Stock In Sales Return"),
+        ("OUT PURCHASE RETURN", "Stock Out Purchase Return"),
     ]
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    movement_type = models.CharField(max_length=3, choices=MOVEMENT_TYPE_CHOICES)
+    movement_type = models.CharField(max_length=20, choices=MOVEMENT_TYPE_CHOICES)
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
+
+    # Generic foreign key fields
+    # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    # object_id = models.PositiveIntegerField(null=True)
+    # source_object = GenericForeignKey("content_type", "object_id")
 
     def __str__(self):
         return f"{self.product.name} - {self.movement_type} ({self.quantity})"
@@ -105,7 +124,7 @@ class PurchaseInvoice(TenantAwareModel, BaseModelMixin):
         verbose_name="Purchase Invoice Number",
         null=True,
         blank=True,
-        max_length=10,
+        max_length=100,
     )
     purchase_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -129,6 +148,60 @@ class PurchaseItem(TenantAwareModel, BaseModelMixin):
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity}"
+
+    @property
+    def total(self):
+        return self.price * self.quantity
+
+
+#################################
+##prchase return helpers#########
+#################################
+
+
+class PurchaseReturn(TenantAwareModel, BaseModelMixin):
+    purchase_invoice = models.ForeignKey(PurchaseInvoice, on_delete=models.CASCADE)
+    return_date = models.DateTimeField(auto_now_add=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"Purchase Return #{self.id} for Invoice #{self.purchase_invoice.id}"
+
+
+@receiver(post_save, sender=PurchaseReturn)
+def handle_purchase_return_stock_movement(sender, instance, created, **kwargs):
+    ic(sender, instance)
+    if created:
+        for item in instance.items.all():
+            StockMovement.objects.create(
+                product=item.product,
+                movement_type="OUT PURCHASE RETURN",
+                quantity=item.quantity,
+                description=f"Purchase Return #{instance.id}",
+            )
+            item.product.stock_quantity -= item.quantity
+            item.product.save()
+
+
+@receiver(post_save, sender=PurchaseReturn)
+def update_purchase_invoice_after_return(sender, instance, created, **kwargs):
+    ic(sender, instance)
+    if created:
+        invoice = instance.purchase_invoice
+        invoice.total_amount -= instance.total_amount
+        invoice.save()
+
+
+class PurchaseReturnItem(TenantAwareModel, BaseModelMixin):
+    purchase_return = models.ForeignKey(
+        PurchaseReturn, related_name="items", on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):

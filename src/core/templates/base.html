@@ -1,20 +1,23 @@
 {% load django_htmx %}
 {% load unicorn %}
+
 {# djlint:off H031,H030 #}
 {# djlint:off H006,H026 #}
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        {% include "cdn_css.html" %}
-        <title>
-            {% block title %}
-                {{ request.tenant |capfirst }}
-            {% endblock title %}
-            Ghato
-        </title>
-        {% unicorn_scripts %}
-    </head>
+    {% block head %}
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            {% include "cdn_css.html" %}
+            <title>
+                {% block title %}
+                    {{ request.tenant |capfirst }}
+                {% endblock title %}
+                Ghato
+            </title>
+            {% unicorn_scripts %}
+        </head>
+    {% endblock head %}
     <body>
         {% block style %}
         {% endblock style %}
