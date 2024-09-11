@@ -4,6 +4,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Application definition
+# ALLOWED_HOSTS = [
+#     "ghato",
+#     "www.yourdomain.com",
+#     "127.0.0.1",
+#     "*.localhost",
+# ]
 
 THIRD_PARTY = [
     "django_unicorn",
@@ -18,7 +24,15 @@ THIRD_PARTY = [
     "active_link",
     "compressor",
     "django_extensions",
+    "django_tasks",
+    "django_tasks.backends.database",
 ]
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks.backends.database.DatabaseBackend",
+        "ENQUEUE_ON_COMMIT": False,
+    }
+}
 
 
 USER = [
@@ -30,6 +44,7 @@ USER = [
 ]
 
 INSTALLED_APPS = [
+    "daphne",
     "tenant",
     "users",
     "django.contrib.admin",
@@ -110,7 +125,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "core.wsgi.application"
-
+ASGI_APPLICATION = "core.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
