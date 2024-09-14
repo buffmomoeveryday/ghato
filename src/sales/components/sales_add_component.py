@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 
 from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
-from purchases.models import PurchaseInvoice, PurchaseItem
+from purchases.models import PurchaseInvoice, PurchaseItem, StockMovement
 
 
 class SalesAddComponentView(UnicornView):
@@ -59,8 +59,7 @@ class SalesAddComponentView(UnicornView):
         try:
             if not self.customer:
                 return messages.error(
-                    request=self.request,
-                    message="Please Select Customer First",
+                    request=self.request, message="Please Select Customer First"
                 )
             customer = Customer.objects.get(id=self.customer)
             sales = Sales.objects.create(
@@ -70,9 +69,7 @@ class SalesAddComponentView(UnicornView):
             )
 
             for item in self.selected_products:
-
                 product = Product.objects.get(id=item["product_id"])
-
                 salesitem = SalesItem.objects.create(
                     sales=sales,
                     product_id=item["product_id"],
@@ -82,14 +79,16 @@ class SalesAddComponentView(UnicornView):
                     vat=item["vat"],
                     stock_snapshot=product.stock_quantity,
                 )
-
-                ic("Before Remove", product.stock_quantity)
-
                 salesitem.save()
                 product.stock_quantity -= item["quantity"]
-                ic("After Remove", product.stock_quantity)
-
                 product.save()
+                StockMovement.objects.create(
+                    product=product,
+                    quantity=item["quantity"],
+                    movement_type="OUT",
+                    description=f"Sold to {customer.get_full_name}",
+                    tenant=self.request.tenant,
+                )
 
             SalesInvoice.objects.create(
                 sales=sales,

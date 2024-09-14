@@ -84,13 +84,11 @@ class TenantMiddleware:
         cache_key = self.get_cache_key(request)
         tenant = cache.get(cache_key)
 
-        ic(cache_key)
-        ic(tenant)
-
         if tenant:
             # Assign the tenant to the request if found in the cache
             request.tenant = tenant
         else:
+
             request.tenant = None
             subdomain = get_subdomain(request)
 

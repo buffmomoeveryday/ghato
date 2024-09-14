@@ -104,3 +104,9 @@ class PaymentMadeOutSchema(ModelSchema):
     class Meta:
         model = PaymentMade
         exclude = ["tenant"]
+
+
+class PaymentReceivedSchema(ModelSchema):
+    class Meta:
+        model = PaymentReceived
+        exclude = ['tenant']

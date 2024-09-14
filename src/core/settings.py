@@ -4,29 +4,32 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Application definition
-# ALLOWED_HOSTS = [
-#     "ghato",
-#     "www.yourdomain.com",
-#     "127.0.0.1",
-#     "*.localhost",
-# ]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    ".buffmomo.xyz",
+    "buffmomo.xyz",
+    "localhost",
+    ".localhost",
+    "siddharthakhanal.top",
+]
 
 THIRD_PARTY = [
+    "django_cotton",
     "django_unicorn",
-    "django_htmx",
     "template_partials",
     "django_celery_results",
     "debug_toolbar",
     "django_filters",
     "django_pandas",
-    "rest_framework",
     "widget_tweaks",
     "active_link",
     "compressor",
     "django_extensions",
     "django_tasks",
     "django_tasks.backends.database",
+    "qr_code",
 ]
+
 TASKS = {
     "default": {
         "BACKEND": "django_tasks.backends.database.DatabaseBackend",
@@ -52,9 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    # "django.contrib.staticfiles",
-    "django_components",
-    "django_components.safer_staticfiles",
+    "django.contrib.staticfiles",
 ]
 
 INSTALLED_APPS += THIRD_PARTY
@@ -62,17 +63,20 @@ INSTALLED_APPS += USER
 
 
 MIDDLEWARE = [
-    "django_htmx.middleware.HtmxMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # WHITENOISE
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # tenant middlewares
     "tenant.middlewares.APIKeyMiddleware",
     "tenant.middlewares.TenantMiddleware",
+    # debug toolbar
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -87,10 +91,12 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
+            os.path.join(BASE_DIR, "core/templates"),
             os.path.join(BASE_DIR, "accounts/components"),
             os.path.join(BASE_DIR, "analytics/components"),
             os.path.join(BASE_DIR, "core/templates"),
@@ -98,7 +104,7 @@ TEMPLATES = [
             os.path.join(BASE_DIR, "purchases/components"),
             os.path.join(BASE_DIR, "sales/components"),
         ],
-        # "APP_DIRS": True,
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -106,23 +112,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            "builtins": [
-                # "slippers.templatetags.slippers",
-                "django_components.templatetags.component_tags",
-            ],
-            "loaders": [
-                (
-                    "django.template.loaders.cached.Loader",
-                    [
-                        "django.template.loaders.filesystem.Loader",
-                        "django.template.loaders.app_directories.Loader",
-                        "django_components.template_loader.Loader",
-                    ],
-                )
-            ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "core.wsgi.application"
 ASGI_APPLICATION = "core.asgi.application"
@@ -168,6 +161,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TENANT_LOGIN_REDIRECT = "/"
 BASE_URL = "buffmomo.xyz"
 AUTH_USER_MODEL = "users.CustomUser"
+
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 
@@ -184,14 +178,9 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    },
-    "pg": {
-        "ENGINE": "django.db.backends.postgresql",  # Specify the PostgreSQL backend
-        "NAME": config("POSTGRES_NAME"),  # Name of your PostgreSQL database
-        "USER": config("POSTGRES_USER"),  # Your PostgreSQL username
-        "PASSWORD": config("POSTGRES_PASSWORD"),  # Your PostgreSQL password
-        "HOST": config("DB_HOST"),  # Database host, e.g., 'localhost' or an IP address
-        "PORT": config("DB_PORT"),
+        "OPTIONS": {
+            "transaction_mode": "EXCLUSIVE",
+        },
     },
 }
 
@@ -215,7 +204,7 @@ CELERY_BROKER_REDIS_URL = REDIS_URL
 # settings.py
 UNICORN = {
     "CACHE_ALIAS": "default",
-    "MINIFY_HTML": True,
+    "MINIFY_HTML": False,
     "MINIFIED": True,
     "SERIAL": {
         "ENABLED": True,
@@ -245,7 +234,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "core/staticfiles")
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # other finders..
     "compressor.finders.CompressorFinder",
 )
 
@@ -272,3 +260,12 @@ DB_SCHEMA = {
     CREATE TABLE IF NOT EXISTS "purchases_product" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "created_at" datetime NOT NULL, "updated_at" date NOT NULL, "name" varchar(100) NOT NULL, "sku" varchar(50) NOT NULL UNIQUE, "tenant_id" bigint NULL REFERENCES "tenant_tenantmodel" ("id") DEFERRABLE INITIALLY DEFERRED, "uom_id" bigint NULL REFERENCES "purchases_unitofmeasurements" ("id") DEFERRABLE INITIALLY DEFERRED, "opening_stock" integer NULL, "stock_quantity" real NULL, "created_by_id" bigint NULL REFERENCES "users_customuser" ("id") DEFERRABLE INITIALLY DEFERRED);
 """
 }
+
+
+# GRAPH_MODELS = {
+#     "all_applications": True,
+#     "group_models": True,
+# }
+# GRAPH_MODELS = {
+#     "app_labels": ["myapp1", "myapp2", "auth"],
+# }

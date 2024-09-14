@@ -18,9 +18,7 @@ class AddUserComponentView(UnicornView):
 
     @transaction.atomic()
     def create_user(self):
-
         ic(self.email, self.first_name, self.last_name, self.password)
-
         if (
             not self.email
             or not self.first_name
@@ -43,7 +41,6 @@ class AddUserComponentView(UnicornView):
                 last_name=self.last_name,
                 is_company_admin=False,
             )
-            ic(user)
             user.save()
             self.employees = CustomUser.objects.filter(
                 tenant=self.request.tenant
@@ -64,9 +61,5 @@ class AddUserComponentView(UnicornView):
         self.employees = CustomUser.objects.filter(
             tenant=self.request.tenant,
         ).exclude(id=self.request.user.id)
-        
-
-    def user_permissions(self):
-        pass
 
     class Meta: ...

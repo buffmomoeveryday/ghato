@@ -1,41 +1,50 @@
-{% load django_htmx %}
 {% load unicorn %}
 
 {# djlint:off H031,H030 #}
 {# djlint:off H006,H026 #}
 <html lang="en">
-    {% block head %}
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            {% include "cdn_css.html" %}
-            <title>
-                {% block title %}
-                    {{ request.tenant |capfirst }}
-                {% endblock title %}
-                Ghato
-            </title>
-            {% unicorn_scripts %}
-        </head>
-    {% endblock head %}
-    <body>
-        {% block style %}
-        {% endblock style %}
-        {% with request.user.is_authenticated as auth %}
-            {% if auth %}
-                {% if not request.user.is_superuser %}
-                    {% include "partials/sidebar.html" %}
-                {% endif %}
-            {% endif %}
-            <main class="{% if auth %} {% if not request.user.is_superuser %}authenticated-main p-4 pt-20 sm:ml-64{% endif %} {% endif %} flex flex-col h-screen">
-                {% include "partials/_messages.html" %}
-                {% block main %}
-                {% endblock main %}
-            </main>
-        {% endwith %}
-        {% block js %}
-        {% endblock js %}
-        {% include "cdn_script.html" %}
-        {% django_htmx_script %}
-    </body>
+{% block head %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include "cdn_css.html" %}
+    <title>
+        {% block title %}
+        {{ request.tenant |capfirst }}
+        {% endblock title %}
+        Ghato
+    </title>
+    {% unicorn_scripts %}
+</head>
+{% endblock head %}
+
+<body>
+    {% block style %}
+    {% endblock style %}
+    {% with request.user.is_authenticated as auth %}
+    {% if auth %}
+    {% if not request.user.is_superuser %}
+    {% include "partials/sidebar.html" %}
+    {% endif %}
+    {% endif %}
+    <main
+        class="{% if auth %} {% if not request.user.is_superuser %}authenticated-main p-4 pt-20 sm:ml-64{% endif %} {% endif %} flex flex-col h-screen">
+        {% include "partials/_messages.html" %}
+        {% block main %}
+        {% endblock main %}
+    </main>
+    {% endwith %}
+    {% block js %}
+    {% endblock js %}
+    {% include "cdn_script.html" %}
+
+</body>
+
+
+<script>
+
+</script>
+
+
 </html>

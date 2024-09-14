@@ -4,6 +4,7 @@ from django.db.models import F, Sum
 from core.models import BaseModelMixin
 from purchases.models import Product
 from tenant.models import TenantAwareModel
+from .managers import ReturnManagers as SalesReturnManagers
 
 
 class Customer(TenantAwareModel, BaseModelMixin):
@@ -41,13 +42,17 @@ class Customer(TenantAwareModel, BaseModelMixin):
 class Sales(TenantAwareModel, BaseModelMixin):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    returned = models.BooleanField(
+        default=False,
+    )
+    objects = SalesReturnManagers()
 
     def __str__(self):
         return f"Order #{self.id}"
 
 
 class SalesInvoice(TenantAwareModel, BaseModelMixin):
-    sales = models.OneToOneField(Sales, on_delete=models.CASCADE)
+    sales = models.OneToOneField(Sales, on_delete=models.CASCADE, related_name="sales")
     billing_address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_status = models.CharField(
@@ -63,15 +68,19 @@ class SalesInvoice(TenantAwareModel, BaseModelMixin):
     def __str__(self):
         return f"Invoice #{self.id} - {self.payment_status}"
 
-    def get_vat(self):
-        total = sum(item.vat_amount for item in self.sales.items.all())
-        return total
+    def get_vat(self) -> int:
+        total = sum(
+            item.vat_amount for item in self.sales.items.all().select_related("sales")
+        )
+        return int(total)
 
     def get_total(self):
-        return self.total_amount
+        return int(self.total_amount)
 
     def get_total_with_vat(self):
         return sum(item.total_with_vat for item in self.sales.items.all())
+
+    def process_return(self): ...
 
 
 class SalesItem(TenantAwareModel, BaseModelMixin):
@@ -102,8 +111,9 @@ class SalesItem(TenantAwareModel, BaseModelMixin):
         return self.price * self.quantity
 
     @property
-    def total_with_vat(self):
-        return self.total + self.vat_amount
+    def total_with_vat(self) -> int:
+        total = self.total + self.vat_amount
+        return int(total)
 
     @property
     def stock_before_sales(self):
@@ -119,3 +129,11 @@ class PaymentReceived(TenantAwareModel, BaseModelMixin):
 
     def __str__(self):
         return f"Payment #{self.id}"
+
+
+class SalesReturn(TenantAwareModel, BaseModelMixin):
+    pass
+
+
+class SalesReturnedItems(TenantAwareModel, BaseModelMixin):
+    pass

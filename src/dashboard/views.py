@@ -1,25 +1,37 @@
+from icecream import ic
+
+
+import asyncio
+from typing import AsyncGenerator
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.db.models import Sum, Count, Avg, ExpressionWrapper
 from django.db.models import DecimalField
-
+from django.views.decorators.http import require_GET
 from datetime import datetime, timedelta
 
 from purchases.models import *
 from sales.models import *
+from .models import Message
 
-from icecream import ic
-
-
+34000.0
 from django.shortcuts import render
 from django.db.models import Sum, Count, Avg
 from django.contrib.auth.decorators import login_required
+
 from datetime import datetime, timedelta
 import json
+from icecream import ic
+from django.http import JsonResponse
+from django.http import HttpResponse
+from .sqlutils import process_natural_language_query
+from .tasks import calculate_meaning_of_life
 
 
 @login_required()
 def dashboard_index(request):
+    result = calculate_meaning_of_life.enqueue()
     start_date = datetime.now() - timedelta(days=30)
 
     total_sales = Sales.objects.filter(
@@ -133,23 +145,8 @@ def dashboard_index(request):
     return render(request, "dashboard/dashboard-index.html", context)
 
 
-@login_required()
-def add_uom(request):
-    if request.method == "POST":
-        uom = request.POST.get("UOM")
-        unit_of_measurements = UnitOfMeasurements.objects.get_or_create(name="uom")
-
-
-from django.http import JsonResponse
-from .sqlutils import process_natural_language_query
-
-
-from django.http import StreamingHttpResponse
-import time
-
-
 @login_required
-def chat(request):
+def assistant(request):
     if request.method == "GET":
         return render(request=request, template_name="dashboard/query.html")
     if request.method == "POST":
@@ -158,3 +155,22 @@ def chat(request):
         return JsonResponse(result)
 
     return JsonResponse({"error": "Only GET and POST requests are allowed"}, status=405)
+
+
+@login_required
+@require_GET
+def chat(request) -> HttpResponse:
+    messages = (
+        Message.objects.filter(
+            room_name=request.tenant.domain,
+        )
+        .select_related("user")
+        .order_by("timestamp")
+    )
+
+    context = {"messages": messages}
+    return render(
+        request=request,
+        template_name="dashboard/chat.html",
+        context=context,
+    )

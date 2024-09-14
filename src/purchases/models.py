@@ -1,18 +1,14 @@
-from typing import Iterable
 from datetime import timedelta
-from datetime import datetime
 from typing import Optional
 
 from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 
 from core.models import BaseModelMixin
 from tenant.models import TenantAwareModel
-
+from .managers import ReturnManagers
 
 from icecream import ic
 
@@ -50,7 +46,7 @@ class Product(TenantAwareModel, BaseModelMixin):
 
 #####################
 ### STOCK MOVEMENT###
-####################
+###################``#
 
 
 class StockMovement(TenantAwareModel, BaseModelMixin):
@@ -64,8 +60,8 @@ class StockMovement(TenantAwareModel, BaseModelMixin):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     movement_type = models.CharField(max_length=20, choices=MOVEMENT_TYPE_CHOICES)
     quantity = models.IntegerField()
-    date = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True)
 
     # Generic foreign key fields
     # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
@@ -130,6 +126,11 @@ class PurchaseInvoice(TenantAwareModel, BaseModelMixin):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     received_date = models.DateTimeField(blank=True, null=True)
     order_date = models.DateTimeField(blank=True, null=True)
+
+    returned = models.BooleanField(default=False, verbose_name="Returned Items")
+   
+    objects = ReturnManagers()
+    all = models.Manager()
 
     def __str__(self):
         return f"Purchase #{self.id} - {self.supplier.name}"

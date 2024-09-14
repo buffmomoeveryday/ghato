@@ -17,6 +17,7 @@ from purchases.models import (
     PurchaseItem,
     Supplier,
     UnitOfMeasurements,
+    StockMovement,
 )
 
 
@@ -104,6 +105,13 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 product.stock_quantity = item["quantity"]
                 product.opening_stock = item["quantity"]
                 product.save()
+
+                StockMovement.objects.create(
+                    product=product,
+                    movement_type="IN",
+                    quantity=item["quantity"],
+                    description=f"Product purchased from {self.supplier}",
+                )
 
             self.request.session["added_products"] = []
             messages.success(

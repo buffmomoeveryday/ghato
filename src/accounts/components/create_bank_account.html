@@ -64,9 +64,9 @@
     </style>
     <!-- Modal Toggle Button -->
     <button id="{{ modal_id }}-open-dialog"
-            class="block text-black hover:text-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
-            height="24" fill="currentColor" viewBox="0 0 24 24">
+        class="block text-black hover:text-gray-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+            width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
             <path fill-rule="evenodd"
                 d="M11.32 6.176H5c-1.105 0-2 .949-2 2.118v10.588C3 20.052 3.895 21 5 21h11c1.105 0 2-.948 2-2.118v-7.75l-3.914 4.144A2.46 2.46 0 0 1 12.81 16l-2.681.568c-1.75.37-3.292-1.263-2.942-3.115l.536-2.839c.097-.512.335-.983.684-1.352l2.914-3.086Z"
                 clip-rule="evenodd" />
@@ -89,28 +89,21 @@
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
                         <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Name</label>
-                        <input type="text"
-                               u:model="name"
-                               id="name"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                               placeholder="Type product name"
-                               required>
+                        <input type="text" u:model.defer="name" id="name"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                            placeholder="Type product name" required>
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                         <label for="balance" class="block mb-2 text-sm font-medium text-gray-900">Balance</label>
-                        <input type="number"
-                               u:model="balance"
-                               id="balance"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                               placeholder=""
-                               required>
+                        <input type="number" u:model.defer="balance" id="balance"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                            placeholder="" required>
                     </div>
                     <div class="col-span-2 sm:col-span-1">
-                        <label for="account_type"
-                               class="block mb-2 text-sm font-medium text-gray-900">Account Type</label>
-                        <select id="account_type"
-                                u:model="account_type"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
+                        <label for="account_type" class="block mb-2 text-sm font-medium text-gray-900">Account
+                            Type</label>
+                        <select id="account_type" u:model.defer="account_type"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5">
                             <option selected disabled>Select account type</option>
                             <option value="1">Current</option>
                             <option value="2">Saving</option>
@@ -142,14 +135,14 @@
             });
 
             // Optionally, close the dialog when clicking outside of it
-            dialog.addEventListener('click',noscroll)
-            updateButton.addEventListener('click',()=>{
-                dialog.close();
-                document.body.classList.remove('no-scroll');
-            }) 
-            
-            
-            function noscroll (event) {
+            //            dialog.addEventListener('click', noscroll)
+            //          updateButton.addEventListener('click', () => {
+            //            dialog.close();
+            //          document.body.classList.remove('no-scroll');
+            //    })
+
+
+            function noscroll(event) {
                 const rect = dialog.getBoundingClientRect();
                 if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
                     dialog.close();

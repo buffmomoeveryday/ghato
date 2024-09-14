@@ -1,50 +1,119 @@
 from django.contrib import admin
 
-from .models import Customer, PaymentReceived, Sales, SalesInvoice, SalesItem
-
-# Register your models here.
+from .models import Customer, Sales, SalesInvoice, SalesItem, PaymentReceived
 
 
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "first_name",
+        "last_name",
+        "email",
+        "phone_number",
+        "address",
+    )
+    list_filter = ("tenant", "created_at", "updated_at", "created_by")
+    date_hierarchy = "created_at"
+
+
+@admin.register(Sales)
+class SalesAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "customer",
+        "total_amount",
+        "returned",
+    )
+    list_filter = (
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "customer",
+        "returned",
+    )
+    date_hierarchy = "created_at"
+
+
+@admin.register(SalesInvoice)
+class SalesInvoiceAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "sales",
+        "billing_address",
+        "total_amount",
+        "payment_status",
+    )
+    list_filter = (
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "sales",
+    )
+    date_hierarchy = "created_at"
+
+
+@admin.register(SalesItem)
 class SalesItemAdmin(admin.ModelAdmin):
-    list_display = [
+    list_display = (
+        "id",
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
         "sales",
         "product",
         "quantity",
         "price",
-        "total",
+        "stock_snapshot",
         "vat",
         "vat_amount",
-    ]
-
-    @admin.display(empty_value="???")
-    def total(self, obj):
-        return obj.quantity * obj.price
-
-
-class CustomerAdmin(admin.ModelAdmin):
-    list_display = ["first_name", "last_name", "email", "phone_number", "address"]
-
-
-class SalesAdmin(admin.ModelAdmin):
-    list_display = ["customer", "total_amount"]
+    )
+    list_filter = (
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "sales",
+        "product",
+    )
+    date_hierarchy = "created_at"
 
 
-class SalesInvoiceAdmin(admin.ModelAdmin):
-    list_display = ["sales", "billing_address", "total_amount", "payment_status"]
-
-
+@admin.register(PaymentReceived)
 class PaymentReceivedAdmin(admin.ModelAdmin):
-    list_display = [
+    list_display = (
+        "id",
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
         "amount",
         "payment_method",
         "payment_date",
         "transaction_id",
         "customer",
-    ]
-
-
-admin.site.register(Customer, CustomerAdmin)
-admin.site.register(SalesItem, SalesItemAdmin)
-admin.site.register(Sales, SalesAdmin)
-admin.site.register(SalesInvoice, SalesInvoiceAdmin)
-admin.site.register(PaymentReceived, PaymentReceivedAdmin)
+    )
+    list_filter = (
+        "tenant",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "payment_date",
+        "customer",
+    )
+    date_hierarchy = "created_at"

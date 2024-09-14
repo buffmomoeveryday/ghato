@@ -9,6 +9,8 @@ from icecream import ic
 from tenant.models import TenantModel
 from users.models import CustomUser
 
+from fbv.decorators import render_html
+
 
 def login_user(request):
     if request.method == "GET":

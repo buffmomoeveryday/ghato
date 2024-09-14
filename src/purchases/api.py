@@ -4,9 +4,10 @@ from ninja import NinjaAPI
 from ninja.security import APIKeyHeader
 from ninja.pagination import paginate, LimitOffsetPagination
 from ninja import Query
+from ninja.decorators import decorate_view
+
 from icecream import ic
 from django.views.decorators.cache import cache_page
-from ninja.decorators import decorate_view
 
 from tenant.models import TenantModel
 from tenant.utils import get_subdomain
@@ -23,16 +24,16 @@ from .schemas import (
     SupplierOutSchema,
     PurchaseInvoiceDetailOutSchema,
     PaymentMadeOutSchema,
+    PaymentReceivedSchema,
 )
 
 from django.shortcuts import get_object_or_404, get_list_or_404
 
-purchase_api = NinjaAPI(auth=ApiKey())
-supplier_api = NinjaAPI(auth=ApiKey())
+purchase_api = NinjaAPI(auth=ApiKey(), urls_namespace="purchase api")
+supplier_api = NinjaAPI(auth=ApiKey(), urls_namespace="supplier api")
 accounts = NinjaAPI(auth=ApiKey())
 
 
-# purchases
 @purchase_api.get("/all/", response={200: List[PurchaseInvoiceOutSchema]})
 @decorate_view(cache_page(40 * 10))
 @paginate(LimitOffsetPagination)
@@ -106,6 +107,7 @@ def bank(request, bank_id):
 
 
 @accounts.get("payment-made/", response={200: List[PaymentMadeOutSchema]})
+@paginate(LimitOffsetPagination)
 def payments_made(request):
     payments = PaymentMade.objects.filter(
         tenant=request.auth,
@@ -114,3 +116,12 @@ def payments_made(request):
         "amount",
     )
     return payments
+
+
+@accounts.get("payment-received/", response={200: List[PaymentReceivedSchema]})
+@paginate(LimitOffsetPagination)
+def payments_received(request):
+    payments_received = PaymentReceived.objects.filter(
+        tenant=request.auth,
+    ).order_by("-updated_at")
+    return payments_received

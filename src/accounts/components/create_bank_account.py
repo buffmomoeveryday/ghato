@@ -2,8 +2,6 @@ from django_unicorn.components import UnicornView
 from accounts.models import BankAccount
 from django.contrib import messages
 
-from icecream import ic
-
 
 class CreateBankAccountView(UnicornView):
     template_name = "create_bank_account.html"
@@ -34,14 +32,9 @@ class CreateBankAccountView(UnicornView):
             .exclude(id=self.bank_id)
             .exists()
         ):
-            return messages.error(self.request, "Error")
+            return messages.error(self.request, "Bank Account Already Exists")
 
         else:
-
-            return messages.success(self.request, "Error")
-            ic("halo returns")
-
-    # self.call("initFlowbite")
-    # return super().updated(name, value)
+            messages.success(self.request, "Successfully Changed")
 
     def create_bank(self): ...

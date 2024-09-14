@@ -15,6 +15,8 @@ from .views import (
     product_analytics,
     stock_movement,
     supplier_list,
+    supplier_edit,
+    purchase_return,
 )
 
 api = []
@@ -24,6 +26,7 @@ purchase = [
     path("purchase/all/", purchase_index, name="purchase_index"),
     path("purchase/add/", purchase_add, name="purchase_add"),
     path("purchase/<int:id>/detail/", purchase_detail, name="purchase_detail"),
+    path("purchase/<int:purchase_id>/return/", purchase_return, name="purchase_return"),
 ]
 
 payments = [
@@ -34,6 +37,7 @@ payments = [
 supplier = [
     path("supplier/<int:supplier_id>/detail/", supplier_detail, name="supplier_detail"),
     path("supplier/all/", supplier_list, name="supplier_list"),
+    path("supplier/<int:supplier_id>/edit/", supplier_edit, name="supplier_edit"),
 ]
 
 stock = [

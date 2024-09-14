@@ -1,26 +1,53 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, ExpressionWrapper, F, DecimalField
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator
-from icecream import ic
+from django.http import HttpResponse
+from django.http import HttpResponse
+from django.http import JsonResponse
 from django.db.models.functions import TruncDate
 from django.db.models import DateField
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
+from datetime import datetime
+from django.urls import reverse
+from icecream import ic
+import json
+import base64
+
+from pydantic import BaseModel
+import json
+from django.db import transaction
+from django.views.decorators.http import require_GET
+
 from .models import PaymentReceived, SalesInvoice, SalesItem, Customer, Sales
 from purchases.utils import number_to_words
+from fbv.decorators import render_html
+from .utils import (
+    generate_hmac_sha256,
+    generate_random_product_code,
+    generate_signature,
+)
+
+
+class Transaction(BaseModel):
+    transaction_code: str
+    status: str
+    total_amount: str
+    transaction_uuid: str
+    product_code: str
+    signed_field_names: str
+    signature: str
 
 
 @login_required
+@render_html("sales/sales_add.html")
 def sales_add(request):
     context = {}
-    return render(
-        request=request,
-        template_name="sales/sales_add.html",
-        context=context,
-    )
+    return context
 
 
 @login_required
+@render_html("payments/payments_received.html")
 def payments_received(request):
     payments_received = PaymentReceived.objects.filter(
         tenant=request.tenant,
@@ -35,11 +62,7 @@ def payments_received(request):
         "last_payment": last_payment,
     }
 
-    return render(
-        request=request,
-        template_name="payments/payments_received.html",
-        context=context,
-    )
+    return context
 
 
 @login_required
@@ -66,14 +89,22 @@ def sales_all(request):
 @login_required
 def sales_detail(request, sales_id):
     sale_invoice = (
-        SalesInvoice.objects.filter(tenant=request.tenant, id=sales_id)
+        SalesInvoice.objects.filter(
+            tenant=request.tenant,
+            id=sales_id,
+        )
         .select_related("sales", "sales__customer")
         .first()
     )
 
     sale_items = SalesItem.objects.filter(
-        sales=sale_invoice.sales, tenant=request.tenant
+        sales=sale_invoice.sales,
+        tenant=request.tenant,
     ).select_related("product")
+
+    from icecream import ic
+
+    ic(sale_items)
 
     if not sale_invoice:
         raise Http404("SalesInvoice not found")
@@ -81,12 +112,22 @@ def sales_detail(request, sales_id):
     items = [item.quantity for item in sale_items]
     products = [item.product.name for item in sale_items]
 
+    ic(items, products)
+
     context = {
         "sale_invoice": sale_invoice,
         "sale_items": sale_items,
         "items": items,
         "products": products,
+        "transaction_uuid": f"{sale_invoice.id}-{generate_random_product_code()}",
+        "product_code": sale_invoice.id,
+        "tenant_url": f"{request.tenant}.localhost:8000/payment/success",
+        "failure_url": f"{request.tenant}.localhost:8000/payment/failed",
+        "tax_amount": sale_invoice.get_vat,
+        "amount": sale_invoice.get_total,
+        "total_amount": sale_invoice.get_total_with_vat,
     }
+
     return render(
         request=request,
         template_name="sales/sales_detail.html",
@@ -94,11 +135,12 @@ def sales_detail(request, sales_id):
     )
 
 
-from datetime import datetime
-
-
 @login_required
 def sales_invoice(request, sales_id):
+
+    url_pattern = reverse("payment", kwargs={"sales_id": sales_id})
+    full_url = request.build_absolute_uri(url_pattern)
+    ic(full_url)
 
     sales = get_object_or_404(SalesInvoice, id=sales_id, tenant=request.tenant)
     time = datetime.now()
@@ -124,6 +166,9 @@ def sales_invoice(request, sales_id):
         "sales_items": sales_items,
         "time": time,
         "total_in_words": number_to_words(total),
+        "full_url": full_url,
+        "customer": sales.sales.customer.get_full_name,
+        "billing_address": sales.billing_address,
     }
     return render(
         request=request, template_name="sales/sales_bill.html", context=context
@@ -228,3 +273,68 @@ def customer_detail(request, customer_id):
         template_name="sales/customer_detail.html",
         context=context,
     )
+
+
+def payment(request, sales_id):
+    sale_invoice = (
+        SalesInvoice.objects.filter(
+            tenant=request.tenant,
+            id=sales_id,
+        )
+        .select_related("sales", "sales__customer")
+        .first()
+    )
+
+    context = {
+        "tax_amount": sale_invoice.get_vat,
+        "amount": sale_invoice.get_total,
+        "total_amount": sale_invoice.get_total_with_vat,
+        "transaction_uuid": f"{sale_invoice.id}-{generate_random_product_code()}",
+        "product_code": sale_invoice.id,
+    }
+
+    return render(
+        request=request,
+        template_name="components/payment_receive.html",
+        context=context,
+    )
+
+
+@require_GET
+def payment_successfull(request):
+    data = request.GET.get("data")
+    if data:
+        try:
+            decoded_data = base64.b64decode(data).decode(
+                "utf-8"
+            )  # decoding base64 data
+            json_data = Transaction(
+                **json.loads(decoded_data)
+            )  # converting the data into python object
+            sales_id = json_data.transaction_uuid.split("-")[
+                0
+            ]  # getting the first number for id
+
+            with transaction.atomic():
+                """changing the payment staus"""
+                sales = SalesInvoice.objects.get(id=sales_id)
+                customer = sales.sales.customer
+                sales.payment_status = "Paid"
+                sales.save()
+                """creating a new payment received object"""
+                payments = PaymentReceived.objects.create(
+                    amount=Transaction.total_amount,
+                    payment_method="esewa",
+                    transaction_id=Transaction.id,
+                    customer=customer,
+                )
+
+                return HttpResponse(
+                    f"Payment for invoice number {sales_id} done thenks"
+                )
+        except (base64.binascii.Error, UnicodeDecodeError):
+            return JsonResponse({"Invalid": "Invalid"})
+        except Exception as e:
+            return HttpResponse(e)
+    else:
+        return HttpResponse("No data found")
