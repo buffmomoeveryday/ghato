@@ -1,17 +1,16 @@
 <div>
+    {% load unicorn %}
     {% include "partials/_messages.html" %}
     <div class="p-8 bg-white rounded-lg shadow-md">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="supplier" class="block text-sm font-medium text-gray-700">Supplier</label>
                 <div class="mt-1 flex rounded-md shadow-sm">
-                    <select u:model="supplier"
-                            u:key="supplier_list"
-                            name="supplier"
-                            id="supplier_dropdown"
-                            class="form-select block w-full mt-1 rounded-md border-gray-300">
+                    <select u:model="supplier" u:key="supplier_list" name="supplier" id="supplier_dropdown"
+                        class="form-select block w-full mt-1 rounded-md border-gray-300">
                         <option value="">Select a supplier</option>
-                        {% for supplier in suppliers %}<option value="{{ supplier.id }}">{{ supplier.name|capfirst }}</option>{% endfor %}
+                        {% for supplier in suppliers %}<option value="{{ supplier.id }}">{{ supplier.name|capfirst }}
+                        </option>{% endfor %}
                     </select>
                 </div>
                 <div class="mt-2">
@@ -19,167 +18,134 @@
                 </div>
             </div>
             <div>
-                <label for="purchase_invoice_date"
-                       class="block text-sm font-medium text-gray-700">Purchase Date</label>
+                <label for="purchase_invoice_date" class="block text-sm font-medium text-gray-700">Purchase Date</label>
                 <div class="relative max-w-sm">`
-                    <input u:model.defer="purchase_invoice_date"
-                           u:input="check_date"
-                           id="purchase_invoice_date"
-                           name="purchase_invoice_date"
-                           type="date"
-                           class="form-input block w-full mt-1 rounded-md border-gray-300">
+                    <input u:model.defer="purchase_invoice_date" u:input="check_date" id="purchase_invoice_date"
+                        name="purchase_invoice_date" type="date"
+                        class="form-input block w-full mt-1 rounded-md border-gray-300">
                     <!-- class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" -->
                     <!-- placeholder="Select date"> -->
                 </div>
-                <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.purchase_invoice_date.0.message.0 }}</p>
+                <p id="date-error" class="text-red-600 text-sm mt-1">
+                    {{ unicorn.errors.purchase_invoice_date.0.message.0 }}</p>
             </div>
             <div>
-                <label for="total_invoice_amount"
-                       class="block text-sm font-medium text-gray-700">Total Amount</label>
-                <input disabled
-                       u:model="total_invoice_amount"
-                       type="number"
-                       id="total_invoice_amount"
-                       name="total_invoice_amount"
-                       id="disabled-input-2"
-                       aria-label="disabled input 2"
-                       class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed"
-                       value="Disabled readonly input"
-                       disabled
-                       readonly>
+                <label for="total_invoice_amount" class="block text-sm font-medium text-gray-700">Total Amount</label>
+                <input disabled u:model="total_invoice_amount" type="number" id="total_invoice_amount"
+                    name="total_invoice_amount" id="disabled-input-2" aria-label="disabled input 2"
+                    class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed"
+                    value="Disabled readonly input" disabled readonly>
             </div>
             <div>
                 <label for="received_date" class="block text-sm font-medium text-gray-700">Received Date</label>
-                <input u:model="received_date"
-                       u:input="check_date"
-                       type="date"
-                       id="received_date"
-                       name="received_date"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <input u:model="received_date" u:input="check_date" type="date" id="received_date" name="received_date"
+                    class="form-input block w-full mt-1 rounded-md border-gray-300">
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.received_date.0.message.0 }}</p>
             </div>
             <div>
                 <label for="order_date" class="block text-sm font-medium text-gray-700">Order Date</label>
-                <input u:model="order_date"
-                       u:input="order_date"
-                       type="date"
-                       id="order_date"
-                       name="order_date"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <input u:model="order_date" u:input="order_date" type="date" id="order_date" name="order_date"
+                    class="form-input block w-full mt-1 rounded-md border-gray-300">
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.order_date.0.message.0 }}</p>
             </div>
             <div>
-                <label for="purchase_invoice_number"
-                       class="block text-sm font-medium text-gray-700">
+                <label for="purchase_invoice_number" class="block text-sm font-medium text-gray-700">
                     Supplier Invoice
                     Reference
                 </label>
-                <input u:model.lazy="purchase_invoice_number"
-                       type="text"
-                       id="purchase_invoice_number"
-                       name="purchase_invoice_number"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300">
+                <input u:model.lazy="purchase_invoice_number" type="text" id="purchase_invoice_number"
+                    name="purchase_invoice_number" class="form-input block w-full mt-1 rounded-md border-gray-300">
             </div>
         </div>
     </div>
     <!-- Purchase Detail -->
     <div class="p-8 mt-8 bg-white rounded-lg shadow-md">
         <h2 class="text-2xl font-semibold mb-6">Purchase Items List</h2>
+
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div>
                 <label for="product" class="block text-sm font-medium text-gray-700">Product</label>
-                <select u:model="product"
-                        u:key="product_list"
-                        u:change="uom_field_change"
-                        id="product"
-                        name="product"
-                        class="form-select block w-full mt-1 rounded-md border-gray-300">
+                <select u:model="product" u:key="product_list" u:change="uom_field_change" id="product" name="product"
+                    class="form-select block w-full mt-1 rounded-md border-gray-300">
                     <option value="">Select a product</option>
                     {% for product in products %}
-                        <option value="{{ product.id }}">{{ product.name }} ({{ product.sku }} in {{ product.uom.name|upper }})</option>
+                    <option value="{{ product.id }}">{{ product.name }} ({{ product.sku }} in
+                        {{ product.uom.name|upper }})</option>
                     {% endfor %}
                 </select>
+                <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.product.0.message.0 }}</p>
+
             </div>
             <div class="mt-2">
                 {% include "purchase/partials/add_product_modal.html" with id="add_purchase" button_label="Add Purchase" title="Add Purchase" %}
             </div>
             <div>
                 <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-                <input u:model="quantity"
-                       u:change="uom_field_change"
-                       type="number"
-                       min="1"
-                       {% if field_int %} step="1" {% else %} step="0.5" {% endif %}
-                       id="quantity"
-                       name="quantity"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300" />
+                <input u:model="quantity" u:change="uom_field_change" type="number" min="1" {% if field_int %} step="1"
+                    {% else %} step="0.5" {% endif %} id="quantity" name="quantity"
+                    class="form-input block w-full mt-1 rounded-md border-gray-300" />
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.quantity.0.message.0 }}</p>
             </div>
             <div>
                 <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-                <input u:model.defer="price"
-                       type="number"
-                       id="price"
-                       name="price"
-                       class="form-input block w-full mt-1 rounded-md border-gray-300" />
+                <input u:model.defer="price" type="number" id="price" name="price"
+                    class="form-input block w-full mt-1 rounded-md border-gray-300" />
+                <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.price.0.message.0 }}</p>
+
             </div>
             <div class="flex items-end">
-                <button u:partial.key="product_table"
-                        u:click="add_item_to_session"
-                        type="submit"
-                        id="add_product_button"
-                        class="bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-500">
+                <button u:partial.key="product_table" u:click="add_item_to_session" type="submit"
+                    id="add_product_button" class="bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-500">
                     Add
                     Item
                 </button>
             </div>
         </div>
         <div class="overflow-x-auto">
-            <table u:key="product_table"
-                   class="min-w-full bg-white divide-y divide-gray-200">
+            <table u:key="product_table" class="min-w-full bg-white divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edit</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delete</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Product ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edit
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Delete</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for item in product_to_be_purchased %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.product_id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.product_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.price }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <button u:click="edit_product({{ item.product_id }})"
-                                        name="edit_product"
-                                        type="submit"
-                                        class="text-blue-600 hover:underline">Edit Product</button>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <button u:click="remove_item_from_session({{ item.product_id }})"
-                                        name="remove_item"
-                                        type="submit"
-                                        class="text-red-600 hover:underline">Delete</button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ item.product_id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ item.product_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ item.price }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button u:click="edit_product({{ item.product_id }})" name="edit_product" type="submit"
+                                class="text-blue-600 hover:underline">Edit Product</button>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button u:click="remove_item_from_session({{ item.product_id }})" name="remove_item"
+                                type="submit" class="text-red-600 hover:underline">Delete</button>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
         <div class="mt-4">
             {% if product_to_be_purchased %}
-                <button u:click="save_all"
-                        name="save_all"
-                        class="bg-pink-500 text-white p-3 rounded-md hover:bg-pink-400">Save All</button>
+            <button u:click="save_all" name="save_all"
+                class="bg-pink-500 text-white p-3 rounded-md hover:bg-pink-400">Save All</button>
             {% else %}
-                <button disabled
-                        id="save_all"
-                        class="bg-gray-500 text-white p-3 rounded-md hover:bg-gray-400">Save All</button>
+            <button disabled id="save_all" class="bg-gray-500 text-white p-3 rounded-md hover:bg-gray-400">Save
+                All</button>
             {% endif %}
         </div>
     </div>

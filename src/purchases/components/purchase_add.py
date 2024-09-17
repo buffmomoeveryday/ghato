@@ -38,11 +38,11 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     purchase_invoice_number = ""
     received_date: date = ""
     order_date: date = ""
-    total_invoice_amount: float = None
+    total_invoice_amount = None
 
     product = ""
     uom = ""
-    quantity: int | float = 0
+    quantity = 0
     price = 0.00
 
     field_int = False
@@ -59,6 +59,11 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
     @transaction.atomic
     def save_all(self):
+
+        # if self.quantity <= 0:
+        #     messages.error(self.request, "Quantity can't be 0 or less than 0")
+        #     raise ValidationError({"quantity": "The Price"})
+
         if self.purchase_invoice_date is None:
             messages.error(self.request, "Purchase Invoice Date is required")
             raise ValidationError(
@@ -80,6 +85,14 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
         if not self.product_to_be_purchased:
             messages.error(self.request, "No Items in Invoice")
+
+        if (
+            self.received_date is None
+            or self.purchase_invoice_date is None
+            or self.order_date is None
+            or self.purchase_invoice_number
+        ):
+            messages.error(self.request, "Dates should be good")
 
         try:
             purchase = PurchaseInvoice.objects.create(
@@ -140,59 +153,81 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             messages.error(request=self.request, message=f"Some Error Occurred {e}")
 
     def add_item_to_session(self):
-        try:
+        ic("Called")
+        ic(self.product)
 
-            if self.product is None or self.quantity == 0 or self.price == 0:
-                return messages.error(request=self.request, message="fix error")
-
-            product_model = Product.objects.get(
-                id=self.product,
-                tenant=self.request.tenant,
+        if self.product is None:
+            messages.error(
+                request=self.request,
+                message="fix error",
+            )
+            raise ValidationError(
+                {"product": "Product Cant be None"},
+                code="invalid",
             )
 
-            existing_product = next(
-                (
-                    p
-                    for p in self.product_to_be_purchased
-                    if p["product_id"] == self.product
-                ),
-                None,
+        if int(float(self.quantity)) <= 0:
+            messages.error(
+                self.request,
+                "Quantity Cant be 0 or less than 0",
+            )
+            raise ValidationError(
+                {"quantity": "Price Cant be 0 or less than 0"},
+                code="invalid",
             )
 
-            if existing_product:
-                if existing_product["price"] != self.price:
-                    messages.error(
-                        self.request, "Product Already Added With a different rate"
-                    )
-                    return
-                else:
-                    existing_product["quantity"] += self.quantity
-                    messages.success(
-                        self.request, "Product quantity updated successfully."
-                    )
+        ic(self.price)
+
+        if int(self.price) <= 0:
+            messages.error(
+                request=self.request,
+                message="Price Cant be 0 or less than 0",
+            )
+            raise ValidationError(
+                {"price": "Cant be 0 or less than 0"},
+                code="invalid",
+            )
+
+        product_model = Product.objects.get(
+            id=self.product,
+            tenant=self.request.tenant,
+        )
+
+        existing_product = next(
+            (
+                p
+                for p in self.product_to_be_purchased
+                if p["product_id"] == self.product
+            ),
+            None,
+        )
+
+        if existing_product:
+            if existing_product["price"] != self.price:
+                messages.error(
+                    self.request, "Product Already Added With a different rate"
+                )
+                return
             else:
-                product = {
-                    "product_id": self.product,
-                    "product_name": product_model.name,
-                    "quantity": (self.quantity),
-                    "sku": product_model.sku,
-                    "price": float(self.price),
-                }
-                self.product_to_be_purchased.append(product)
+                existing_product["quantity"] += self.quantity
+                messages.success(self.request, "Product quantity updated successfully.")
+        else:
+            product = {
+                "product_id": self.product,
+                "product_name": product_model.name,
+                "quantity": (self.quantity),
+                "sku": product_model.sku,
+                "price": float(self.price),
+            }
+            self.product_to_be_purchased.append(product)
 
-                messages.success(self.request, "Product added successfully.")
+            messages.success(self.request, "Product added successfully.")
 
-            self.request.session["added_products"] = self.product_to_be_purchased
+        self.request.session["added_products"] = self.product_to_be_purchased
 
-            self.product = ""
-            self.price = ""
-            self.quantity = ""
-
-        except ValidationError as ve:
-            messages.error(self.request, str(ve))
-
-        except Exception as e:
-            messages.error(self.request, f"{e}")
+        self.product = ""
+        self.price = ""
+        self.quantity = ""
 
     @transaction.atomic
     def create_supplier(self):
@@ -306,7 +341,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
             self.field_int = True
 
-            if self.quantity is not None:
+            if self.quantity is not None or self.quantity != " ":
                 self.quantity = int(float(self.quantity))
 
             return
