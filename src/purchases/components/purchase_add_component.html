@@ -36,13 +36,13 @@
             </div>
             <div>
                 <label for="received_date" class="block text-sm font-medium text-gray-700">Received Date</label>
-                <input u:model="received_date" u:input="check_date" type="date" id="received_date" name="received_date"
+                <input u:model="received_date" u:change="check_date" type="date" id="received_date" name="received_date"
                     class="form-input block w-full mt-1 rounded-md border-gray-300">
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.received_date.0.message.0 }}</p>
             </div>
             <div>
                 <label for="order_date" class="block text-sm font-medium text-gray-700">Order Date</label>
-                <input u:model="order_date" u:input="order_date" type="date" id="order_date" name="order_date"
+                <input u:model="order_date" u:change="order_date" type="date" id="order_date" name="order_date"
                     class="form-input block w-full mt-1 rounded-md border-gray-300">
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.order_date.0.message.0 }}</p>
             </div>

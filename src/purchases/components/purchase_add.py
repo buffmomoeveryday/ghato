@@ -34,11 +34,12 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     new_supplier_contact_person = ""
 
     supplier = ""
-    purchase_invoice_date: date = ""
-    purchase_invoice_number = ""
-    received_date: date = ""
-    order_date: date = ""
-    total_invoice_amount = None
+    purchase_invoice_date: date = date.today()
+    purchase_invoice_number = date.today()
+    received_date: date = date.today()
+    order_date: date = date.today()
+    
+    total_invoice_amount = 0
 
     product = ""
     uom = ""
@@ -298,6 +299,12 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             if self.purchase_invoice_date > date.today():
                 raise ValidationError(
                     {"purchase_invoice_date": "Date cannot be greater than today"},
+                    code="invalid",
+                )
+        if self.order_date is not None:
+            if self.order_date > date.today:
+                raise ValidationError(
+                    {"order_date": "Date Cannot be greater than today"},
                     code="invalid",
                 )
 
