@@ -6,7 +6,7 @@ from django.db import models
 from users.models import CustomUser as User
 from tenant.models import TenantAwareModel
 
-class Message(models.Model):
+class Message(TenantAwareModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages")
     room_name = models.CharField(max_length=255)
     content = models.TextField()

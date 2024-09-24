@@ -26,7 +26,6 @@ class AccountCreateView(UnicornView):
         self.reset_form()
 
     def create_account(self):
-        ic("called")
         if not self.account_name or self.account_balance < 0:
             messages.error(
                 request=self.request, message="Please fill in all fields correctly."

@@ -1,138 +1,118 @@
 {% extends "base.html" %}
 {% block main %}
-{% load unicorn %}
-<div class="container mx-auto p-6">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Invoice Details -->
-        <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-800">
-                    Invoice <span class="text-blue-600">#{{ sale_invoice.id }}</span>
-                </h1>
-                <a href="{% url 'sales_invoice' sale_invoice.id %}" target="_blank"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
-                    View Invoice
-                </a>
+    {% load unicorn %}
+    <div class="container mx-auto p-4 lg:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Invoice Details -->
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-4 lg:p-6">
+                <div class="flex justify-between items-center mb-4 lg:mb-6">
+                    <h1 class="text-xl lg:text-3xl font-bold text-gray-800">
+                        Invoice <span class="text-blue-600">#{{ sale_invoice.id }}</span>
+                    </h1>
+                    <a href="{% url 'sales_invoice' sale_invoice.id %}"
+                       target="_blank"
+                       class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 lg:px-4 rounded transition duration-300">
+                        Print Invoice
+                    </a>
+                </div>
+                {% unicorn 'return_stock_component' sales_id=sale_invoice.id %}
+                <div class="mb-4 lg:mb-6">
+                    <h2 class="text-lg lg:text-2xl font-semibold text-gray-700">
+                        {{ sale_invoice.sales.customer.first_name }} {{ sale_invoice.sales.customer.last_name }}
+                    </h2>
+                    <p class="text-gray-600 mt-2">
+                        Payment Status:
+                        {% if sale_invoice.payment_status == 'Unpaid' %}
+                            <span class="bg-red-100 text-red-800 text-xs lg:text-sm font-medium px-2 py-0.5 rounded">
+                                {{ sale_invoice.payment_status }}
+                            </span>
+                        {% else %}
+                            <span class="bg-green-100 text-green-800 text-xs lg:text-sm font-medium px-2 py-0.5 rounded">
+                                {{ sale_invoice.payment_status }}
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="text-gray-700">
+                    <p class="text-base lg:text-lg">
+                        Total Amount: <span class="font-bold text-blue-600">Rs. {{ sale_invoice.sales.total_amount }}</span>
+                    </p>
+                </div>
             </div>
-            {% unicorn 'return_stock_component' sales_id=sale_invoice.id %}
-
-            <div class="mb-6">
-                <h2 class="text-2xl font-semibold text-gray-700">
-                    {{ sale_invoice.sales.customer.first_name }} {{ sale_invoice.sales.customer.last_name }}
-                </h2>
-                <p class="text-gray-600">
-                    Payment Status:
-                    {% if sale_invoice.payment_status == 'Unpaid' %}
-                    <span
-                        class="bg-red-100 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded">{{ sale_invoice.payment_status }}</span>
-                    {% else %}
-                    <span
-                        class="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded">{{ sale_invoice.payment_status }}</span>
-                    {% endif %}
-                </p>
-            </div>
-            <div class="text-gray-700">
-                <p class="text-lg">
-                    Total Amount: <span class="font-bold text-blue-600">Rs. {{ sale_invoice.sales.total_amount }}</span>
-                </p>
+            <!-- Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">Sales Distribution</h3>
+                <div id="chart" class="w-full"></div>
             </div>
         </div>
-        <!-- Chart -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-xl font-semibold mb-4 text-gray-800">Sales Distribution</h3>
-            <div id="chart"></div>
+        <!-- Items Table -->
+        <div class="bg-white rounded-lg shadow-md p-6 mt-6 overflow-x-auto">
+            <h3 class="text-xl lg:text-2xl font-semibold mb-4 text-gray-800">Items Sold</h3>
+            <table class="min-w-full bg-white">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">Quantity</th>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">Price</th>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">VAT %</th>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">VAT Amount</th>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                            Total Without VAT
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs lg:text-sm font-semibold text-gray-600 uppercase tracking-wider">
+                            Total With VAT
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    {% for item in sale_items %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">{{ item.product.name }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">{{ item.quantity }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">Rs. {{ item.price }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">{{ item.vat }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">Rs. {{ item.vat_amount }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">Rs. {{ item.total }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap border-b border-gray-200">Rs. {{ item.total_with_vat }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    <!-- Items Table -->
-    <div class="bg-white rounded-lg shadow p-6 mt-6 overflow-x-auto">
-        <h3 class="text-2xl font-semibold mb-4 text-gray-800">Items Sold</h3>
-        <table class="min-w-full bg-white">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Name
-                    </th>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Quantity
-                    </th>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Price
-                    </th>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        VAT %
-                    </th>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        VAT Amount
-                    </th>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Total Without VAT
-                    </th>
-                    <th
-                        class="px-6 py-3 border-b-2 border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Total With VAT
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white">
-                {% for item in sale_items %}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ item.product.name }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ item.quantity }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">Rs. {{ item.price }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">{{ item.vat }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">Rs. {{ item.vat_amount }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">Rs. {{ item.total }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap border-b border-gray-200">Rs. {{ item.total_with_vat }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-{% if sale_invoice.payment_status == 'Unpaid' %}
-{% include "components/esewa_form.html" %}
-{% endif %}
+    {% if sale_invoice.payment_status == 'Unpaid' %}
+        {% include "components/esewa_form.html" %}
+    {% endif %}
 {% endblock main %}
 {% block js %}
-<script>
-    console.log({{ items | safe }});
-    console.log({{ products | safe }});
-</script>
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-<script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
     var options = {
-        series: {{ items | safe }}, // Correct series data
-    chart: {
-        width: '100%',
+        series: {{ items | safe }},
+        chart: {
+            width: '100%',
             height: 350,
-                type: 'pie',
+            type: 'pie',
         },
-    labels: { { products | safe } }, // Corrected labels formatting
-    responsive: [{
-        breakpoint: 480,
-        options: {
-            chart: {
-                width: 300
-            },
-            legend: {
-                position: 'bottom'
+        labels: {{ products | safe }},
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 300
+                },
+                legend: {
+                    position: 'bottom'
+                }
             }
-        }
-    }],
+        }],
         colors: ['#4299E1', '#48BB78', '#ED8936', '#ECC94B', '#ED64A6', '#9F7AEA'],
-            legend: {
-        position: 'bottom'
-    }
+        legend: {
+            position: 'bottom'
+        }
     };
 
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
-</script>
+    </script>
 {% endblock js %}

@@ -21,9 +21,11 @@ class Customer(TenantAwareModel, BaseModelMixin):
     @property
     def get_balance(self):
         total = (
-            Sales.objects.filter(customer=self).aggregate(total=Sum("total_amount"))[
-                "total"
-            ]
+            Sales.objects.filter(
+                customer=self,
+            ).aggregate(
+                total=Sum("total_amount"),
+            )["total"]
             or 0
         )
         payment_received = (
@@ -129,11 +131,3 @@ class PaymentReceived(TenantAwareModel, BaseModelMixin):
 
     def __str__(self):
         return f"Payment #{self.id}"
-
-
-class SalesReturn(TenantAwareModel, BaseModelMixin):
-    pass
-
-
-class SalesReturnedItems(TenantAwareModel, BaseModelMixin):
-    pass

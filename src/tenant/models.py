@@ -1,11 +1,28 @@
 from django.db import models
 import random
 import string
+from django.core.validators import integer_validator
+from django.core.exceptions import ValidationError
+import re
+
+
+def validate_domain_name(value):
+    num_format = re.compile("^-?\d+(\.\d+)?$")
+    isnumber = re.match(num_format, value)
+    if isnumber:
+        raise ValidationError(
+            message="The Domain Name Cannot be numeric",
+        )
 
 
 class TenantModel(models.Model):
     name = models.CharField(verbose_name="Tenant Name", max_length=255, unique=True)
-    domain = models.CharField(verbose_name="Domain", max_length=10, unique=True)
+    domain = models.CharField(
+        verbose_name="Domain",
+        max_length=10,
+        unique=True,
+        validators=[validate_domain_name],
+    )
     api_key = models.CharField(
         verbose_name="API Key", max_length=20, unique=True, blank=True, null=True
     )

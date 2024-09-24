@@ -15,7 +15,6 @@ from purchases.models import *
 from sales.models import *
 from .models import Message
 
-34000.0
 from django.shortcuts import render
 from django.db.models import Sum, Count, Avg
 from django.contrib.auth.decorators import login_required
@@ -31,7 +30,6 @@ from .tasks import calculate_meaning_of_life
 
 @login_required()
 def dashboard_index(request):
-    result = calculate_meaning_of_life.enqueue()
     start_date = datetime.now() - timedelta(days=30)
 
     total_sales = Sales.objects.filter(
@@ -149,6 +147,7 @@ def dashboard_index(request):
 def assistant(request):
     if request.method == "GET":
         return render(request=request, template_name="dashboard/query.html")
+
     if request.method == "POST":
         nl_query = request.POST.get("query", "")
         result = process_natural_language_query(nl_query, request.tenant.id)
@@ -163,6 +162,7 @@ def chat(request) -> HttpResponse:
     messages = (
         Message.objects.filter(
             room_name=request.tenant.domain,
+            tenant=request.tenant,
         )
         .select_related("user")
         .order_by("timestamp")

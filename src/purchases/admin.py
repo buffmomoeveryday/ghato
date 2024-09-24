@@ -7,8 +7,6 @@ from .models import (
     Supplier,
     PurchaseInvoice,
     PurchaseItem,
-    PurchaseReturn,
-    PurchaseReturnItem,
 )
 
 
@@ -165,53 +163,6 @@ class PurchaseItemAdmin(admin.ModelAdmin):
         "updated_at",
         "created_by",
         "purchase",
-        "product",
-    )
-    date_hierarchy = "created_at"
-
-
-@admin.register(PurchaseReturn)
-class PurchaseReturnAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "tenant",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "purchase_invoice",
-        "return_date",
-        "total_amount",
-    )
-    list_filter = (
-        "tenant",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "purchase_invoice",
-        "return_date",
-    )
-    date_hierarchy = "created_at"
-
-
-@admin.register(PurchaseReturnItem)
-class PurchaseReturnItemAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "tenant",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "purchase_return",
-        "product",
-        "quantity",
-        "price",
-    )
-    list_filter = (
-        "tenant",
-        "created_at",
-        "updated_at",
-        "created_by",
-        "purchase_return",
         "product",
     )
     date_hierarchy = "created_at"

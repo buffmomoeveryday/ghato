@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 {% block title %}
-
-    {{ supplier.name }} | {{ super }}
+    {{ supplier.name }}
 {% endblock title %}
 {% block main %}
     <div class="container mx-auto p-6">
         <div class="flex flex-col md:flex-row md:justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
-            <a href="{% url 'supplier_edit' supplier.id %}">Edit</a>
+                <a href="{% url 'supplier_edit' supplier.id %}">Edit</a>
                 {{ supplier.name | upper }}
-            
             </h1>
             <div class="space-y-2 md:space-y-0 md:space-x-4">
                 <p class="text-xl text-yellow-600 font-semibold">Payment To Be Made: {{ payment_to_be_made }}</p>
@@ -104,33 +102,33 @@
                 <div id="paymentChart" class="w-full max-w-lg mx-auto"></div>
             </div>
             <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var options = {
-            series: [
-                {{ payments_made_amount | floatformat:2 | default:"0" }},
-        {{ payment_remaining | floatformat:2 | default:"0" }},
+        document.addEventListener('DOMContentLoaded', function () {
+            var options = {
+                series: [
+                    {{ payments_made_amount | floatformat:"2g" }},
+            {{ payment_remaining | floatformat:"2g" }},
         ],
-        chart: {
-        type: 'donut',
-        width: '100%'
-    },
-        labels: ['Payment Made', 'Total Remaining'],
-        colors: ['#4CAF50', '#FF6347'],
-        responsive: [{
-            breakpoint: 640,
-            options: {
-                chart: {
-                    width: 300
-                },
-                legend: {
-                    position: 'bottom'
+            chart: {
+            type: 'donut',
+            width: '100%'
+        },
+            labels: ['Payment Made', 'Total Remaining'],
+            colors: ['#4CAF50', '#FF6347'],
+            responsive: [{
+                breakpoint: 640,
+                options: {
+                    chart: {
+                        width: 300
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
-            }
-        }]
+            }]
     };
 
-    var chart = new ApexCharts(document.querySelector("#paymentChart"), options);
-    chart.render();
+        var chart = new ApexCharts(document.querySelector("#paymentChart"), options);
+        chart.render();
 });
             </script>
         {% endif %}

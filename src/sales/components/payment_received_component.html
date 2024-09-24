@@ -1,90 +1,100 @@
 {% extends 'base.html' %}
 {% load unicorn %}
 {% block main %}
-<h1 class="text-3xl font-bold pb-3 text-gray-800">Receive Payments</h1>
-<span class="pb-4">
-    <a href="{% url 'payments_received' %}" class=" underline hover:text-blue-600 ">List of Payments</a>
-</span>
+<div class="space-y-6 bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-5xl font-bold pb-3 text-gray-800">Receive Payments</h1>
+    <span class="pb-4">
+        <a href="{% url 'payments_received' %}" class="underline text-blue-400">List of Payments</a>
+    </span>
 
-<div u:view>
-    {% include 'partials/_messages.html' %}
-    <div class="flex items-center mb-4">
-        <input id="cash_payment" u:click="$toggle('cash_payment')" u:model="cash_payment" type="checkbox"
-            class="form-checkbox h-5 w-5 text-blue-600">
-        <label for="cash_payment" class="ml-2 text-gray-700">Cash</label>
-    </div>
+    <div u:view>
+        {% include 'partials/_messages.html' %}
 
-    <div class="mb-4">
-        {% if cash_payment %}
-        <select name="cash" id="cash" u:model="cash_id"
-            class="form-select block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300">
-            {% for account in cash_list %}
-            <option value="{{ account.id }}">{{ account.name }}</option>
-            {% endfor %}
-        </select>
-        {% else %}
-        <select name="bank" id="bank" u:model="bank_id"
-            class="form-select block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300">
-            {% for account in bank_list %}
-            <option value="{{ account.id }}">{{ account.name }}</option>
-            {% endfor %}
-        </select>
-        {% endif %}
-    </div>
+        <div class="flex items-center mb-4">
+            <input id="cash_payment" u:click="$toggle('cash_payment')" u:model="cash_payment" type="checkbox"
+                class="form-checkbox h-5 w-5 text-blue-600">
+            <label for="cash_payment" class="ml-2 text-gray-700">Cash</label>
+        </div>
 
-    <div class="mb-4">
-        <label for="customer" class="block text-gray-700 font-medium">Customer</label>
-        <select u:model="customer_id" name="customer" id="customer"
-            class="form-select block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300">
-            <option value="" disabled selected>Select a customer</option>
-            {% for customer in customer_list %}
-            <option value="{{ customer.id }}">{{ customer.get_full_name }}</option>
-            {% endfor %}
-        </select>
-    </div>
+        <div class="mb-4">
+            {% if cash_payment %}
+            <label for="cash" class="block text-sm font-medium text-gray-700">Cash Account</label>
+            <select name="cash" id="cash" u:model="cash_id"
+                class="form-select block w-full pl-3 pr-10 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                {% for account in cash_list %}
+                <option value="{{ account.id }}">{{ account.name }}</option>
+                {% endfor %}
+            </select>
+            {% else %}
+            <label for="bank" class="block text-sm font-medium text-gray-700">Bank Account</label>
+            <select name="bank" id="bank" u:model="bank_id"
+                class="form-select block w-full pl-3 pr-10 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                {% for account in bank_list %}
+                <option value="{{ account.id }}">{{ account.name }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+        </div>
 
-    <div class="mb-4">
-        <span class="text-sm text-gray-600">Remaining Balance: <strong
-                class="text-gray-800">{{ balance }}</strong></span>
-    </div>
+        <div class="mb-4">
+            <label for="customer" class="block text-sm font-medium text-gray-700">Customer</label>
+            <select u:model="customer_id" name="customer" id="customer"
+                class="form-select block w-full pl-3 pr-10 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <option value="" disabled selected>Select a customer</option>
+                {% for customer in customer_list %}
+                <option value="{{ customer.id }}">{{ customer.get_full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <div class="mb-4">
-        <label for="received_amount" class="block text-gray-700 font-medium">Received Amount</label>
-        <input type="number" step="0.01" min="1" u:model.="received_amount" id="received_amount"
-            class="form-input block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300" />
-    </div>
+        <div class="mb-4">
+            <span class="text-sm text-gray-600">Remaining Balance: <strong
+                    class="text-gray-800">{{ balance }}</strong></span>
+        </div>
 
-    <div class="mb-4">
-        <label for="transaction_id" class="block text-gray-700 font-medium">Transaction ID</label>
-        <input  u:model.="transaction_id" u:change="check_txn_id" id="transaction_id"
-            class="form-input block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300" />
-    </div>
+        <div class="mb-4">
+            <label for="received_amount" class="block text-sm font-medium text-gray-700">Received Amount</label>
+            <input type="number" step="0.01" min="1" u:model.defer="received_amount" id="received_amount"
+                class="form-input block w-full pl-3 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" />
+        </div>
 
-            <p>
-                <span class="text-sm text-red-600">{{ unicorn.errors.transaction_id.0.message.0 }}</span>
-            </p>
+        <div class="mb-4">
+            <label for="transaction_id" class="block text-sm font-medium text-gray-700">Transaction ID</label>
+            <input u:model.defer="transaction_id" u:change="check_txn_id" id="transaction_id"
+                class="form-input block w-full pl-3 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" />
+            <p class="text-red-600 text-sm mt-1">{{ unicorn.errors.transaction_id.0.message.0 }}</p>
+        </div>
 
-    <div class="mb-4">
-        <label for="payment_method" class="block text-gray-700 font-medium">Payment Method</label>
-        <input u:model.="payment_method" id="payment_method"
-            class="form-input block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300" />
-    </div>
+        <div class="mb-4">
+            <label for="payment_method" class="block text-sm font-medium text-gray-700">Payment Method</label>
+            <input u:model.defer="payment_method" id="payment_method"
+                class="form-input block w-full pl-3 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" />
+        </div>
 
-    <div class="mb-4">
-        <label for="payment_date" class="block text-gray-700 font-medium">Payment Date</label>
-        <input type="date" u:input="validate_date" u:model.="payment_date" id="payment_date"
-            class="form-input block w-full text-gray-700 bg-gray-100 border border-gray-300 rounded focus:ring focus:ring-blue-300" />
-        <p>
-            <span class="text-sm text-red-600">{{ unicorn.errors.payment_date.0.message }}</span>
-        </p>
-    </div>
+        <div class="mb-4">
+            <label for="payment_date" class="block text-sm font-medium text-gray-700">Payment Date</label>
+            <input type="date" u:input="validate_date" u:model.defer="payment_date" id="payment_date"
+                class="form-input block w-full pl-3 pr-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" />
+            <p class="text-red-600 text-sm mt-1">{{ unicorn.errors.payment_date.0.message }}</p>
+        </div>
 
-    <div class="flex justify-end">
-        <button type="button" u:click="add_payment"
-            class="px-4 py-2 font-semibold rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-300
-                       {% if unicorn.errors %}bg-gray-600 text-white hover:bg-gray-700{% else %}bg-blue-600 text-white hover:bg-blue-700{% endif %}">
-            Submit Payment
-        </button>
+        <div class="flex justify-end">
+            <button type="button" u:click="add_payment"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
+                <span u:loading>
+                    <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin"
+                        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="#E5E7EB" />
+                        <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentColor" />
+                    </svg>
+                </span>
+                Submit Payment
+            </button>
+        </div>
     </div>
 </div>
 {% endblock main %}

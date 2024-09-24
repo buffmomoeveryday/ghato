@@ -171,11 +171,11 @@ No Sales
                 data: {{ sales_qty_list| safe }}
             }, {
         name: "Stock Snapshot",
-            data: { { stock_snapshot | safe } }
+            data: {{ stock_snapshot | safe }}
     }
         ],
     xaxis: {
-        categories: { { sales_time | safe } }
+        categories: {{ sales_time | safe }}
     },
     stroke: {
         curve: 'smooth',

@@ -36,10 +36,10 @@ class AddUserComponentView(UnicornView):
             user = CustomUser.objects.create(
                 email=self.email,
                 password=make_password(password=self.password),
-                tenant=self.request.tenant,
                 first_name=self.first_name,
                 last_name=self.last_name,
                 is_company_admin=False,
+                tenant=self.request.tenant,
             )
             user.save()
             self.employees = CustomUser.objects.filter(

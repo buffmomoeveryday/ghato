@@ -1,69 +1,73 @@
 {% extends "base.html" %}
 {% block main %}
-    <h1 class="text-5xl font-bold mb-6 text-blue-800">Customer Ledger: {{ customer.get_full_name|capfirst }}</h1>
-    <!-- Ledger Summary -->
-    <div class="mb-8">
-        <h2 class="text-3xl font-semibold mb-4">Ledger Summary</h2>
-        <div class="flex space-x-8">
-            <div>
-                <span class="block text-lg font-semibold">Total Sales</span>
-                <span class="block text-2xl text-green-700 font-bold">{{ total_sales }}</span>
-            </div>
-            <div>
-                <span class="block text-lg font-semibold">Total Payments Received</span>
-                <span class="block text-2xl text-red-700 font-bold">{{ total_payments }}</span>
-            </div>
-            <div>
-                <span class="block text-lg font-semibold">Balance</span>
-                <span class="block text-2xl {% if balance > 0 %} text-red-700 {% else %} text-green-700 {% endif %} font-bold">{{ balance }}</span>
-            </div>
+<h1 class="text-5xl font-bold mb-6 text-blue-800">Customer Ledger: {{ customer.get_full_name|capfirst }}</h1>
+<!-- Ledger Summary -->
+<div class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Ledger Summary</h2>
+    <div class="flex space-x-8">
+        <div>
+            <span class="block text-lg font-semibold">Total Sales</span>
+            <span class="block text-2xl text-green-700 font-bold">{{ total_sales }}</span>
+        </div>
+        <div>
+            <span class="block text-lg font-semibold">Total Payments Received</span>
+            <span class="block text-2xl text-red-700 font-bold">{{ total_payments }}</span>
+        </div>
+        <div>
+            <span class="block text-lg font-semibold">Balance</span>
+            <span
+                class="block text-2xl {% if balance > 0 %} text-red-700 {% else %} text-green-700 {% endif %} font-bold">{{ balance }}</span>
         </div>
     </div>
-    <!-- Ledger Details -->
-    <div class="mb-8">
-        <h2 class="text-3xl font-semibold mb-4">Ledger Details</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white divide-y divide-gray-200">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Debit (Sales)</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Credit (Payment)</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {% for entry in ledger_entries %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entry.date|date:"F j, Y" }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entry.description }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {% if entry.debit %}
-                                    {{ entry.debit }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {% if entry.credit %}
-                                    {{ entry.credit }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entry.balance }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="5"
-                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
-                                No transactions found for {{ customer.get_full_name|capfirst }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+</div>
+<!-- Ledger Details -->
+<div class="mb-8">
+    <h2 class="text-3xl font-semibold mb-4">Ledger Details</h2>
+    <div class="overflow-x-auto">
+        <table id="ledger-table" class="min-w-full bg-white divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Description</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Debit
+                        (Sales)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Credit
+                        (Payment)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for entry in ledger_entries %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entry.date|date:"F j, Y" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entry.description }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {% if entry.debit %}
+                        {{ entry.debit }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {% if entry.credit %}
+                        {{ entry.credit }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ entry.balance }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600">
+                        No transactions found for {{ customer.get_full_name|capfirst }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+</div>
 {% endblock main %}

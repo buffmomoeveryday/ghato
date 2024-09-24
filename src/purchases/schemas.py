@@ -10,9 +10,6 @@ from typing import List, Optional
 from pydantic import validator
 
 from .models import PurchaseInvoice, PurchaseItem, Supplier
-from accounts.models import BankAccount, CashAccount
-from sales.models import PaymentReceived
-from purchases.models import PaymentMade
 
 
 class PurchaseInvoiceOutSchema(ModelSchema):
@@ -94,19 +91,3 @@ class PurchaseInvoiceDetailOutSchema(Schema):
     items: List[PurchaseItemSchema]  # This will hold the list of purchase items
 
 
-class BankOutSchema(ModelSchema):
-    class Meta:
-        model = BankAccount
-        exclude = ["tenant"]
-
-
-class PaymentMadeOutSchema(ModelSchema):
-    class Meta:
-        model = PaymentMade
-        exclude = ["tenant"]
-
-
-class PaymentReceivedSchema(ModelSchema):
-    class Meta:
-        model = PaymentReceived
-        exclude = ['tenant']

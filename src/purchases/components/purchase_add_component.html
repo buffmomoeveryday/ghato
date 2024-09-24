@@ -19,12 +19,10 @@
             </div>
             <div>
                 <label for="purchase_invoice_date" class="block text-sm font-medium text-gray-700">Purchase Date</label>
-                <div class="relative max-w-sm">`
+                <div class="relative max-w-sm">
                     <input u:model.defer="purchase_invoice_date" u:input="check_date" id="purchase_invoice_date"
                         name="purchase_invoice_date" type="date"
                         class="form-input block w-full mt-1 rounded-md border-gray-300">
-                    <!-- class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" -->
-                    <!-- placeholder="Select date"> -->
                 </div>
                 <p id="date-error" class="text-red-600 text-sm mt-1">
                     {{ unicorn.errors.purchase_invoice_date.0.message.0 }}</p>
@@ -32,7 +30,7 @@
             <div>
                 <label for="total_invoice_amount" class="block text-sm font-medium text-gray-700">Total Amount</label>
                 <input disabled u:model="total_invoice_amount" type="number" id="total_invoice_amount"
-                    name="total_invoice_amount" id="disabled-input-2" aria-label="disabled input 2"
+                    name="total_invoice_amount" aria-label="disabled input 2"
                     class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 cursor-not-allowed"
                     value="Disabled readonly input" disabled readonly>
             </div>
@@ -49,10 +47,8 @@
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.order_date.0.message.0 }}</p>
             </div>
             <div>
-                <label for="purchase_invoice_number" class="block text-sm font-medium text-gray-700">
-                    Supplier Invoice
-                    Reference
-                </label>
+                <label for="purchase_invoice_number" class="block text-sm font-medium text-gray-700">Supplier Invoice
+                    Reference</label>
                 <input u:model.lazy="purchase_invoice_number" type="text" id="purchase_invoice_number"
                     name="purchase_invoice_number" class="form-input block w-full mt-1 rounded-md border-gray-300">
             </div>
@@ -74,7 +70,6 @@
                     {% endfor %}
                 </select>
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.product.0.message.0 }}</p>
-
             </div>
             <div class="mt-2">
                 {% include "purchase/partials/add_product_modal.html" with id="add_purchase" button_label="Add Purchase" title="Add Purchase" %}
@@ -91,13 +86,11 @@
                 <input u:model.defer="price" type="number" id="price" name="price"
                     class="form-input block w-full mt-1 rounded-md border-gray-300" />
                 <p id="date-error" class="text-red-600 text-sm mt-1">{{ unicorn.errors.price.0.message.0 }}</p>
-
             </div>
             <div class="flex items-end">
                 <button u:partial.key="product_table" u:click="add_item_to_session" type="submit"
                     id="add_product_button" class="bg-indigo-600 text-white p-2 rounded-md hover:bg-indigo-500">
-                    Add
-                    Item
+                    Add Item
                 </button>
             </div>
         </div>

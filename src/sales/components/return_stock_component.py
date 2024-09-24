@@ -15,6 +15,7 @@ from purchases.models import PurchaseItem, Product, StockMovement
 
 class ReturnStockComponentView(UnicornView):
     template_name = "return_stock_component.html"
+
     sales_id: int = None
 
     def mount(self):
@@ -26,18 +27,25 @@ class ReturnStockComponentView(UnicornView):
                 id=sales_id, tenant=self.request.tenant
             ).first()
             sale_items = sales_invoice.sales.items.filter(tenant=self.request.tenant)
+            ic(sales_invoice)
+            ic(sale_items)
             with transaction.atomic():
+
                 for item in sale_items:
-                    product = Product.objects.get(id=item.product.id)
+                    product = Product.objects.get(
+                        id=item.product.id, tenant=self.request.tenant
+                    )
                     product.stock_quantity += item.quantity
                     product.save()
-                    StockMovement.objects.create(
+                    movement = StockMovement.objects.create(
                         product=product,
                         quantity=item.quantity,
                         movement_type="IN SALES RETURN",
                         description=f"Sales returned invoice number {sales_id}",
                         created_by=self.request.user,
+                        tenant=self.request.tenant,
                     )
+                    ic(movement)
 
                 sales_invoice.sales.delete()
 
@@ -45,6 +53,7 @@ class ReturnStockComponentView(UnicornView):
             return redirect(reverse_lazy("sales_list"))
 
         except Exception as e:
+
             self.call("refresh_page()")
             return messages.error(
                 self.request, "Some Error occoured cannot return teh stock "

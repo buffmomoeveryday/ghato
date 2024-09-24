@@ -96,11 +96,11 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
         try:
             purchase = PurchaseInvoice.objects.create(
+                tenant=self.request.tenant,
                 supplier_id=self.supplier,
                 purchase_date=self.purchase_invoice_date,
                 total_amount=self.total_invoice_amount,
                 invoice_number=self.purchase_invoice_number,
-                tenant=self.request.tenant,
                 received_date=self.received_date,
                 order_date=self.order_date,
             )
@@ -114,12 +114,16 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                     tenant=self.request.tenant,
                 )
 
-                product = Product.objects.get(id=item["product_id"])
+                product = Product.objects.get(
+                    id=item["product_id"],
+                    tenant=self.request.tenant,
+                )
                 product.stock_quantity = item["quantity"]
                 product.opening_stock = item["quantity"]
                 product.save()
 
                 StockMovement.objects.create(
+                    tenant=self.request.tenant,
                     product=product,
                     movement_type="IN",
                     quantity=item["quantity"],
@@ -153,8 +157,6 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             messages.error(request=self.request, message=f"Some Error Occurred {e}")
 
     def add_item_to_session(self):
-        ic("Called")
-        ic(self.product)
 
         if self.product is None:
             messages.error(
@@ -178,7 +180,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
 
         ic(self.price)
 
-        if int(self.price) <= 0:
+        if int(float(self.price)) <= 0:
             messages.error(
                 request=self.request,
                 message="Price Cant be 0 or less than 0",
@@ -330,14 +332,13 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
         )
 
     def uom_field_change(self):
-        # try:
         product = Product.objects.get(tenant=self.request.tenant, id=self.product)
         product_uom = product.uom.field
 
         if product_uom == "INTEGER":
             if isinstance(self.quantity, float):
                 print("integer vayera float haldchas radi")
-                return  # raise ValidationError("Quantity must be an integer for this UOM.")
+                return
 
             self.field_int = True
 
@@ -354,16 +355,6 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             self.field_int = False
 
             return
-
-    # except Product.DoesNotExist:
-    #     messages.error(self.request, "Selected product does not exist.")
-    # except ValidationError as e:
-    #     ic("vad", e)
-    #     messages.error(self.request, str(e))
-    # except Exception as e:
-    #     ic("exe", e)
-
-    #     messages.error(self.request, f"An error occurred: {e}")
 
     def mount(self):
 

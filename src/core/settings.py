@@ -11,10 +11,11 @@ ALLOWED_HOSTS = [
     "localhost",
     ".localhost",
     "siddharthakhanal.top",
+    "test.example.com",
 ]
 
 THIRD_PARTY = [
-    "django_cotton",
+    "django_cotton.apps.SimpleAppConfig",
     "django_unicorn",
     "template_partials",
     "django_celery_results",

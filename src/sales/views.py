@@ -32,7 +32,7 @@ from .utils import (
 class Transaction(BaseModel):
     transaction_code: str
     status: str
-    total_amount: str
+    total_amount: int
     transaction_uuid: str
     product_code: str
     signed_field_names: str
@@ -102,17 +102,11 @@ def sales_detail(request, sales_id):
         tenant=request.tenant,
     ).select_related("product")
 
-    from icecream import ic
-
-    ic(sale_items)
-
     if not sale_invoice:
         raise Http404("SalesInvoice not found")
 
     items = [item.quantity for item in sale_items]
     products = [item.product.name for item in sale_items]
-
-    ic(items, products)
 
     context = {
         "sale_invoice": sale_invoice,
@@ -148,7 +142,12 @@ def sales_invoice(request, sales_id):
     sales_items = SalesItem.objects.filter(
         sales=sales.sales,
         tenant=request.tenant,
-    ).select_related("product", "sales", "sales__salesinvoice")
+    ).select_related(
+        "product",
+        "sales",
+        "created_by",
+        "tenant",
+    )
 
     total = sales_items.aggregate(
         total=Sum(
@@ -196,7 +195,10 @@ from itertools import chain
 @login_required
 def customer_detail(request, customer_id):
     # Get customer
-    customer = Customer.objects.get(id=customer_id)
+    customer = Customer.objects.get(
+        id=customer_id,
+        tenant=request.tenant,
+    )
 
     # Get all sales invoices for the customer
     invoices = SalesInvoice.objects.filter(
@@ -233,7 +235,6 @@ def customer_detail(request, customer_id):
             }
         )
 
-    # Add payments to ledger entries
     for payment in payments:
         ledger_entries.append(
             {
@@ -241,14 +242,12 @@ def customer_detail(request, customer_id):
                 "description": f"Payment Received (Payment Method: {payment.payment_method})",
                 "debit": None,
                 "credit": payment.amount,
-                "balance": None,  # To be calculated later
+                "balance": None,
             }
         )
 
-    # Sort all entries by date
     ledger_entries.sort(key=lambda x: x["date"])
 
-    # Calculate running balance
     running_balance = 0
     for entry in ledger_entries:
         if entry["debit"]:
@@ -257,7 +256,6 @@ def customer_detail(request, customer_id):
             running_balance -= entry["credit"]
         entry["balance"] = running_balance
 
-    # Add everything to context
     context = {
         "invoices": invoices,
         "payments": payments,
@@ -305,19 +303,16 @@ def payment_successfull(request):
     data = request.GET.get("data")
     if data:
         try:
-            decoded_data = base64.b64decode(data).decode(
-                "utf-8"
-            )  # decoding base64 data
-            json_data = Transaction(
-                **json.loads(decoded_data)
-            )  # converting the data into python object
-            sales_id = json_data.transaction_uuid.split("-")[
-                0
-            ]  # getting the first number for id
+            decoded_data = base64.b64decode(data).decode("utf-8")
+            json_data = Transaction(**json.loads(decoded_data))
+            sales_id = json_data.transaction_uuid.split("-")[0]
 
             with transaction.atomic():
                 """changing the payment staus"""
-                sales = SalesInvoice.objects.get(id=sales_id)
+                sales = SalesInvoice.objects.get(
+                    id=sales_id,
+                    tenant=request.tenant,
+                )
                 customer = sales.sales.customer
                 sales.payment_status = "Paid"
                 sales.save()
@@ -327,14 +322,17 @@ def payment_successfull(request):
                     payment_method="esewa",
                     transaction_id=Transaction.id,
                     customer=customer,
+                    tenant=request.tenant,
                 )
 
                 return HttpResponse(
-                    f"Payment for invoice number {sales_id} done thenks"
+                    f"Payment for invoice number {sales_id} done thenks",
                 )
+
         except (base64.binascii.Error, UnicodeDecodeError):
             return JsonResponse({"Invalid": "Invalid"})
+
         except Exception as e:
-            return HttpResponse(e)
+            return HttpResponse(f"{e} invalid")
     else:
         return HttpResponse("No data found")
