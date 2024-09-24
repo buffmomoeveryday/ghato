@@ -1,17 +1,31 @@
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.db.models import DecimalField, ExpressionWrapper, F, Sum
-from django.shortcuts import get_object_or_404, render, get_list_or_404
-from django.http import HttpResponse
-from django.db import transaction
-from .filters import PurchaseFilter
-from .models import PaymentMade, PurchaseInvoice, PurchaseItem, Supplier
-from sales.models import SalesItem
+from django.shortcuts import get_object_or_404, render
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.urls import reverse_lazy
 
+from fbv.decorators import render_html
 import pandas as pd
-import json
-from django.utils.dateformat import DateFormat
 from decimal import Decimal
+
+from datetime import timedelta
+from django.utils import timezone
+
+from purchases.filters import PurchaseFilter, InventoryFilter
+from purchases.models import (
+    Product,
+    PaymentMade,
+    PurchaseInvoice,
+    PurchaseItem,
+    Supplier,
+)
+
+from purchases.forms import SupplierEditForm
+
+from sales.models import SalesItem
+from core.utils import url
 
 
 def decimal_default(obj):
@@ -20,81 +34,43 @@ def decimal_default(obj):
     raise TypeError
 
 
-class PurchaseForm(forms.ModelForm):
-    class Meta:
-        model = PurchaseInvoice
-        fields = ["supplier", "total_amount", "received_date"]
-
-
-class PurchaseItemForm(forms.ModelForm):
-    class Meta:
-        model = PurchaseItem
-        fields = ["product", "quantity", "price"]
-
-
 @login_required
+@render_html("purchase/purchase_index.html")
 def purchase_index(request):
-    queryset = PurchaseInvoice.objects.filter(tenant=request.tenant).select_related(
-        "supplier"
+    queryset = PurchaseInvoice.objects.filter(
+        tenant=request.tenant,
+    ).select_related(
+        "supplier",
     )
     filter = PurchaseFilter(request.GET, queryset=queryset, tenant=request.tenant)
-    context = {
-        "filter": filter,
-    }
-    return render(request, "purchase/purchase_index.html", context)
+    context = {"filter": filter}
+    return context
 
 
 @login_required
+@render_html("purchase/purchase_add.html")
 def purchase_add(request):
     context = {}
-    return render(
-        request=request,
-        template_name="purchase/purchase_add.html",
-        context=context,
-    )
+    return context
 
 
 @login_required
+@render_html("purchase/purchase_detail.html")
 def purchase_detail(request, id):
-    if request.method == "GET":
-        purchase = (
-            PurchaseInvoice.objects.filter(id=id, tenant=request.tenant)
-            .select_related("supplier")
-            .first()
-        )
-        purchase_items = PurchaseItem.objects.filter(purchase=purchase).select_related(
-            "purchase", "product"
-        )
+    purchase = (
+        PurchaseInvoice.objects.filter(id=id, tenant=request.tenant)
+        .select_related("supplier")
+        .first()
+    )
+    purchase_items = PurchaseItem.objects.filter(
+        purchase=purchase,
+    ).select_related(
+        "purchase",
+        "product",
+    )
 
-        context = {
-            "purchase": purchase,
-            "purchase_items": purchase_items,
-            # "purchase_dates": json.dumps(formatted_dates, default=decimal_default),
-            # "purchase_amounts": json.dumps(
-            #     list(purchase_amounts), default=decimal_default
-            # ),
-            # "top_products_names": json.dumps(
-            #     list(top_products.values_list("product__name", flat=True)),
-            #     default=decimal_default,
-            # ),
-            # "top_products_quantities": json.dumps(
-            #     list(top_products.values_list("total_quantity", flat=True)),
-            #     default=decimal_default,
-            # ),
-            # "suppliers_names": json.dumps(
-            #     list(suppliers.values_list("supplier__name", flat=True)),
-            #     default=decimal_default,
-            # ),
-            # "suppliers_amounts": json.dumps(
-            #     list(suppliers.values_list("total_amount", flat=True)),
-            #     default=decimal_default,
-            # ),
-        }
-        return render(
-            request=request,
-            template_name="purchase/purchase_detail.html",
-            context=context,
-        )
+    context = {"purchase": purchase, "purchase_items": purchase_items}
+    return context
 
 
 @login_required
@@ -109,6 +85,7 @@ def supplier_list(request):
 
 
 @login_required
+@render_html("supplier/supplier_detail.html")
 def supplier_detail(request, supplier_id):
     advance_made_amount = None
 
@@ -136,42 +113,58 @@ def supplier_detail(request, supplier_id):
         "payment_remaining": payment_remaining,
         "payments_made": payments_made,
     }
-    return render(request, "supplier/supplier_detail.html", context)
+
+    return context
 
 
 @login_required
-def payments_made(request):
-    payments_made = PaymentMade.objects.filter(tenant=request.tenant).select_related(
-        "supplier"
-    )
-    total_payments_made = payments_made.aggregate(Sum("amount"))
-    context = {
-        "payments_made": payments_made,
-        "total_payments_made": total_payments_made["amount__sum"],
-    }
+def supplier_edit(request, supplier_id):
+    supplier = get_object_or_404(Supplier, id=supplier_id)
 
-    return render(
-        request=request, template_name="payments/payments_made.html", context=context
-    )
+    if request.method == "POST":
+        form = SupplierEditForm(request.POST, instance=supplier)
+        if form.is_valid():
+            form.save()
+            messages.success(request=request, message="Updated Successfully")
+            return redirect(reverse_lazy("supplier_list"))
+        else:
+            messages.error(request=request, message="Some Error Occoured Fix this")
 
-
-@login_required
-def payments_made_create(request):
-
-    context = {"suppliers": Supplier.objects.filter(tenant=request.tenant)}
-
+    form = SupplierEditForm(instance=supplier)
+    context = {"form": form, "supplier": supplier}
     return render(
         request=request,
-        template_name="payments/payments_made_create.html",
+        template_name="supplier/supplier_edit.html",
         context=context,
     )
 
 
-import datetime
-from .filters import InventoryFilter
+@login_required
+@render_html("payments/payments_made.html")
+def payments_made(request):
+    payments_made = PaymentMade.objects.filter(
+        tenant=request.tenant,
+    ).select_related(
+        "supplier",
+    )
+    total_payments_made = payments_made.aggregate(total=Sum("amount"))["total"]
+    context = {
+        "payments_made": payments_made,
+        "total_payments_made": total_payments_made,
+    }
+
+    return context
 
 
 @login_required
+@render_html("payments/payments_made_create.html")
+def payments_made_create(request):
+    context = {"suppliers": Supplier.objects.filter(tenant=request.tenant)}
+    return context
+
+
+@login_required
+@render_html("inventory/inventory_index.html")
 def inventory(request):
 
     tenant = request.user.tenant
@@ -204,52 +197,36 @@ def inventory(request):
         "total_inventory_value": total_inventory_value,
     }
 
-    return render(
-        request=request,
-        template_name="inventory/inventory_index.html",
-        context=context,
-    )
+    return context
 
 
-from .models import Product
-from icecream import ic
+from .models import StockMovement
 
 
 @login_required
+@render_html("inventory/movement.html")
 def stock_movement(request):
-    sales = SalesItem.objects.filter_by_tenant(request.tenant).select_related(
+
+    movements = StockMovement.objects.filter_by_tenant(request.tenant).select_related(
         "product",
-        "sales",
-        "sales__customer",
+        "tenant",
     )
 
     context = {
-        "sales": sales,
+        "movements": movements,
     }
-    return render(
-        request=request,
-        template_name="inventory/movement.html",
-        context=context,
-    )
+    return context
 
 
 @login_required
+@render_html("purchase/settings.html")
 def settings(request):
-    context = {}
-    return render(
-        request=request,
-        template_name="purchase/settings.html",
-        context=context,
-    )
-
-
-from datetime import timedelta
-from django.utils import timezone
+    return {}
 
 
 @login_required
+@render_html("products/product_details.html")
 def product_analytics(request, product_id):
-
     product = get_object_or_404(Product, id=product_id, tenant=request.tenant)
     purchase = PurchaseItem.objects.filter(
         tenant=request.tenant, product=product
@@ -270,8 +247,8 @@ def product_analytics(request, product_id):
     stock_snap_shot = list(item.stock_snapshot for item in sales)
     sold = sum(sales_qty_list)
 
-    first_sales = sales.order_by("sales__created_at").first()
-    last_sales = sales.order_by("-sales__created_at").first()
+    first_sales = sales.order_by("sales__created_at").first() or None
+    last_sales = sales.order_by("-sales__created_at").first() or None
 
     sales_items = SalesItem.objects.filter(
         tenant=request.tenant, product=product
@@ -282,8 +259,6 @@ def product_analytics(request, product_id):
     sales_time = [
         item.sales.created_at.date().strftime("%Y-%m-%d") for item in sales_items
     ]
-    for items in sales_items:
-        ic(items.stock_snapshot)
 
     stock_snapshot = [item.stock_snapshot for item in sales_items]
 
@@ -296,7 +271,6 @@ def product_analytics(request, product_id):
         if days_between_sales > 0:
             reorder_days = sold / days_between_sales
 
-    ic(reorder_days)
     remaining_stock = opening_stock - sold
 
     try:
@@ -345,18 +319,26 @@ def product_analytics(request, product_id):
         "sales_time": sales_time,
         "sales_trend": sales_trend,  # Pass the calculated sales trend
         "stock_snapshot": stock_snapshot,  # Pass stock snapshot data
+        "last_sales": last_sales,
     }
 
     # Only include reorder_days if it was calculated
     if reorder_days is not None:
         context["days_until_reorder"] = reorder_days
 
-    return render(
-        request=request,
-        template_name="products/product_details.html",
-        context=context,
-    )
+    return context
 
 
 @login_required
-def payment_received_list(self): ...
+def payment_received_list(request): ...
+
+
+@login_required
+@render_html(template_name="purchase/purchase_return.html")
+def purchase_return(request, purchase_id: int):
+    purchase = PurchaseInvoice.objects.filter(id=purchase_id)
+
+    context = {
+        "purchase": purchase,
+    }
+    return context

@@ -1,88 +1,161 @@
 {% extends 'base.html' %}
 {% block main %}
-    <div class="container mx-auto p-6">
-        <h1 class="text-5xl font-bold pb-5 text-blue-800">{{ product.name }}</h1>
-        <!-- Option 1: Chart at the top -->
-        <div class="mb-6">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h3 class="text-3xl font-bold pb-4 text-gray-700">Inventory Movement</h3>
-                <div id="chart" class="mt-6" style="height: 400px;">
-                    <!-- Chart will be rendered here -->
-                </div>
-            </div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-6">
-            <!-- Product Details -->
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h3 class="text-3xl font-bold pb-4 text-gray-700">Product Details</h3>
-                <div class="space-y-3">
-                    <p class="text-lg flex justify-between">
-                        <span class="font-semibold text-gray-600">Sell Through Rate:</span>
-                        <span class="text-blue-600">{{ sell_through_rate }}%</span>
-                    </p>
-                    <p class="text-lg flex justify-between">
-                        <span class="font-semibold text-gray-600">Opening Stock:</span>
-                        <span>{{ opening_stock }}</span>
-                    </p>
-                    <p class="text-lg flex justify-between">
-                        <span class="font-semibold text-gray-600">Remaining Stock:</span>
-                        <span>{{ remaining_stock }}</span>
-                    </p>
-                </div>
-            </div>
-            <!-- Key Insights -->
-            <div class="bg-blue-50 shadow-md rounded-lg p-6">
-                <h3 class="text-3xl font-bold pb-4 text-blue-800">Key Insights</h3>
-                <ul class="space-y-2 text-gray-700">
-                    <li class="flex items-start">
-                        <svg class="h-6 w-6 text-blue-500 mr-2 mt-1"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Current stock level is <strong>{{ stock_status }}</strong> based on historical sales data.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <svg class="h-6 w-6 text-blue-500 mr-2 mt-1"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                        <span>Sales trend is <strong>{{ sales_trend }}</strong> over the past 30 days.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <svg class="h-6 w-6 text-blue-500 mr-2 mt-1"
-                             fill="none"
-                             viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>Estimated time until reorder: <strong>{{ days_until_reorder|floatformat:2 }} days</strong>.</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <!-- Table Section -->
-        <div class="rounded-lg p-6 mt-6">
-            <h3 class="text-3xl font-bold pb-4 text-gray-700">Sales Data Table</h3>
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
 
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-        {% include 'inventory/movement.html#movement' %}
-                </tbody>
-            </table>
+{% if sales is None %}
+No Sales
+{% else %}
+<div class="container mx-auto p-6">
+    <h1 class="text-5xl font-bold pb-5 text-blue-800">{{ product.name }}</h1>
+    <!-- Option 1: Chart at the top -->
+    <div class="mb-6">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h3 class="text-3xl font-bold pb-4 text-gray-700">Inventory Movement</h3>
+            <div id="chart" class="mt-6" style="height: 400px;">
+                <!-- Chart will be rendered here -->
+            </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <div class="grid md:grid-cols-2 gap-6">
+        <!-- Product Details -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h3 class="text-3xl font-bold pb-4 text-gray-700">Product Details</h3>
+            <div class="space-y-3">
+                <p class="text-lg flex justify-between">
+                    <span class="font-semibold text-gray-600">Sell Through Rate:</span>
+                    <span class="text-blue-600">{{ sell_through_rate }}%</span>
+                </p>
+                <p class="text-lg flex justify-between">
+                    <span class="font-semibold text-gray-600">Opening Stock:</span>
+                    <span>{{ opening_stock }}</span>
+                </p>
+                <p class="text-lg flex justify-between">
+                    <span class="font-semibold text-gray-600">Remaining Stock:</span>
+                    <span>{{ remaining_stock }}</span>
+                </p>
+            </div>
+        </div>
+        <!-- Key Insights -->
+        <div class="bg-blue-50 shadow-md rounded-lg p-6">
+            <h3 class="text-3xl font-bold pb-4 text-blue-800">Key Insights</h3>
+            <ul class="space-y-2 text-gray-700">
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-blue-500 mr-2 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg <span>
+                    The product is last sold on <strong> {{ last_sales |date}}</strong>
+                    </span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-blue-500 mr-2 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    <span>Sales trend is <strong>{{ sales_trend }}</strong> over the past 30 days.</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="h-6 w-6 text-blue-500 mr-2 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Estimated time until reorder: <strong>{{ days_until_reorder|floatformat:2 }}
+                            days</strong>.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Table Section -->
+    <div class="rounded-lg p-6 mt-6">
+        <h3 class="text-3xl font-bold pb-4 text-gray-700">Sales Data Table</h3>
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <div class="overflow-x-auto">
+                    <table id="movement-table" class=" divide-y table-fixed divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Product
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Customer Name
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Quantity
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Price
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Stock At the time of Sale
+                                </th>
+                                <th scope="col"
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Sold At
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for item in sales %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <a href="{% url 'product_analytics' item.product.id %}"
+                                        class="underline hover:text-blue-400">
+
+                                        {{ item.product }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ item.sales.customer.get_full_name }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.quantity }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.price }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.stock_snapshot }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ item.sales.created_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <script>
+                        document.getElementById('table-search').addEventListener('input', function () {
+                            let filter = this.value.toUpperCase();
+                            let rows = document.querySelector("#movement-table tbody").rows;
+
+                            for (let i = 0; i < rows.length; i++) {
+                                let firstCol = rows[i].cells[0].textContent.toUpperCase();
+                                let secondCol = rows[i].cells[1].textContent.toUpperCase();
+                                if (firstCol.indexOf(filter) > -1 || secondCol.indexOf(filter) > -1) {
+                                    rows[i].style.display = "";
+                                } else {
+                                    rows[i].style.display = "none";
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+{% endif %}
+
 {% endblock main %}
 {% block js %}
-    <script>
+<script>
     var options = {
         chart: {
             height: 380,
@@ -95,32 +168,32 @@
         series: [
             {
                 name: "Product",
-                data: {{ sales_qty_list|safe }}
+                data: {{ sales_qty_list| safe }}
             }, {
-                name: "Stock Snapshot",
-                data: {{ stock_snapshot|safe }}
-            }
+        name: "Stock Snapshot",
+            data: {{ stock_snapshot | safe }}
+    }
         ],
-        xaxis: {
-            categories: {{ sales_time|safe }}
+    xaxis: {
+        categories: {{ sales_time | safe }}
+    },
+    stroke: {
+        curve: 'smooth',
         },
-        stroke: {
-            curve: 'smooth',
-        },
-        colors: ['#3B82F6', '#10B981'],
+    colors: ['#3B82F6', '#10B981'],
         legend: {
-            position: 'top'
-        },
-        tooltip: {
-            theme: 'light',
+        position: 'top'
+    },
+    tooltip: {
+        theme: 'light',
             x: {
-                format: 'dd MMM yyyy'
-            }
+            format: 'dd MMM yyyy'
         }
+    }
     };
 
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
 
-    </script>
+</script>
 {% endblock js %}

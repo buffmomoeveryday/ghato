@@ -1,12 +1,11 @@
 from django_unicorn.components import UnicornView
 from accounts.models import BankAccount
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 
-from icecream import ic
 
-
-class CreateBankAccountView(UnicornView):
-    template_name = "create_bank_account.html"
+class BankAccountUpdateView(UnicornView):
+    template_name = "bank_account_update.html"
 
     bank_id = None
     name: str = None
@@ -26,6 +25,12 @@ class CreateBankAccountView(UnicornView):
         self.account_type = bank.accounttype
 
     def _update(self):
+        if self.balance < 0:
+            messages.error(self.request, "Cant be smaller than 0")
+            raise ValidationError(
+                {"balance": "Balance Can't smaller than 0 "}, code="invalid"
+            )
+
         if (
             BankAccount.objects.filter(
                 tenant=self.request.tenant,
@@ -34,14 +39,11 @@ class CreateBankAccountView(UnicornView):
             .exclude(id=self.bank_id)
             .exists()
         ):
-            return messages.error(self.request, "Error")
+
+            self.parent.force_render = True
+            return messages.error(self.request, "Bank Account Already Exists")
 
         else:
-
-            return messages.success(self.request, "Error")
-            ic("halo returns")
-
-    # self.call("initFlowbite")
-    # return super().updated(name, value)
+            messages.success(self.request, "Successfully Changed")
 
     def create_bank(self): ...

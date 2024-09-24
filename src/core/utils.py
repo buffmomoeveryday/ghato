@@ -10,6 +10,7 @@ from tenant.models import TenantModel
 from tenant.utils import get_subdomain
 from purchases.models import PurchaseInvoice, PurchaseItem
 from tenant.models import TenantModel
+from decimal import Decimal
 
 
 def require_htmx(view_func):
@@ -48,9 +49,36 @@ class ApiKey(APIKeyHeader):
         try:
             if key:
                 subdomain = get_subdomain(request)
+                ic(subdomain, key)
                 return TenantModel.objects.get(api_key=key, domain=subdomain)
             else:
                 pass
 
         except TenantModel.DoesNotExist:
             pass
+
+
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
+
+from django.urls import path
+from functools import wraps
+
+auto_urlpatterns = []
+
+
+def url(pattern):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(*args, **kwargs):
+            return view_func(*args, **kwargs)
+
+        # Register the URL pattern
+        auto_urlpatterns.append(path(pattern, wrapper))
+
+        return wrapper
+
+    return decorator

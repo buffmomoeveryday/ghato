@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Purchase List | {{ super }}
+Purchase List
 {% endblock title %}
 
 {% block main %}
@@ -36,11 +36,8 @@ Purchase List | {{ super }}
             </thead>
             <tbody>
                 {% for purchase in filter.qs %}
-                <tr
-                    class="bg-white border-b "
-                    >
-                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
-                    >
+                <tr class="bg-white border-b ">
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                         <a href="{% url 'purchase_detail' id=purchase.id %}"
                             class="text-blue-600 hover:underline">{{ purchase.id }}</a>
                     </td>

@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
 from .models import TenantModel
 
-admin.site.register(TenantModel)
+
+@admin.register(TenantModel)
+class TenantModelAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "domain", "api_key")
+    search_fields = ("name",)

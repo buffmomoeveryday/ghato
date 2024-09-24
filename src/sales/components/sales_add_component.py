@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 
 from sales.models import Customer, Product, Sales, SalesInvoice, SalesItem
-from purchases.models import PurchaseInvoice, PurchaseItem
+from purchases.models import PurchaseInvoice, PurchaseItem, StockMovement
 
 
 class SalesAddComponentView(UnicornView):
@@ -27,9 +27,11 @@ class SalesAddComponentView(UnicornView):
     product_quantity: int = 1
     product_vat: int = 13
     product_selected: str = ""
+    product_profit: float = 0.00
 
     total_amount: float = 0.00
     total_vat: float = 0.00
+    total_profit: float = 0.00
 
     vat_choices: List[int] = [13, 0]
 
@@ -38,6 +40,9 @@ class SalesAddComponentView(UnicornView):
     customer_phone: int = 0  # Default to 0 instead of an empty string
     customer_address: str = ""
     customer_email: str = ""
+
+    product_cost: float = 0.00
+    product_stock = 0
 
     disable_add_product_btn = False
     disable_edit_btn = False
@@ -54,15 +59,21 @@ class SalesAddComponentView(UnicornView):
             for item in self.selected_products
         )
 
+    def calculate_profit(self):
+        self.total_profit = sum(
+            float(item["product_profit"]) for item in self.selected_products
+        )
+
     @transaction.atomic
     def create_invoice(self):
         try:
             if not self.customer:
                 return messages.error(
-                    request=self.request,
-                    message="Please Select Customer First",
+                    request=self.request, message="Please Select Customer First"
                 )
-            customer = Customer.objects.get(id=self.customer)
+            customer = Customer.objects.get(
+                id=self.customer, tenant=self.request.tenant
+            )
             sales = Sales.objects.create(
                 customer=customer,
                 total_amount=self.total_amount,
@@ -70,9 +81,9 @@ class SalesAddComponentView(UnicornView):
             )
 
             for item in self.selected_products:
-
-                product = Product.objects.get(id=item["product_id"])
-
+                product = Product.objects.get(
+                    id=item["product_id"], tenant=self.request.tenant
+                )
                 salesitem = SalesItem.objects.create(
                     sales=sales,
                     product_id=item["product_id"],
@@ -82,21 +93,23 @@ class SalesAddComponentView(UnicornView):
                     vat=item["vat"],
                     stock_snapshot=product.stock_quantity,
                 )
-
-                ic("Before Remove", product.stock_quantity)
-
                 salesitem.save()
                 product.stock_quantity -= item["quantity"]
-                ic("After Remove", product.stock_quantity)
-
                 product.save()
+                StockMovement.objects.create(
+                    product=product,
+                    quantity=item["quantity"],
+                    movement_type="OUT",
+                    description=f"Sold to {customer.get_full_name}",
+                    tenant=self.request.tenant,
+                )
 
             SalesInvoice.objects.create(
                 sales=sales,
                 billing_address=self.billing_address,
                 total_amount=self.total_amount,
-                tenant=self.request.tenant,
                 created_by=self.request.user,
+                tenant=self.request.tenant,
             )
             self.selected_products = []
             self.total_amount = 0.0
@@ -104,6 +117,9 @@ class SalesAddComponentView(UnicornView):
             self.billing_address = ""
             self.product_selected = ""
             self.total_vat = 0
+            self.product_price = 0
+            self.total_profit = 0.00
+            self.product_quantity = 0
             messages.success(request=self.request, message="Created Successfully")
 
         except Exception as e:
@@ -135,13 +151,18 @@ class SalesAddComponentView(UnicornView):
 
     def add_product(self):
         try:
+            if not self.product_selected.strip():
+                raise ValidationError(
+                    {"product_selected": "Select a product"}, code="required"
+                )
+
             if (
-                self.product_price == 0
-                or self.product_quantity == 0
+                self.product_price <= 0
+                or self.product_quantity <= 0
                 or not self.product_selected.strip()
             ):
                 return messages.error(
-                    self.request, "Price or Quantity Could not be zero"
+                    self.request, "Price or Quantity or Product Could not be zero"
                 )
             for item in self.selected_products:
                 if item["product_id"] == int(self.product_selected):
@@ -152,7 +173,18 @@ class SalesAddComponentView(UnicornView):
                     )
 
             self.validate_quantity()
-            product = Product.objects.get(id=self.product_selected)
+            product = (
+                Product.objects.filter(id=self.product_selected)
+                .prefetch_related("purchase_item")
+                .first()
+            )
+            purchase_item = PurchaseItem.objects.get(
+                product=product, tenant=self.request.tenant
+            )
+            ic(self.product_quantity, self.product_price, purchase_item.price)
+            self.product_profit = self.product_quantity * (
+                self.product_price - purchase_item.price
+            )
             self.selected_products.append(
                 {
                     "product_id": product.id,
@@ -160,6 +192,7 @@ class SalesAddComponentView(UnicornView):
                     "quantity": self.product_quantity,
                     "price": self.product_price,
                     "vat": self.product_vat,
+                    "product_profit": self.product_profit,
                     "vat_amount": (
                         float(self.product_price)
                         * float(self.product_vat)
@@ -172,6 +205,7 @@ class SalesAddComponentView(UnicornView):
 
             self.calculate_total()
             self.calculate_vat()
+            self.calculate_profit()
             self.product_input = ""
             self.product_price = 1
             self.product_quantity = 1
@@ -244,6 +278,7 @@ class SalesAddComponentView(UnicornView):
                     self.product_price = item["price"]
                     self.product_quantity = item["quantity"]
                     self.product_vat = item["vat"]
+                    self.product_profit = item["product_profit"]
                     self.product_selected = str(item["product_id"])
 
                     self.selected_products.remove(item)
@@ -279,6 +314,17 @@ class SalesAddComponentView(UnicornView):
             .filter(has_purchase=True)
             .order_by("name")
         )
+
+    def get_details(self):
+        self.product_cost = (
+            PurchaseItem.objects.filter(product__id=self.product_selected).first().price
+        )
+        self.product_stock = (
+            Product.objects.filter(id=self.product_selected).first().stock_quantity
+        )
+
+    def print_hello(self):
+        print(":hell")
 
     def updating(self, name, value):
         ic(name, value)

@@ -7,11 +7,11 @@
     <div hx-boost='true'>
         <form method="post" action="{% url 'user_settings' %}" class="space-y-4">
             {% csrf_token %}
-            {% component "input" id="first_name" label="First Name" type="text" name="first_name" value=request.user.first_name placeholder="First Name" required=True %}{% endcomponent %}
-            {% component "input" id="last_name" label="Last Name" type="text" name="last_name" value=request.user.last_name placeholder="Last Name" required=True %}{% endcomponent %}
-            {% component "input" id="email" label="Email Address" type="email" name="email" value=request.user.email placeholder="user@email.com" required=True %}{% endcomponent %}
-            {% component "input" id="password1" label="Password" type="password" name="password1" placeholder="Enter new password" required=False %}{% endcomponent %}
-            {% component "input" id="password2" label="Confirm Password" type="password" name="password2" placeholder="Confirm password" required=False %}{% endcomponent %}
+            {% include 'users/partials/input.html' with id="first_name" label="First Name" type="text" name="first_name" value=request.user.first_name placeholder="First Name" %}
+            {% include 'users/partials/input.html' with id="last_name" label="Last Name" type="text" name="last_name" value=request.user.last_name placeholder="Last Name" %}
+            {% include 'users/partials/input.html' with id="email" label="Email Address" type="email" name="email" value=request.user.email placeholder="user@email.com" %}
+            {% include 'users/partials/input.html' with id="password1" label="Password" type="password" name="password1" placeholder="Enter new password" %}
+            {% include 'users/partials/input.html' with id="password2" label="Confirm Password" type="password" name="password2" placeholder="Confirm password" %}
             <div id="error_div" class="hidden text-red-800 mb-4">Passwords do not match.</div>
             <div>
                 <button type="submit" id="submit_button"
@@ -21,10 +21,16 @@
     </div>
 </div>
 <div class="p-6 mt-6 bg-white rounded-lg shadow-lg">
-        {% if request.user.is_company_admin %}
-            <h1 class="text-2xl font-bold pb-3">Create Employee</h1>
-            {% unicorn 'add_user_component' %}
-        {% endif %}
+    {% if request.user.is_company_admin %}
+    <h1 class="text-2xl font-bold pb-3">Create Employee</h1>
+    {% unicorn 'add_user_component' %}
+    {% endif %}
+</div>
+
+<div>
+
+    {% unicorn 'api_component' %}
+
 </div>
 <br>
 {% endblock main %}

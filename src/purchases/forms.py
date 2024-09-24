@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import PurchaseInvoice, PurchaseItem
+from .models import PurchaseInvoice, PurchaseItem, Supplier
 
 
 class PurchaseForm(forms.ModelForm):
@@ -12,4 +12,10 @@ class PurchaseForm(forms.ModelForm):
 class PurchaseItemForm(forms.ModelForm):
     class Meta:
         model = PurchaseItem
-        fields = ["product", "quantity", "price", "received_quantity"]
+        fields = ["product", "quantity", "price"]
+
+
+class SupplierEditForm(forms.ModelForm):
+    class Meta:
+        model = Supplier
+        exclude = ["tenant", "created_at", "updated_at", "created_by"]

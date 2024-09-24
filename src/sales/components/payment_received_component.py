@@ -78,6 +78,13 @@ class PaymentReceivedComponentView(UnicornView):
             )
 
     def add_payment(self):
+        if self.received_amount <= 0:
+            messages.error(self.request, "Received Amount Cannto be 0 or less than 0")
+            raise ValidationError(
+                {"received_amount": "Received Amount Cannot be 0 or less than 0"},
+                code="invalid",
+            )
+
         if not all(
             [
                 self.customer_id,
