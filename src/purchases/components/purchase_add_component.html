@@ -61,8 +61,8 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
             <div>
                 <label for="product" class="block text-sm font-medium text-gray-700">Product</label>
-                <select u:model="product" u:key="product_list" u:change="uom_field_change" id="product" name="product"
-                    class="form-select block w-full mt-1 rounded-md border-gray-300">
+                <select u:model.defer="product" u:key="product_list" u:change="uom_field_change" id="product"
+                    name="product" class="form-select block w-full mt-1 rounded-md border-gray-300">
                     <option value="">Select a product</option>
                     {% for product in products %}
                     <option value="{{ product.id }}">{{ product.name }} ({{ product.sku }} in
@@ -94,6 +94,7 @@
                 </button>
             </div>
         </div>
+
         <div class="overflow-x-auto">
             <table u:key="product_table" class="min-w-full bg-white divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -132,6 +133,7 @@
                 </tbody>
             </table>
         </div>
+
         <div class="mt-4">
             {% if product_to_be_purchased %}
             <button u:click="save_all" name="save_all"

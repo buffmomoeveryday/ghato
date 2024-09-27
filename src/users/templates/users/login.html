@@ -10,6 +10,14 @@
                 <span class="underline text-indigo-700">{{ request.tenant.name }}</span>
             </h2>
         </div>
+        {% block session_message %}
+        {% for message in messages  %}
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+            <span class="font-medium">Invalid</span>{{message}}.
+        </div>
+        {% endfor %}
+        {% endblock session_message %}
+
         <form action="{% url 'login' %}" method="post" class="mt-8 space-y-6">
             {% csrf_token %}
             <div class="rounded-md shadow-sm -space-y-px">
@@ -27,11 +35,11 @@
                 </div>
             </div>
             <div class="pt-2">
-                    <button type="submit"
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white
+                <button type="submit"
+                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white
                                             bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transform transition-all duration-300 hover:scale-105">
-                        Login ✨
-                    </button>
+                    Login ✨
+                </button>
             </div>
         </form>
         <div class="text-center pt-4">

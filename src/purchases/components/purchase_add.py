@@ -38,7 +38,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
     purchase_invoice_number = date.today()
     received_date: date = date.today()
     order_date: date = date.today()
-    
+
     total_invoice_amount = 0
 
     product = ""
@@ -169,6 +169,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 code="invalid",
             )
 
+        ic(self.quantity)
         if int(float(self.quantity)) <= 0:
             messages.error(
                 self.request,
@@ -179,7 +180,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
                 code="invalid",
             )
 
-        ic(self.price)
+        ic(type(int(float(self.price))), self.price)
 
         if int(float(self.price)) <= 0:
             messages.error(
@@ -206,14 +207,12 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
         )
 
         if existing_product:
-            if existing_product["price"] != self.price:
-                messages.error(
-                    self.request, "Product Already Added With a different rate"
-                )
-                return
-            else:
-                existing_product["quantity"] += self.quantity
-                messages.success(self.request, "Product quantity updated successfully.")
+            messages.error(
+                self.request,
+                "Product Already Added With a different rate please edit to change",
+            )
+            return
+
         else:
             product = {
                 "product_id": self.product,
@@ -246,6 +245,7 @@ class PurchaseAddView(LoginRequiredMixin, UnicornView):
             self.new_supplier_contact_person = ""
             self.new_supplier_name = ""
 
+            self.supplier = supplier
             self.suppliers = Supplier.objects.filter(tenant=self.request.tenant)
 
             messages.success(

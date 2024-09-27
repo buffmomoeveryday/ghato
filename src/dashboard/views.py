@@ -16,7 +16,7 @@ from sales.models import *
 from .models import Message
 
 from django.shortcuts import render
-from django.db.models import Sum, Count, Avg
+from django.db.models import Sum, Count, Avg, Q
 from django.contrib.auth.decorators import login_required
 
 from datetime import datetime, timedelta
@@ -30,6 +30,11 @@ from .tasks import calculate_meaning_of_life
 
 @login_required()
 def dashboard_index(request):
+
+    product_with_no_stock = Product.objects.filter(
+        stock_quantity=0 or None, tenant=request.tenant
+    )
+    print(product_with_no_stock)
     start_date = datetime.now() - timedelta(days=30)
 
     total_sales = Sales.objects.filter(
@@ -138,6 +143,7 @@ def dashboard_index(request):
         "total_purchase_made": total_purchases_made,
         "total_sales_made": total_sales_made,
         "total_payments_made": total_payments_made,
+        "product_with_no_stock": product_with_no_stock,
     }
 
     return render(request, "dashboard/dashboard-index.html", context)

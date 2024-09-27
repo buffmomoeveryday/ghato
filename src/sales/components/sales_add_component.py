@@ -181,7 +181,6 @@ class SalesAddComponentView(UnicornView):
             purchase_item = PurchaseItem.objects.get(
                 product=product, tenant=self.request.tenant
             )
-            ic(self.product_quantity, self.product_price, purchase_item.price)
             self.product_profit = self.product_quantity * (
                 self.product_price - purchase_item.price
             )
@@ -214,7 +213,7 @@ class SalesAddComponentView(UnicornView):
             self.call("alert", "Product not found")
 
         except Exception as e:
-            ic(e)
+            messages.error(self.request,f"{e}")
             raise e
 
     def validate_quantity(self):
@@ -266,7 +265,6 @@ class SalesAddComponentView(UnicornView):
         if not self.disable_edit_btn:
             try:
                 self.disable_edit_btn = True
-
                 item = next(
                     item
                     for item in self.selected_products

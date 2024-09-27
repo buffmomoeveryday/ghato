@@ -93,6 +93,8 @@
                 </button>
                 {% endif %}
             </div>
+            {% if disable_edit_btn %}
+
             <div class="flex-1 px-2 mb-4 flex items-end">
                 <button type="button" u:click="cancel_editing" u:key="cancel_editing"
                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
@@ -109,6 +111,8 @@
                     </span> Cancel Editing
                 </button>
             </div>
+            {% endif %}
+
         </div>
         <!-- product list -->
         <h3 class="text-xl">Selected Products</h3>

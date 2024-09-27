@@ -27,6 +27,7 @@ def login_user(request):
 
         user = authenticate(username=email, password=password)
         if user is not None:
+            ic(user.is_active)
             if user.is_active:
                 if user.tenant == tenant:
                     login(request, user)
@@ -42,16 +43,38 @@ def login_user(request):
         return redirect(reverse_lazy("login"))
 
 
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+
+
+class EmailNotValidException(Exception):
+    pass
+
+
+def clean_email(email: str) -> str:
+    try:
+        validate_email(email)
+    except ValidationError:
+        raise EmailNotValidException("Invalid email")
+
+    return email
+
+
 def register_user(request):
     if request.method == "GET":
-
         if get_subdomain(request) is not None:
             return HttpResponsePermanentRedirect("http://localhost:8000/register/")
-
         return render(request=request, template_name="users/register.html")
 
     if request.method == "POST":
-        email = request.POST.get("email")
+        try:
+            email = clean_email(request.POST.get("email"))
+
+        except EmailNotValidException as e:
+            messages.error(request=request, message=f"{e}")
+
+            return redirect(reverse_lazy("register"))
+
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
         company_name = request.POST.get("company_name")
@@ -61,7 +84,9 @@ def register_user(request):
             messages.error(request=request, message="Password Error")
             return redirect(reverse_lazy("register"))
 
-        if CustomUser.objects.filter(email=email).exists():
+        exists = CustomUser.objects.filter(email=email).exists()
+
+        if exists:
             messages.error(request=request, message="Email Already Exists")
             return redirect(reverse_lazy("register"))
 
@@ -83,10 +108,12 @@ def register_user(request):
                 user = CustomUser.objects.create(
                     email=email,
                     password=make_password(password=password1),
+                    tenant=tenant,
                 )
+
                 user.save()
                 messages.success(request=request, message="Registered Successfully")
-                return redirect("http://{tenant.domain}.localhost:8000/login/")
+                return redirect(f"http://{tenant.domain}.localhost:8000/login/")
 
         except ValidationError as e:
             messages.error(request, f"{e}")
@@ -128,7 +155,10 @@ def settings(request):
                     return redirect(reverse_lazy("user_settings"))
 
             if (
-                CustomUser.objects.filter(email=email)
+                CustomUser.objects.filter(
+                    email=email,
+                    tenant=request.tenant,
+                )
                 .exclude(pk=request.user.pk)
                 .exists()
             ):

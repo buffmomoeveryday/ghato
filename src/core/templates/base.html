@@ -30,7 +30,10 @@
     {% endif %}
     <main
         class="{% if auth %} {% if not request.user.is_superuser %}authenticated-main p-4 pt-20 sm:ml-64{% endif %} {% endif %} flex flex-col h-screen">
+        {% block session_message %}
         {% include "partials/_messages.html" %}
+        {% endblock session_message %}
+
         {% block main %}
         {% endblock main %}
     </main>

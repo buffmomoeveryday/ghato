@@ -63,11 +63,6 @@ class StockMovement(TenantAwareModel, BaseModelMixin):
     description = models.TextField(blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True)
 
-    # Generic foreign key fields
-    # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
-    # object_id = models.PositiveIntegerField(null=True)
-    # source_object = GenericForeignKey("content_type", "object_id")
-
     def __str__(self):
         return f"{self.product.name} - {self.movement_type} ({self.quantity})"
 
@@ -147,7 +142,9 @@ class PurchaseItem(TenantAwareModel, BaseModelMixin):
         related_name="items",
         on_delete=models.CASCADE,
     )
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name="purchase_item")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="purchase_item"
+    )
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
@@ -157,58 +154,3 @@ class PurchaseItem(TenantAwareModel, BaseModelMixin):
     @property
     def total(self):
         return self.price * self.quantity
-
-
-# #################################
-# ##prchase return helpers#########
-# #################################
-
-
-# class PurchaseReturn(TenantAwareModel, BaseModelMixin):
-#     purchase_invoice = models.ForeignKey(PurchaseInvoice, on_delete=models.CASCADE)
-#     return_date = models.DateTimeField(auto_now_add=True)
-#     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-
-#     def __str__(self):
-#         return f"Purchase Return #{self.id} for Invoice #{self.purchase_invoice.id}"
-
-
-# @receiver(post_save, sender=PurchaseReturn)
-# def handle_purchase_return_stock_movement(sender, instance, created, **kwargs):
-#     ic(sender, instance)
-#     if created:
-#         for item in instance.items.all():
-#             StockMovement.objects.create(
-#                 product=item.product,
-#                 movement_type="OUT PURCHASE RETURN",
-#                 quantity=item.quantity,
-#                 description=f"Purchase Return #{instance.id}",
-#             )
-#             item.product.stock_quantity -= item.quantity
-#             item.product.save()
-
-
-# @receiver(post_save, sender=PurchaseReturn)
-# def update_purchase_invoice_after_return(sender, instance, created, **kwargs):
-#     ic(sender, instance)
-#     if created:
-#         invoice = instance.purchase_invoice
-#         invoice.total_amount -= instance.total_amount
-#         invoice.save()
-
-
-# # TODO:depricate this
-# class PurchaseReturnItem(TenantAwareModel, BaseModelMixin):
-#     purchase_return = models.ForeignKey(
-#         PurchaseReturn, related_name="items", on_delete=models.CASCADE
-#     )
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     quantity = models.IntegerField()
-#     price = models.DecimalField(max_digits=10, decimal_places=2)
-
-#     def __str__(self):
-#         return f"{self.product.name} x {self.quantity}"
-
-#     @property
-#     def total(self):
-#         return self.price * self.quantity

@@ -54,7 +54,11 @@ def payments_received(request):
     ).order_by("-payment_date")
 
     total_payments_received = payments_received.aggregate(total=Sum("amount"))["total"]
-    last_payment = payments_received.first().payment_date
+
+    if payments_received:
+        last_payment = payments_received.first().payment_date
+    else:
+        last_payment = None
 
     context = {
         "payments_received": payments_received,

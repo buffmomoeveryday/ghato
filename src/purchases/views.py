@@ -163,10 +163,12 @@ def payments_made_create(request):
     return context
 
 
+from django.db.models import Q
+
+
 @login_required
 @render_html("inventory/inventory_index.html")
 def inventory(request):
-
     tenant = request.user.tenant
     purchase_items = PurchaseItem.objects.filter(
         tenant=tenant,
@@ -178,9 +180,17 @@ def inventory(request):
         "product__uom",
     )
 
-    filter = InventoryFilter(
-        request.GET, queryset=purchase_items, tenant=request.tenant
-    )
+    stock_no = request.GET.get("stock_no", "")
+
+    if stock_no:
+        purchase_items = PurchaseItem.objects.filter(
+            (
+                Q(product__stock_quantity__lte=0)
+                | Q(product__stock_quantity__isnull=True)
+            )
+            & Q(tenant=tenant)
+        )
+        print(purchase_items)
 
     total_inventory_value = (
         purchase_items.annotate(
@@ -192,8 +202,7 @@ def inventory(request):
     )
 
     context = {
-        "inventory": filter.qs,
-        "inventory_form": filter.form,
+        "inventory": purchase_items,
         "total_inventory_value": total_inventory_value,
     }
 
