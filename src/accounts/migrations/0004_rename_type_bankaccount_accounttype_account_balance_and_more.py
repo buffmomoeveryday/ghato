@@ -6,28 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_account_tenant_bankaccount_tenant_cashaccount_tenant'),
+        ("accounts", "0003_account_tenant_bankaccount_tenant_cashaccount_tenant"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='bankaccount',
-            old_name='type',
-            new_name='accounttype',
+            model_name="bankaccount",
+            old_name="type",
+            new_name="accounttype",
         ),
         migrations.AddField(
-            model_name='account',
-            name='balance',
+            model_name="account",
+            name="balance",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=25),
         ),
         migrations.AddField(
-            model_name='bankaccount',
-            name='balance',
+            model_name="bankaccount",
+            name="balance",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=25),
         ),
         migrations.AddField(
-            model_name='cashaccount',
-            name='balance',
+            model_name="cashaccount",
+            name="balance",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=25),
         ),
     ]

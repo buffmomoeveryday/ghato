@@ -345,6 +345,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from users.models import CustomUser
 
+
 class PurchaseIndexViewTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -403,6 +404,7 @@ class PurchaseAddViewTest(TestCase):
         response = self.client.get(reverse("purchase_add"))
         self.assertIn("context", response.context)
         self.assertEqual(response.context, {})
+
 
 from .models import PurchaseItem, Product, UnitOfMeasurements
 

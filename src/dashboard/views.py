@@ -30,7 +30,6 @@ from .tasks import calculate_meaning_of_life
 
 @login_required()
 def dashboard_index(request):
-
     product_with_no_stock = Product.objects.filter(
         stock_quantity=0 or None, tenant=request.tenant
     )

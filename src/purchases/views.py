@@ -34,6 +34,9 @@ def decimal_default(obj):
     raise TypeError
 
 
+# purchase details
+
+
 @login_required
 @render_html("purchase/purchase_index.html")
 def purchase_index(request):
@@ -43,6 +46,11 @@ def purchase_index(request):
         "supplier",
     )
     filter = PurchaseFilter(request.GET, queryset=queryset, tenant=request.tenant)
+    from icecream import ic
+
+    # for items in filter:
+    # ic(items.form)
+
     context = {"filter": filter}
     return context
 
@@ -73,6 +81,7 @@ def purchase_detail(request, id):
     return context
 
 
+# supplier details
 @login_required
 def supplier_list(request):
     suppliers = Supplier.objects.filter(tenant=request.tenant)
@@ -201,9 +210,15 @@ def inventory(request):
         or 0
     )
 
+    from .filters import InventoryFilter
+
+    filters = InventoryFilter(
+        request.GET, queryset=purchase_items, tenant=request.tenant
+    )
     context = {
-        "inventory": purchase_items,
+        "inventory": filters.qs,
         "total_inventory_value": total_inventory_value,
+        "inventory_form": filters.form,
     }
 
     return context
@@ -237,6 +252,7 @@ def settings(request):
 @render_html("products/product_details.html")
 def product_analytics(request, product_id):
     product = get_object_or_404(Product, id=product_id, tenant=request.tenant)
+
     purchase = PurchaseItem.objects.filter(
         tenant=request.tenant, product=product
     ).select_related()

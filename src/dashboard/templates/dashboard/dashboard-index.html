@@ -2,8 +2,8 @@
 {% load static %}
 {% load unicorn %}
 {% block main %}
-{% if product_with_no_stock %}
 
+{% if product_with_no_stock %}
 <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
     role="alert">
     <span class="font-medium">Warning alert!</span>
@@ -11,7 +11,9 @@
 </div>
 {% endif %}
 
+
 <div class="container mx-auto px-4 py-8">
+    {{request.user.is_company_admin}}
     <h1 class="text-4xl font-bold mb-8 text-gray-800">Dashboard</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <div class="bg-white p-6 rounded-lg shadow-md">

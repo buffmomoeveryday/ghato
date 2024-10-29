@@ -5,9 +5,6 @@ import base64
 import random
 import string
 
-import hashlib
-import hmac
-import base64
 from datetime import datetime
 
 

@@ -14,6 +14,11 @@ class PurchaseFilter(django_filters.FilterSet):
         label="Supplier Name",
     )
 
+    purchase_date_range = django_filters.DateFromToRangeFilter(
+        field_name="purchase_date",
+        label="Purchase Range",
+    )
+
     class Meta:
         model = PurchaseInvoice
         fields = "__all__"
@@ -21,6 +26,7 @@ class PurchaseFilter(django_filters.FilterSet):
             "tenant",
             "created_at",
             "updated_at",
+            "created_by",
         ]
 
     def __init__(self, *args, **kwargs):

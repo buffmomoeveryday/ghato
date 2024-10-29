@@ -7,14 +7,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0001_initial'),
-        ('tenant', '0002_tenantmodel_api_key'),
+        ("dashboard", "0001_initial"),
+        ("tenant", "0002_tenantmodel_api_key"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='message',
-            name='tenant',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_instances', to='tenant.tenantmodel'),
+            model_name="message",
+            name="tenant",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(class)s_instances",
+                to="tenant.tenantmodel",
+            ),
         ),
     ]

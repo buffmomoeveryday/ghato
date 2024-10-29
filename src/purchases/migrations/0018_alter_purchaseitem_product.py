@@ -7,13 +7,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('purchases', '0017_purchaseinvoice_returned'),
+        ("purchases", "0017_purchaseinvoice_returned"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='purchaseitem',
-            name='product',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='purchase_item', to='purchases.product'),
+            model_name="purchaseitem",
+            name="product",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="purchase_item",
+                to="purchases.product",
+            ),
         ),
     ]

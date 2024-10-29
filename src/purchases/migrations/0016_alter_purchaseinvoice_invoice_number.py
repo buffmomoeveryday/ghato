@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('purchases', '0015_remove_stockmovement_content_type_and_more'),
+        ("purchases", "0015_remove_stockmovement_content_type_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='purchaseinvoice',
-            name='invoice_number',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Purchase Invoice Number'),
+            model_name="purchaseinvoice",
+            name="invoice_number",
+            field=models.CharField(
+                blank=True,
+                max_length=100,
+                null=True,
+                verbose_name="Purchase Invoice Number",
+            ),
         ),
     ]

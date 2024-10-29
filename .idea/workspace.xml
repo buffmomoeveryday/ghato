@@ -6,39 +6,51 @@
   <component name="ChangeListManager">
     <list default="true" id="1a181d83-23b9-491c-9fd2-d7fe8c8bd2e5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/dump.rdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/accounts/components/account_create.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/components/account_create.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/accounts/components/create_bank_account.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/accounts/components/create_bank_account.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/accounts/templates/accounts/bank_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/templates/accounts/bank_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/templates/cotton/input.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/templates/cotton/link.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/accounts/migrations/0003_account_tenant_bankaccount_tenant_cashaccount_tenant.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/migrations/0003_account_tenant_bankaccount_tenant_cashaccount_tenant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/accounts/migrations/0004_rename_type_bankaccount_accounttype_account_balance_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/migrations/0004_rename_type_bankaccount_accounttype_account_balance_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/accounts/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/accounts/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/templates/partials/_navbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/partials/_navbar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/templates/partials/_search.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/partials/_search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/templates/partials/sidebar.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/templates/partials/sidebar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/purchases/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/purchases/components/payment_made_create_component.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/components/payment_made_create_component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/purchases/components/payment_made_create_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/components/payment_made_create_component.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/purchases/components/purchase_add.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/components/purchase_add.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/purchases/templates/inventory/movement.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templates/inventory/movement.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/purchases/templates/products/product_details.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templates/products/product_details.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/migrations/0002_message_tenant.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/migrations/0002_message_tenant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/templates/dashboard/dashboard-index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/templates/dashboard/dashboard-index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/dashboard/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dashboard/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/filters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/filters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0007_product_opening_stock.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0007_product_opening_stock.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0008_alter_product_opening_stock.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0008_alter_product_opening_stock.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0009_alter_product_stock_quantity_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0009_alter_product_stock_quantity_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0010_paymentmade_created_by_product_created_by_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0010_paymentmade_created_by_product_created_by_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0011_purchaseinovice_order_date.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0011_purchaseinovice_order_date.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0012_rename_purchaseinovice_purchaseinvoice.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0012_rename_purchaseinovice_purchaseinvoice.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0013_alter_unitofmeasurements_field.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0013_alter_unitofmeasurements_field.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0014_stockmovement_content_type_stockmovement_object_id_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0014_stockmovement_content_type_stockmovement_object_id_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0015_remove_stockmovement_content_type_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0015_remove_stockmovement_content_type_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0016_alter_purchaseinvoice_invoice_number.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0016_alter_purchaseinvoice_invoice_number.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0017_purchaseinvoice_returned.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0017_purchaseinvoice_returned.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/migrations/0018_alter_purchaseitem_product.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/migrations/0018_alter_purchaseitem_product.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/tasks.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templates/inventory/inventory_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templates/inventory/inventory_index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templates/purchase/purchase_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templates/purchase/purchase_index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/templatetags/length_is.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/templatetags/length_is.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/purchases/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/components/payment_received_component.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/components/payment_received_component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/components/payment_received_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/components/payment_received_component.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/components/return_stock_component.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/components/return_stock_component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/components/return_stock_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/components/return_stock_component.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/components/sales_add_component.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/components/sales_add_component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/purchases/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/purchases/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sales/components/sales_add_component.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/components/sales_add_component.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/templates/sales/customer_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/templates/sales/customer_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/templates/sales/customer_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/templates/sales/customer_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/templates/sales/sales_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/templates/sales/sales_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0003_salesitem_stock_snapshop.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0003_salesitem_stock_snapshop.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0004_rename_stock_snapshop_salesitem_stock_snapshot.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0004_rename_stock_snapshop_salesitem_stock_snapshot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0005_customer_created_by_paymentreceived_created_by_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0005_customer_created_by_paymentreceived_created_by_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0006_alter_salesinvoice_payment_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0006_alter_salesinvoice_payment_status.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0007_alter_paymentreceived_transaction_id.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0007_alter_paymentreceived_transaction_id.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0008_sales_returned_sales.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0008_sales_returned_sales.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0009_rename_returned_sales_sales_returned.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0009_rename_returned_sales_sales_returned.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0010_alter_salesinvoice_sales_salesreturn_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0010_alter_salesinvoice_sales_salesreturn_and_more.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/migrations/0011_remove_salesreturneditems_created_by_and_more.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/migrations/0011_remove_salesreturneditems_created_by_and_more.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sales/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tenant/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/users/templates/users/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/users/templates/users/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tenant/migrations/0002_tenantmodel_api_key.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/migrations/0002_tenantmodel_api_key.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tenant/migrations/0003_alter_tenantmodel_domain.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/tenant/migrations/0003_alter_tenantmodel_domain.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,7 +100,7 @@
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "django.template.preview.state": "SHOW_EDITOR_AND_PREVIEW",
     "git-widget-placeholder": "sales-add-component",
-    "last_opened_file_path": "/home/siddharthakhanal/MEGA/College/6th Semester/Project/ghato",
+    "last_opened_file_path": "/home/siddharthakhanal/Desktop/rocky-dai/silkhair-cms",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.stylelint": "true",
     "node.js.detected.package.tslint": "true",
@@ -135,8 +147,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.22855.92" />
-        <option value="bundled-python-sdk-b068d85d1acf-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.22855.92" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23339.19" />
+        <option value="bundled-python-sdk-0029f7779945-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23339.19" />
       </set>
     </attachedChunks>
   </component>
@@ -156,6 +168,7 @@
       <workItem from="1722395794868" duration="2541000" />
       <workItem from="1723741354771" duration="72000" />
       <workItem from="1726932102160" duration="262000" />
+      <workItem from="1728571857796" duration="158000" />
     </task>
     <servers />
   </component>

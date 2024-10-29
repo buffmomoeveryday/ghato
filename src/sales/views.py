@@ -4,11 +4,10 @@ from django.http import Http404
 from django.http import HttpResponse
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.db.models.functions import TruncDate
-from django.db.models import DateField
 from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator
 from datetime import datetime
+from django.db.models import Sum
+
 from django.urls import reverse
 from icecream import ic
 import json
@@ -19,13 +18,11 @@ import json
 from django.db import transaction
 from django.views.decorators.http import require_GET
 
-from .models import PaymentReceived, SalesInvoice, SalesItem, Customer, Sales
+from .models import PaymentReceived, SalesInvoice, SalesItem, Customer
 from purchases.utils import number_to_words
 from fbv.decorators import render_html
 from .utils import (
-    generate_hmac_sha256,
     generate_random_product_code,
-    generate_signature,
 )
 
 
@@ -138,7 +135,6 @@ def sales_invoice(request, sales_id):
 
     url_pattern = reverse("payment", kwargs={"sales_id": sales_id})
     full_url = request.build_absolute_uri(url_pattern)
-    ic(full_url)
 
     sales = get_object_or_404(SalesInvoice, id=sales_id, tenant=request.tenant)
     time = datetime.now()
@@ -173,6 +169,7 @@ def sales_invoice(request, sales_id):
         "customer": sales.sales.customer.get_full_name,
         "billing_address": sales.billing_address,
     }
+
     return render(
         request=request, template_name="sales/sales_bill.html", context=context
     )
@@ -190,10 +187,6 @@ def customer_all(request):
         template_name="sales/customer_list.html",
         context=context,
     )
-
-
-from django.db.models import Sum
-from itertools import chain
 
 
 @login_required

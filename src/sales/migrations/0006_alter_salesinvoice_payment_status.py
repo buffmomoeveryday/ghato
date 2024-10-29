@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sales', '0005_customer_created_by_paymentreceived_created_by_and_more'),
+        ("sales", "0005_customer_created_by_paymentreceived_created_by_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='salesinvoice',
-            name='payment_status',
-            field=models.CharField(choices=[('Paid', 'Paid'), ('Unpaid', 'Unpaid'), ('Partial', 'Partial')], default='Unpaid', max_length=20),
+            model_name="salesinvoice",
+            name="payment_status",
+            field=models.CharField(
+                choices=[
+                    ("Paid", "Paid"),
+                    ("Unpaid", "Unpaid"),
+                    ("Partial", "Partial"),
+                ],
+                default="Unpaid",
+                max_length=20,
+            ),
         ),
     ]

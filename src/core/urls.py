@@ -1,13 +1,11 @@
 import debug_toolbar
-from django.contrib import admin
-from django.http import HttpResponse
-from django.template.response import TemplateResponse
+from fbv.views import favicon_emoji
 
+from django.contrib import admin
 from django.urls import include, path
 
 from purchases.api import purchase_api, supplier_api
 from accounts.api import accounts_api
-from fbv.views import favicon_emoji
 
 
 urlpatterns = [

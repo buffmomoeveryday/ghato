@@ -89,5 +89,3 @@ class PurchaseInvoiceDetailOutSchema(Schema):
     received_date: Optional[datetime]
     order_date: Optional[datetime]
     items: List[PurchaseItemSchema]  # This will hold the list of purchase items
-
-

@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('purchases', '0012_rename_purchaseinovice_purchaseinvoice'),
+        ("purchases", "0012_rename_purchaseinovice_purchaseinvoice"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='unitofmeasurements',
-            name='field',
-            field=models.CharField(blank=True, choices=[('FLOAT', 'Float'), ('INTEGER', 'Integer')], default='FLOAT', max_length=255, null=True),
+            model_name="unitofmeasurements",
+            name="field",
+            field=models.CharField(
+                blank=True,
+                choices=[("FLOAT", "Float"), ("INTEGER", "Integer")],
+                default="FLOAT",
+                max_length=255,
+                null=True,
+            ),
         ),
     ]

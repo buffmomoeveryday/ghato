@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sales', '0007_alter_paymentreceived_transaction_id'),
+        ("sales", "0007_alter_paymentreceived_transaction_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sales',
-            name='Returned sales',
+            model_name="sales",
+            name="Returned sales",
             field=models.BooleanField(default=False),
         ),
     ]

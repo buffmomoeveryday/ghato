@@ -3,6 +3,7 @@ from tenant.models import TenantAwareModel
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class BankAccount(TenantAwareModel):
 
     class AccountType(models.TextChoices):
@@ -48,11 +49,11 @@ class Account(TenantAwareModel):
     balance = models.DecimalField(max_digits=25, decimal_places=2, default=0.00)
 
 
-
-@receiver(post_save,sender=BankAccount)
-def bank_account_save_handler(*args,**kwargs):
+@receiver(post_save, sender=BankAccount)
+def bank_account_save_handler(*args, **kwargs):
     print("halo bank")
-    
-@receiver(post_save,sender=CashAccount)
-def cash_account_save_handler(*args,**kwargs):
+
+
+@receiver(post_save, sender=CashAccount)
+def cash_account_save_handler(*args, **kwargs):
     print("halo cash")

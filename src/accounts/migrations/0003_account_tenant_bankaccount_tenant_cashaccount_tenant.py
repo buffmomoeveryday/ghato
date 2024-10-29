@@ -7,24 +7,39 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0002_remove_account_balance_remove_bankaccount_balance_and_more'),
-        ('tenant', '0001_initial'),
+        ("accounts", "0002_remove_account_balance_remove_bankaccount_balance_and_more"),
+        ("tenant", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='account',
-            name='tenant',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_instances', to='tenant.tenantmodel'),
+            model_name="account",
+            name="tenant",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(class)s_instances",
+                to="tenant.tenantmodel",
+            ),
         ),
         migrations.AddField(
-            model_name='bankaccount',
-            name='tenant',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_instances', to='tenant.tenantmodel'),
+            model_name="bankaccount",
+            name="tenant",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(class)s_instances",
+                to="tenant.tenantmodel",
+            ),
         ),
         migrations.AddField(
-            model_name='cashaccount',
-            name='tenant',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_instances', to='tenant.tenantmodel'),
+            model_name="cashaccount",
+            name="tenant",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(class)s_instances",
+                to="tenant.tenantmodel",
+            ),
         ),
     ]

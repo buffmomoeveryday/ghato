@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tenant', '0001_initial'),
+        ("tenant", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tenantmodel',
-            name='api_key',
-            field=models.CharField(blank=True, max_length=20, null=True, unique=True, verbose_name='API Key'),
+            model_name="tenantmodel",
+            name="api_key",
+            field=models.CharField(
+                blank=True,
+                max_length=20,
+                null=True,
+                unique=True,
+                verbose_name="API Key",
+            ),
         ),
     ]

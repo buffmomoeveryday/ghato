@@ -7,14 +7,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('purchases', '0011_purchaseinovice_order_date'),
-        ('tenant', '0001_initial'),
+        ("purchases", "0011_purchaseinovice_order_date"),
+        ("tenant", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='PurchaseInovice',
-            new_name='PurchaseInvoice',
+            old_name="PurchaseInovice",
+            new_name="PurchaseInvoice",
         ),
     ]

@@ -1,4 +1,8 @@
 import math
+from pyppeteer import launch
+import os
+from django.template import loader
+from django.http import FileResponse
 
 
 def number_to_words(amount):
@@ -84,3 +88,56 @@ def number_to_words(amount):
     return f"{result} Rupees{points} Only."
 
 
+import asyncio
+from django.views import View
+from django.http import FileResponse, Http404
+from pyppeteer import launch
+from asgiref.sync import async_to_sync
+
+
+import os
+import asyncio
+from django.views import View
+from django.http import FileResponse, Http404
+from pyppeteer import launch
+from asgiref.sync import async_to_sync
+
+
+class PdfView(View):
+    template_name: str = ""
+    size: str = "A4"
+    file_name: str = "output"
+
+    async def generate_pdf(self) -> str:
+        try:
+            # Launch the browser
+            browser = await launch({"headless": True})
+            page = await browser.newPage()
+
+            # Construct the file path to the HTML template
+            template_path = os.path.join(os.getcwd(), self.template_name)
+            if not os.path.exists(template_path):
+                raise Http404("Template not found")
+
+            # Open the HTML template in the browser
+            await page.goto(f"file://{template_path}")
+
+            # Generate the PDF
+            pdf_path = os.path.join(os.getcwd(), f"{self.file_name}.pdf")
+            await page.pdf({"path": pdf_path, "format": self.size})
+
+            # Close the browser
+            await browser.close()
+
+            return pdf_path
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            raise Http404("An error occurred while generating the PDF")
+
+    def get(self, request, *args, **kwargs):
+        return FileResponse(
+            open(self.pdf_path, "rb"),
+            as_attachment=True,
+            filename=f"{self.file_name}.pdf",
+        )

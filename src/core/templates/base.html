@@ -22,14 +22,9 @@
 <body>
     {% block style %}
     {% endblock style %}
-    {% with request.user.is_authenticated as auth %}
-    {% if auth %}
-    {% if not request.user.is_superuser %}
+
     {% include "partials/sidebar.html" %}
-    {% endif %}
-    {% endif %}
-    <main
-        class="{% if auth %} {% if not request.user.is_superuser %}authenticated-main p-4 pt-20 sm:ml-64{% endif %} {% endif %} flex flex-col h-screen">
+    <main class="authenticated-main p-4 pt-20 sm:ml-64 flex flex-col h-screen">
         {% block session_message %}
         {% include "partials/_messages.html" %}
         {% endblock session_message %}
@@ -37,7 +32,6 @@
         {% block main %}
         {% endblock main %}
     </main>
-    {% endwith %}
     {% block js %}
     {% endblock js %}
     {% include "cdn_script.html" %}

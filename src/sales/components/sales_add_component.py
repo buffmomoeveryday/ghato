@@ -213,7 +213,7 @@ class SalesAddComponentView(UnicornView):
             self.call("alert", "Product not found")
 
         except Exception as e:
-            messages.error(self.request,f"{e}")
+            messages.error(self.request, f"{e}")
             raise e
 
     def validate_quantity(self):
